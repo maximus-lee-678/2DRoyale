@@ -2,12 +2,17 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,15 +33,16 @@ public class Game extends JPanel implements Runnable {
 	private final int originalTileSize = 16;
 	private final int scale = 3;
 	public final int tileSize = originalTileSize * scale;
-	public final int playerSize = tileSize / 2;
+	public final int playerSize = 32;
 
-	public final int maxScreenCol = 16;
-	public final int maxScreenRow = 12;
+	public final int maxScreenCol = 32;
+	public final int maxScreenRow = 24;
 	public final int screenWidth = tileSize * maxScreenCol;
 	public final int screenHeight = tileSize * maxScreenRow;
 
 	private int FPS = 60;
 	private boolean running = false;
+	private BufferedImage cursor;
 
 	// World
 	public final int maxWorldCol = 50;
@@ -45,7 +51,7 @@ public class Game extends JPanel implements Runnable {
 	public final int worldHeight = tileSize * maxWorldRow;
 
 	public WindowHandler windowHandler;
-	private TileManager tileM = new TileManager(this);
+	public TileManager tileM = new TileManager(this);
 	public KeyHandler keys = new KeyHandler();
 	public MouseHandler mouse = new MouseHandler();
 	private List<PlayerMP> playerList = new ArrayList<PlayerMP>();
@@ -115,10 +121,11 @@ public class Game extends JPanel implements Runnable {
 
 			if (delta >= 1) {
 				update();
+				repaint();
+				frames++;
 				delta--;
 			}
-			repaint();
-			frames++;
+
 
 			if (timer >= 1000000000) {
 				window.setTitle("Name: " + player.getUsername() + " FPS: " + frames);
@@ -131,8 +138,20 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void init() {
+		
+		
+		
+		try {
+			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
+			Toolkit toolkit = Toolkit.getDefaultToolkit();
+			Cursor c = toolkit.createCustomCursor(cursor, getLocation(), "img");
+			this.setCursor(c);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 
-		windowHandler = new WindowHandler(this);
+		windowHandler = new WindowHandler(this);		
+		
 		player.setUsername(JOptionPane.showInputDialog(this, "Please enter a username"));
 		this.getPlayers().add(player);
 		if (socketServer != null) {

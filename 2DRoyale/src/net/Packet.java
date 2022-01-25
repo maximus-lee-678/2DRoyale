@@ -1,7 +1,5 @@
 package net;
 
-import main.Game;
-
 public class Packet {
 
 	private int id;

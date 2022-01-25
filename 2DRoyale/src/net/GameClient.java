@@ -62,7 +62,7 @@ public class GameClient extends Thread {
 			dataArr = msgData.split(",");			//Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
 			int x = Integer.parseInt(dataArr[1]);			//x axis
 			int y = Integer.parseInt(dataArr[2]);			//y axis
-			game.getPlayers().get(playerIndex(dataArr[0])).move(x, y);	//get player and call move() to update player world coordinates
+			game.getPlayers().get(playerIndex(dataArr[0])).updateXY(x, y);	//get player and call move() to update player world coordinates
 			break;
 		case 4:
 			// MOUSE
