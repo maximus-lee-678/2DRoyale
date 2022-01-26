@@ -35,11 +35,6 @@ public class Game extends JPanel implements Runnable {
 	public final int tileSize = originalTileSize * scale;
 	public final int playerSize = 32;
 
-	public final int maxScreenCol = 32;
-	public final int maxScreenRow = 24;
-	public final int screenWidth = tileSize * maxScreenCol;
-	public final int screenHeight = tileSize * maxScreenRow;
-
 	private int FPS = 60;
 	private boolean running = false;
 	private BufferedImage cursor;
@@ -52,6 +47,7 @@ public class Game extends JPanel implements Runnable {
 
 	public WindowHandler windowHandler;
 	public TileManager tileM = new TileManager(this);
+	public Screen screen = new Screen(this);
 	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler();
 	private List<PlayerMP> playerList = new ArrayList<PlayerMP>();
@@ -71,7 +67,7 @@ public class Game extends JPanel implements Runnable {
 
 	public Game() {
 
-		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setPreferredSize(new Dimension(screen.screenWidth, screen.screenHeight));
 		this.setBackground(Color.BLACK);
 
 		this.setDoubleBuffered(true);
@@ -94,9 +90,7 @@ public class Game extends JPanel implements Runnable {
 
 	}
 
-	public void startGameThread() {
-		
-		
+	public void startGameThread() {		
 
 		if (JOptionPane.showConfirmDialog(this, "Do you want to ok run the server") == 0) {
 			socketServer = new GameServer(this);
@@ -194,13 +188,12 @@ public class Game extends JPanel implements Runnable {
 		
 		// Title Screen
 		if (gameState == titleState) {
-			ui.draw(g2);
-			
+			ui.draw(g2);			
 		}
 		
 		// Others
 		else {
-			tileM.render(g2);
+			screen.render(g2);
 			for (PlayerMP p : getPlayers())
 				p.render(g2);
 

@@ -52,7 +52,7 @@ public class UI{
 		
 		if(titleScreenState == 0) {
 			g2.setColor(new Color(0,0,0));
-			g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+			g2.fillRect(0, 0, gp.screen.screenWidth, gp.screen.screenHeight);
 			// Title Name
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD,96F));
 			String text = "2D Royale";
@@ -150,7 +150,7 @@ public class UI{
 	}
 	public int getXforCenteredText(String text) {
 		int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-		int x = gp.screenWidth/2 - length/2;
+		int x = gp.screen.screenWidth/2 - length/2;
 		return x;
 	}
 }

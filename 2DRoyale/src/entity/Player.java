@@ -37,8 +37,8 @@ public class Player extends Entity { // inherits Entity class
 		this.username = username;
 		this.isLocal = isLocal;
 
-		this.screenX = game.screenWidth / 2 - game.playerSize / 2;
-		this.screenY = game.screenHeight / 2 - game.playerSize / 2;
+		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
+		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 		
 		this.solidArea = new Rectangle(10,10,12,12);		
 
@@ -47,8 +47,8 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	private void setDefaultValues() {
-		worldX = game.tileSize * 23 + ((int) (Math.random() * (25 + 25 + 1)) - 25)*4;
-		worldY = game.tileSize * 21 + ((int) (Math.random() * (25 + 25 + 1)) - 25)*4;
+		worldX = game.tileSize * 23 + ((int) (Math.random() * (100 + 100 + 1)) - 100);
+		worldY = game.tileSize * 21 + ((int) (Math.random() * (100 + 100 + 1)) - 100);
 
 		speed = 4;
 		mouseX = 0;
@@ -80,7 +80,11 @@ public class Player extends Entity { // inherits Entity class
 				if (keys.left == true) xa -= 1;
 				if (keys.right == true) xa += 1;
 				
-				move(xa, ya);
+				for(int i = 0; i < speed; i++) {
+					move(xa, ya);
+				}
+				Packet movePacket = new Packet(3, this.username, this.worldX, this.worldY);
+				game.socketClient.sendData(movePacket.getPacket());
 			}
 		}
 
@@ -105,10 +109,8 @@ public class Player extends Entity { // inherits Entity class
 			return;
 		}
 		if(!hasCollided(xa, ya)) {			
-			worldX += xa * speed;
-			worldY += ya * speed;
-			Packet movePacket = new Packet(3, this.username, this.worldX, this.worldY);
-			game.socketClient.sendData(movePacket.getPacket());
+			worldX += xa;
+			worldY += ya;			
 		}
 	}
 
@@ -126,28 +128,28 @@ public class Player extends Entity { // inherits Entity class
 		int tileNum1, tileNum2;
 		
 		if (ya < 0) { //UP
-			entityTopRow = (entityTopWorldY - speed)/game.tileSize;
+			entityTopRow = (entityTopWorldY - 1)/game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
 			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
 				return true;
 		}
 		if (ya > 0) { //DOWN
-			entityBottomRow = (entityBottomWorldY + speed)/game.tileSize;
+			entityBottomRow = (entityBottomWorldY + 1)/game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
 			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
 				return true;
 		}
 		if (xa < 0) { //LEFT
-			entityLeftCol = (entityLeftWorldX - speed)/game.tileSize;
+			entityLeftCol = (entityLeftWorldX - 1)/game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
 			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
 				return true;
 		}
 		if (xa > 0) { //RIGHT
-			entityRightCol = (entityRightWorldX + speed)/game.tileSize;
+			entityRightCol = (entityRightWorldX + 1)/game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
 			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
@@ -179,13 +181,13 @@ public class Player extends Entity { // inherits Entity class
 		if (!isLocal) {
 			x = worldX - game.player.worldX + game.player.screenX;
 			y = worldY - game.player.worldY + game.player.screenY;
-			handX = worldX - game.player.worldX + game.screenWidth / 2 - holding.getWidth()/2;
-			handY = worldY - game.player.worldY + game.screenHeight / 2 - holding.getHeight()/2;
+			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth()/2;
+			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight()/2;
 		} else {
 			x = screenX;
 			y = screenY;
-			handX = game.screenWidth / 2 - holding.getWidth()/2;
-			handY = game.screenHeight / 2 - holding.getHeight()/2;			
+			handX = game.screen.screenWidth / 2 - holding.getWidth()/2;
+			handY = game.screen.screenHeight / 2 - holding.getHeight()/2;			
 		}		
 		
 		AffineTransform t = new AffineTransform();

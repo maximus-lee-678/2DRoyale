@@ -12,5 +12,4 @@ public class Entity {
 	public BufferedImage sprite;
 	
 	public Rectangle solidArea;
-	public boolean collisionOn = false;
 }
