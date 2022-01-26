@@ -184,23 +184,9 @@ public class Game extends JPanel implements Runnable {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		Graphics2D g2 = (Graphics2D) g;
-		
-		// Title Screen
-		if (gameState == titleState) {
-			ui.draw(g2);			
-		}
-		
-		// Others
-		else {
-			screen.render(g2);
-			for (PlayerMP p : getPlayers())
-				p.render(g2);
-
-			ui.draw(g2);
-			g2.dispose();
-		}
-
+		Graphics2D g2 = (Graphics2D) g;		
+		screen.render(g2);
+		g2.dispose();
 		
 	}
 

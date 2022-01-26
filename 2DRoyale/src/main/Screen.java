@@ -22,6 +22,7 @@ public class Screen {
 	
 	public void render(Graphics2D g2) {
 		
+		//Title screen
 		if (game.gameState == game.titleState) {
 			game.ui.draw(g2);			
 		}
@@ -31,8 +32,6 @@ public class Screen {
 			renderWorld(g2);
 			for (PlayerMP p : game.getPlayers())
 				p.render(g2);
-
-			g2.dispose();
 		}
 		
 	}
