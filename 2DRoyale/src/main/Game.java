@@ -52,15 +52,22 @@ public class Game extends JPanel implements Runnable {
 
 	public WindowHandler windowHandler;
 	public TileManager tileM = new TileManager(this);
-	public KeyHandler keys = new KeyHandler();
+	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler();
 	private List<PlayerMP> playerList = new ArrayList<PlayerMP>();
-
+	public UI ui = new UI(this);
+	
 	public PlayerMP player = new PlayerMP(this, keys, mouse, null, null, -1);
 
 	// Server
 	public GameClient socketClient;
 	private GameServer socketServer;
+	
+	// Game State
+	public int gameState;
+	public final int titleState = 0;
+	public final int playState = 1;
+	public final int endState = 2;
 
 	public Game() {
 
@@ -83,10 +90,13 @@ public class Game extends JPanel implements Runnable {
 
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+		gameState = titleState;
 
 	}
 
 	public void startGameThread() {
+		
+		
 
 		if (JOptionPane.showConfirmDialog(this, "Do you want to ok run the server") == 0) {
 			socketServer = new GameServer(this);
@@ -166,8 +176,14 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void update() {
-		for (PlayerMP p : getPlayers())
+		if(gameState == titleState) {
+			//do nothing
+		}
+		if (gameState == playState) {
+			for (PlayerMP p : getPlayers())
 			p.update();
+		}
+		
 
 	}
 
@@ -175,12 +191,24 @@ public class Game extends JPanel implements Runnable {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+		
+		// Title Screen
+		if (gameState == titleState) {
+			ui.draw(g2);
+			
+		}
+		
+		// Others
+		else {
+			tileM.render(g2);
+			for (PlayerMP p : getPlayers())
+				p.render(g2);
 
-		tileM.render(g2);
-		for (PlayerMP p : getPlayers())
-			p.render(g2);
+			ui.draw(g2);
+			g2.dispose();
+		}
 
-		g2.dispose();
+		
 	}
 
 	public static void main(String[] args) {
