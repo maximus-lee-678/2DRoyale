@@ -90,6 +90,8 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 			else if(gp.ui.titleScreenState == 4) {
+				char input = e.getKeyChar();
+				gp.ui.name += input;
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
 				}

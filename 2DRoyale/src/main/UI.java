@@ -22,6 +22,7 @@ public class UI{
 	public String currentDialogue = "";
 	public int commandNum = 0;
 	public int titleScreenState = 0;
+	public String name = "";
 	
 	public UI(Game gp) {
 		this.gp = gp;
@@ -205,10 +206,10 @@ public class UI{
 			int y = gp.tileSize*3;
 			g2.drawString(text, x, y);
 			
-			text = "HERE";
-			x = getXforCenteredText(text);
-			y += gp.tileSize * 4;
-			g2.drawString(text,  x,  y);
+			g2.drawRect(gp.tileSize*6,gp.tileSize*5,gp.screen.screenWidth - gp.tileSize*12,gp.tileSize*2);
+			x = getXforCenteredText(name);
+			y += gp.tileSize*3;
+			g2.drawString(name,  x,  y);
 		}
 		
 		
