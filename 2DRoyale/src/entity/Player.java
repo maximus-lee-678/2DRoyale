@@ -129,26 +129,26 @@ public class Player extends Entity { // inherits Entity class
 		if (ya < 0) { // UP
 			entityTopWorldY -= 1;
 			entityTopRow = entityTopWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
 		}
 		if (ya > 0) { // DOWN
 			entityBottomWorldY += 1;
 			entityBottomRow = entityBottomWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
 		}
 		if (xa < 0) { // LEFT
 			entityLeftWorldX -= 1;
 			entityLeftCol = entityLeftWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
-			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
+			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
 		}
 		if (xa > 0) { // RIGHT
 			entityRightWorldX += 1;
 			entityRightCol = entityRightWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
+			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
 		}
 		if (game.tileM.tile[tileNum1].collision || game.tileM.tile[tileNum2].collision) return true;
 

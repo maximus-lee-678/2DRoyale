@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import tile.Tile;
-
 public class ItemManager {
 	
 	public Weapon[] weaponsArr;
