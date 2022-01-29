@@ -21,6 +21,7 @@ import entity.PlayerMP;
 import net.GameClient;
 import net.GameServer;
 import net.Packet;
+import structure.StructuresManager;
 import tile.TileManager;
 
 public class Game extends JPanel implements Runnable {
@@ -47,6 +48,7 @@ public class Game extends JPanel implements Runnable {
 
 	public WindowHandler windowHandler;
 	public TileManager tileM = new TileManager(this);
+	public StructuresManager structM = new StructuresManager(this);
 	public Screen screen = new Screen(this);
 	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler();

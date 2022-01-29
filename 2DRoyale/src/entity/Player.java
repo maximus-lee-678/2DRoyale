@@ -29,7 +29,7 @@ public class Player extends Entity { // inherits Entity class
 
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
-	
+
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
 		this.keys = keys;
@@ -39,16 +39,16 @@ public class Player extends Entity { // inherits Entity class
 
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
-		
-		this.solidArea = new Rectangle(10,10,12,12);		
+
+		this.solidArea = new Rectangle(10, 10, 12, 12);
 
 		setDefaultValues();
 		getPlayerImage();
 	}
 
 	private void setDefaultValues() {
-		worldX = game.tileSize * 23 + ((int) (Math.random() * (100 + 100 + 1)) - 100);
-		worldY = game.tileSize * 21 + ((int) (Math.random() * (100 + 100 + 1)) - 100);
+		worldX = game.tileSize * 23 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
+		worldY = game.tileSize * 21 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
 
 		speed = 4;
 		mouseX = 0;
@@ -57,7 +57,7 @@ public class Player extends Entity { // inherits Entity class
 
 	private void getPlayerImage() {
 		try {
-			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/player.png"));			
+			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/playerDebug.png"));
 			this.playerHand = ImageIO.read(getClass().getResourceAsStream("/player/hand.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,13 +74,13 @@ public class Player extends Entity { // inherits Entity class
 			if (keys.up == true || keys.down == true || keys.left == true || keys.right == true) {
 				int xa = 0;
 				int ya = 0;
-				
+
 				if (keys.up == true) ya -= 1;
 				if (keys.down == true) ya += 1;
 				if (keys.left == true) xa -= 1;
 				if (keys.right == true) xa += 1;
-				
-				for(int i = 0; i < speed; i++) {
+
+				for (int i = 0; i < speed; i++) {
 					move(xa, ya);
 				}
 				Packet movePacket = new Packet(3, this.username, this.worldX, this.worldY);
@@ -89,28 +89,27 @@ public class Player extends Entity { // inherits Entity class
 		}
 
 		if (mouse != null) {
-			if(mouseX != mouse.x || mouseY != mouse.y) {
+			if (mouseX != mouse.x || mouseY != mouse.y) {
 				this.mouseX = mouse.x;
 				this.mouseY = mouse.y;
-				
+
 				updateDirection(mouse.x, mouse.y);
 				Packet mousePacket = new Packet(4, this.username, this.mouseX, this.mouseY);
 				game.socketClient.sendData(mousePacket.getPacket());
-			}			
+			}
 		}
-			
-		
+
 	}
 
 	private void move(int xa, int ya) {
-		if(xa != 0 && ya != 0) {
+		if (xa != 0 && ya != 0) {
 			move(xa, 0);
 			move(0, ya);
 			return;
 		}
-		if(!hasCollided(xa, ya)) {			
+		if (!hasCollided(xa, ya)) {
 			worldX += xa;
-			worldY += ya;			
+			worldY += ya;
 		}
 	}
 
@@ -119,43 +118,53 @@ public class Player extends Entity { // inherits Entity class
 		int entityRightWorldX = worldX + solidArea.x + solidArea.width;
 		int entityTopWorldY = worldY + solidArea.y;
 		int entityBottomWorldY = worldY + solidArea.y + solidArea.height;
-		
-		int entityLeftCol = entityLeftWorldX/game.tileSize;
-		int entityRightCol = entityRightWorldX/game.tileSize;
-		int entityTopRow = entityTopWorldY/game.tileSize;
-		int entityBottomRow = entityBottomWorldY/game.tileSize;
-		
-		int tileNum1, tileNum2;
-		
-		if (ya < 0) { //UP
-			entityTopRow = (entityTopWorldY - 1)/game.tileSize;
+
+		int entityLeftCol = entityLeftWorldX / game.tileSize;
+		int entityRightCol = entityRightWorldX / game.tileSize;
+		int entityTopRow = entityTopWorldY / game.tileSize;
+		int entityBottomRow = entityBottomWorldY / game.tileSize;
+
+		int tileNum1 = 0, tileNum2 = 0;
+
+		if (ya < 0) { // UP
+			entityTopWorldY -= 1;
+			entityTopRow = entityTopWorldY / game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
-			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
-				return true;
 		}
-		if (ya > 0) { //DOWN
-			entityBottomRow = (entityBottomWorldY + 1)/game.tileSize;
+		if (ya > 0) { // DOWN
+			entityBottomWorldY += 1;
+			entityBottomRow = entityBottomWorldY / game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
-			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
-				return true;
 		}
-		if (xa < 0) { //LEFT
-			entityLeftCol = (entityLeftWorldX - 1)/game.tileSize;
+		if (xa < 0) { // LEFT
+			entityLeftWorldX -= 1;
+			entityLeftCol = entityLeftWorldX / game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
-				return true;
 		}
-		if (xa > 0) { //RIGHT
-			entityRightCol = (entityRightWorldX + 1)/game.tileSize;
+		if (xa > 0) { // RIGHT
+			entityRightWorldX += 1;
+			entityRightCol = entityRightWorldX / game.tileSize;
 			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow];
-			if (game.tileM.tile[tileNum1].collision|| game.tileM.tile[tileNum2].collision)
-				return true;
 		}
-		
+		if (game.tileM.tile[tileNum1].collision || game.tileM.tile[tileNum2].collision) return true;
+
+		int structX, structY, structWidth, structHeight;
+
+		for (int i = 0; i < game.structM.building.length; i++) {
+			structX = game.structM.building[i].boundingBox.x;
+			structY = game.structM.building[i].boundingBox.y;
+			structWidth = game.structM.building[i].boundingBox.width;
+			structHeight = game.structM.building[i].boundingBox.height;
+
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+				return game.structM.hasCollided(xa, ya, entityTopWorldY, entityBottomWorldY, entityLeftWorldX, entityRightWorldX, i);
+			}
+		}
+
 		return false;
 	}
 
@@ -163,7 +172,7 @@ public class Player extends Entity { // inherits Entity class
 		this.worldX = worldX;
 		this.worldY = worldY;
 	}
-	
+
 	public void updateDirection(double x, double y) {
 		double dx = x - screenX;
 		double dy = y - screenY;
@@ -171,32 +180,33 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	public void render(Graphics2D g2) {
-		
-		BufferedImage holding = playerHand;	//This will be replaced by the img of the weapon the player is holding
-		
+
+		BufferedImage holding = playerHand; // This will be replaced by the img of the weapon the player is holding
+
 		int x, y;
 		int handX, handY;
-		int handOffset = -5; //How close you want the image to be to the player. can play around this value. Should retrieve this value inside the weapon object in the future
-				
+		int handOffset = -5; // How close you want the image to be to the player. can play around this value.
+								// Should retrieve this value inside the weapon object in the future
+
 		if (!isLocal) {
 			x = worldX - game.player.worldX + game.player.screenX;
 			y = worldY - game.player.worldY + game.player.screenY;
-			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth()/2;
-			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight()/2;
+			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
+			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
 		} else {
 			x = screenX;
 			y = screenY;
-			handX = game.screen.screenWidth / 2 - holding.getWidth()/2;
-			handY = game.screen.screenHeight / 2 - holding.getHeight()/2;			
-		}		
-		
+			handX = game.screen.screenWidth / 2 - holding.getWidth() / 2;
+			handY = game.screen.screenHeight / 2 - holding.getHeight() / 2;
+		}
+
 		AffineTransform t = new AffineTransform();
 		t.setToTranslation(handX, handY);
-		t.rotate(imageAngleRad, holding.getWidth()/2, holding.getHeight()/2);        
-        t.translate(game.playerSize/2 + holding.getWidth()/2 + handOffset, 0);
-        
-		g2.drawImage(holding, t, null); //Draw hand (weapons)
-		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null);	//Draw player
+		t.rotate(imageAngleRad, holding.getWidth() / 2, holding.getHeight() / 2);
+		t.translate(game.playerSize / 2 + holding.getWidth() / 2 + handOffset, 0);
+
+		g2.drawImage(holding, t, null); // Draw hand (weapons)
+		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
 
 	}
 
