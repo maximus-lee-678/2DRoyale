@@ -23,6 +23,7 @@ public class UI{
 	public int commandNum = 0;
 	public int titleScreenState = 0;
 	public String name = "";
+	public String temp = "";
 	
 	public UI(Game gp) {
 		this.gp = gp;

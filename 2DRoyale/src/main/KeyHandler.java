@@ -91,7 +91,13 @@ public class KeyHandler implements KeyListener {
 			}
 			else if(gp.ui.titleScreenState == 4) {
 				char input = e.getKeyChar();
-				gp.ui.name += input;
+				if(input == KeyEvent.VK_BACK_SPACE)
+			    {  
+					gp.ui.name = removeLastChar(gp.ui.name);
+			    }
+				else {
+					gp.ui.name += input;
+				}
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
 				}
@@ -113,6 +119,15 @@ public class KeyHandler implements KeyListener {
 		if(code == KeyEvent.VK_A) left = false;
 		if(code == KeyEvent.VK_S) down = false;
 		if(code == KeyEvent.VK_D) right = false;
+	}
+	
+
+	public String removeLastChar(String str) {
+	    if (str != null && str.length() > 0) {
+	        str = str.substring(0, str.length() - 1);
+	    }
+	    System.out.println(str);
+	    return str;
 	}
 
 }
