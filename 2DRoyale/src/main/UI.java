@@ -112,14 +112,24 @@ public class UI{
 			int y = gp.tileSize*3;
 			g2.drawString(text, x, y);
 			
-			text = "the objectives, subjected to changes";
+			text = "- Kill everyone and be the last man standing";
+			x = getXforCenteredText(text);
+			y += gp.tileSize*2;
+			g2.drawString(text,  x,  y);
+			
+			text = "- Search around for weapons and stay in the restricted area";
+			x = getXforCenteredText(text);
+			y += gp.tileSize;
+			g2.drawString(text,  x,  y);
+			
+			text = "Good luck";
 			x = getXforCenteredText(text);
 			y += gp.tileSize;
 			g2.drawString(text,  x,  y);
 			
 			text = "Back to Main Menu";
 			x = getXforCenteredText(text);
-			y += gp.tileSize;
+			y += gp.tileSize*2;
 			g2.drawString(text,  x,  y);
 			g2.drawString(">", x-gp.tileSize, y);
 		}
@@ -132,14 +142,24 @@ public class UI{
 			int y = gp.tileSize*3;
 			g2.drawString(text, x, y);
 			
-			text = "controls, subjected to changes";
+			text = "- Use WASD to move your character around";
+			x = getXforCenteredText(text);
+			y += gp.tileSize*2;
+			g2.drawString(text,  x,  y);
+			
+			text = "- Use E to pick and drop weapons";
+			x = getXforCenteredText(text);
+			y += gp.tileSize;
+			g2.drawString(text,  x,  y);
+			
+			text = "- Left-click to shoot";
 			x = getXforCenteredText(text);
 			y += gp.tileSize;
 			g2.drawString(text,  x,  y);
 			
 			text = "Back to Main Menu";
 			x = getXforCenteredText(text);
-			y += gp.tileSize;
+			y += gp.tileSize*2;
 			g2.drawString(text,  x,  y);
 			g2.drawString(">", x-gp.tileSize, y);
 		}
