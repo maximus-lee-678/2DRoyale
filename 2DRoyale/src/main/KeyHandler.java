@@ -101,6 +101,7 @@ public class KeyHandler implements KeyListener {
 				}
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
+					gp.player.setUsername(gp.ui.name);
 				}
 			}
 			

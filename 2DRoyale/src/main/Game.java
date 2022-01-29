@@ -158,9 +158,6 @@ public class Game extends JPanel implements Runnable {
 			e.printStackTrace();
 		}		
 
-		windowHandler = new WindowHandler(this);		
-		
-		player.setUsername(JOptionPane.showInputDialog(this, "Please enter a username"));
 		this.getPlayers().add(player);
 		if (socketServer != null) {
 			socketServer.addConnection(player);
