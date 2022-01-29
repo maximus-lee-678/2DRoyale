@@ -163,7 +163,53 @@ public class UI{
 			g2.drawString(text,  x,  y);
 			g2.drawString(">", x-gp.tileSize, y);
 		}
-		
+		else if (titleScreenState == 3) {
+			g2.setColor(Color.white);
+			g2.setFont(g2.getFont().deriveFont(42F));
+			
+			String text = "Do you want to run the server?";
+			int x = getXforCenteredText(text);
+			int y = gp.tileSize*3;
+			g2.drawString(text, x, y);
+			
+			text = "YES";
+			x = getXforCenteredText(text);
+			y += gp.tileSize * 4;
+			g2.drawString(text,  x,  y);
+			if (commandNum == 0) {
+				g2.drawString(">", x-gp.tileSize, y);
+			}
+			
+			text = "NO";
+			x = getXforCenteredText(text);
+			y += gp.tileSize;
+			g2.drawString(text,  x,  y);
+			if (commandNum == 1) {
+				g2.drawString(">", x-gp.tileSize, y);
+			}
+			
+			text = "Back";
+			x = getXforCenteredText(text);
+			y += gp.tileSize*3;
+			g2.drawString(text,  x,  y);
+			if (commandNum == 2) {
+				g2.drawString(">", x-gp.tileSize, y);
+			}
+		}
+		else if (titleScreenState == 4) {
+			g2.setColor(Color.white);
+			g2.setFont(g2.getFont().deriveFont(42F));
+			
+			String text = "Enter your nickname:";
+			int x = getXforCenteredText(text);
+			int y = gp.tileSize*3;
+			g2.drawString(text, x, y);
+			
+			text = "HERE";
+			x = getXforCenteredText(text);
+			y += gp.tileSize * 4;
+			g2.drawString(text,  x,  y);
+		}
 		
 		
 		

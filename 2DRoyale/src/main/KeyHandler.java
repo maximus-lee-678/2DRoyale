@@ -16,6 +16,7 @@ public class KeyHandler implements KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
+		//when in menu page
 		if(gp.gameState == gp.titleState) {
 			if(gp.ui.titleScreenState == 0) {
 				if(code == KeyEvent.VK_W) {
@@ -31,28 +32,66 @@ public class KeyHandler implements KeyListener {
 					}
 				}
 				if(code == KeyEvent.VK_ENTER) {
+					//when user click "start"
 					if (gp.ui.commandNum == 0) {
-						gp.gameState = gp.playState;
+						gp.ui.titleScreenState = 3;
 					}
+					////when user click "how to play"
 					if (gp.ui.commandNum == 1) {
 						gp.ui.titleScreenState = 1;
 					}
+					//when user click "players control"
 					if (gp.ui.commandNum == 2) {
 						gp.ui.titleScreenState = 2;
 					}
+					//when user click "quit"
 					if (gp.ui.commandNum == 3) {
 						System.exit(0);
 					}
 				}
 			}
+			//when in "how to play" page
 			else if(gp.ui.titleScreenState == 1) {
 				if(code == KeyEvent.VK_ENTER) {
 					gp.ui.titleScreenState = 0;
 				}
 			}
+			//when in "players control page"
 			else if(gp.ui.titleScreenState == 2) {
 				if(code == KeyEvent.VK_ENTER) {
 					gp.ui.titleScreenState = 0;
+				}
+			}
+			//when in "do you want to host the server" page
+			else if(gp.ui.titleScreenState == 3) {
+				if(code == KeyEvent.VK_W) {
+					gp.ui.commandNum--;
+					if (gp.ui.commandNum < 0) {
+						gp.ui.commandNum = 2;
+					}
+				}
+				if(code == KeyEvent.VK_S) {
+					gp.ui.commandNum++;
+					if (gp.ui.commandNum > 2) {
+						gp.ui.commandNum = 0;
+					}
+				}
+				if(code == KeyEvent.VK_ENTER) {
+					if (gp.ui.commandNum == 0) {
+						gp.ui.titleScreenState = 4;
+					}
+					else if (gp.ui.commandNum == 1) {
+						gp.ui.titleScreenState = 4;
+					}
+					else if (gp.ui.commandNum == 2) {
+						gp.ui.titleScreenState = 0;
+						gp.ui.commandNum = 0;
+					}
+				}
+			}
+			else if(gp.ui.titleScreenState == 4) {
+				if(code == KeyEvent.VK_ENTER) {
+					gp.gameState = gp.playState;
 				}
 			}
 			
