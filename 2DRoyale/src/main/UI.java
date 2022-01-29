@@ -152,7 +152,7 @@ public class UI{
 			y += gp.tileSize;
 			g2.drawString(text,  x,  y);
 			
-			text = "- Left-click to shoot";
+			text = "- Left-click to aim and shoot";
 			x = getXforCenteredText(text);
 			y += gp.tileSize;
 			g2.drawString(text,  x,  y);
