@@ -37,9 +37,9 @@ public class Building {
 			}
 			for (int x = 0; x < row; x++) {
 				for (int y = 0; y < col; y++) {
-					System.out.print(buildingTileNum.get(x)[y]);
+//					System.out.print(buildingTileNum.get(x)[y]);
 				}
-				System.out.println();
+//				System.out.println();
 			}
 
 			br.close();

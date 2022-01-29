@@ -10,14 +10,14 @@ import tile.Tile;
 
 public class StructuresManager {
 
-	private Game game;
+//	private Game game;
 	public int buildingTileSize = 16;
 	public Tile[] tile;
 	public Building[] building;
 
 	public StructuresManager(Game game) {
 
-		this.game = game;
+//		this.game = game;
 		tile = new Tile[10];
 		building = new Building[2];
 
@@ -28,7 +28,7 @@ public class StructuresManager {
 
 	private void loadBuildings() {
 		
-		building[0] = new Building("/blueprint/building1.txt", 800, 800, buildingTileSize);
+		building[0] = new Building("/blueprint/building1.txt", 900, 900, buildingTileSize);
 		building[1] = new Building("/blueprint/building2.txt", 1500, 1500, buildingTileSize);
 
 	}

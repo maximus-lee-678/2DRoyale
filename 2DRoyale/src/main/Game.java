@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -41,6 +42,7 @@ public class Game extends JPanel implements Runnable {
 	private BufferedImage cursor;
 
 	// World
+	public final Random rand = new Random(System.currentTimeMillis());
 	public final int maxWorldCol = 50;
 	public final int maxWorldRow = 50;
 	public final int worldWidth = tileSize * maxWorldCol;
@@ -165,6 +167,7 @@ public class Game extends JPanel implements Runnable {
 		}
 		Packet loginPacket = new Packet(1, player.getUsername());
 		socketClient.sendData(loginPacket.getPacket());
+		
 	}
 
 	public synchronized List<PlayerMP> getPlayers() {
