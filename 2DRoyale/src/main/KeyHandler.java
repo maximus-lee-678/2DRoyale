@@ -97,6 +97,7 @@ public class KeyHandler implements KeyListener {
 			    }
 				else {
 					gp.ui.name += input;
+					gp.ui.name = maxLength(gp.ui.name);
 				}
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
@@ -128,6 +129,13 @@ public class KeyHandler implements KeyListener {
 	    }
 	    System.out.println(str);
 	    return str;
+	}
+	
+	public String maxLength(String str) {
+		if (str.length() > 15) {
+		    str = str.substring(0, 15);
+		}
+		return str;
 	}
 
 }

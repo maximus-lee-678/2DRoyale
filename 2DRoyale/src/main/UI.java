@@ -211,6 +211,12 @@ public class UI{
 			x = getXforCenteredText(name);
 			y += gp.tileSize*3;
 			g2.drawString(name,  x,  y);
+			
+			text = "Let's go";
+			x = getXforCenteredText(text);
+			y += gp.tileSize*3;
+			g2.drawString(text,  x,  y);
+			g2.drawString(">", x-gp.tileSize, y);
 		}
 		
 		
