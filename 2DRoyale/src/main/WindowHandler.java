@@ -16,8 +16,11 @@ public class WindowHandler implements WindowListener{
 	
 	@Override
 	public void windowClosing(WindowEvent e) {
-		Packet disconnectPacket = new Packet(2, game.player.getUsername());
-		game.socketClient.sendData(disconnectPacket.getPacket());
+		if(game.gameState == game.playState) {
+			Packet disconnectPacket = new Packet(2, game.player.getUsername());
+			game.socketClient.sendData(disconnectPacket.getPacket());
+		}
+		
 	}
 	
 	//default funcs, delete will throw warning :(

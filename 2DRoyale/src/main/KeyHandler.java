@@ -11,6 +11,8 @@ public class KeyHandler implements KeyListener {
 	
 	Game gp;
 	public boolean up, down, left, right = false;
+	String pattern= "^[a-zA-Z0-9]*$";
+	String ipPattern= "^[0-9\\.]*$";
 	
 	public KeyHandler(Game gp) {
 		this.gp = gp;
@@ -101,11 +103,13 @@ public class KeyHandler implements KeyListener {
 			//when in "Enter your nickname" page
 			else if(gp.ui.titleScreenState == 4) {
 				char input = e.getKeyChar();
+				String tempInput = "";
+				tempInput += input;
 				if(input == KeyEvent.VK_BACK_SPACE)
 			    {  
 					gp.ui.name = removeLastChar(gp.ui.name);
 			    }
-				else {
+				else if (tempInput.matches(pattern)){
 					gp.ui.name += input;
 					gp.ui.name = maxLength(gp.ui.name, 15);
 				}
@@ -123,11 +127,13 @@ public class KeyHandler implements KeyListener {
 			//when in "Type the server ip:" page
 			else if(gp.ui.titleScreenState == 5) {
 				char input = e.getKeyChar();
+				String tempInput = "";
+				tempInput += input;
 				if(input == KeyEvent.VK_BACK_SPACE)
 			    {  
 					gp.ui.ipAddress = removeLastChar(gp.ui.ipAddress);
 			    }
-				else {
+				else if (tempInput.matches(ipPattern)){
 					gp.ui.ipAddress += input;
 					gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
 				}

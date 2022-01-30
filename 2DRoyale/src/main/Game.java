@@ -140,6 +140,8 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void init() {
+		windowHandler = new WindowHandler(this);
+
 
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
