@@ -48,7 +48,7 @@ public class Player extends Entity { // inherits Entity class
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 
-		this.solidArea = new Rectangle(10, 10, 12, 12);
+		this.solidArea = new Rectangle(6, 6, 12, 12);
 		
 		this.playerWeap = new ArrayList<SuperWeapon>();
 		playerWeap.add(new Rifle(game));

@@ -36,7 +36,7 @@ public class Game extends JPanel implements Runnable {
 	private final int originalTileSize = 16;
 	private final int scale = 3;
 	public final int tileSize = originalTileSize * scale;
-	public final int playerSize = tileSize / 2;
+	public final int playerSize = tileSize/2;
 
 	private int FPS = 60;
 	private boolean running = false;
@@ -59,7 +59,7 @@ public class Game extends JPanel implements Runnable {
 	private List<PlayerMP> playerList = new ArrayList<PlayerMP>();
 	public UI ui = new UI(this);
 
-	public PlayerMP player = new PlayerMP(this, keys, mouse, "test", null, -1);
+	public PlayerMP player = new PlayerMP(this, keys, mouse, null, null, -1);
 
 	// Server
 	public GameClient socketClient;
@@ -105,7 +105,7 @@ public class Game extends JPanel implements Runnable {
 			socketServer.start();
 		}
 
-		socketClient = new GameClient(this, "25.62.195.21");
+		socketClient = new GameClient(this, "localhost");
 		socketClient.start();
 
 		running = true;
