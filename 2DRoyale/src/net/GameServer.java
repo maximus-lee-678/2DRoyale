@@ -118,6 +118,8 @@ public class GameServer extends Thread {
 	public void addConnection(PlayerMP player) {					
 		boolean isConnected = false;
 		for (PlayerMP p : connectedPlayers) {								//Loop thru each player in server playerList array
+			System.out.println("|" + player.getUsername() + "|");
+			System.out.println("|" + p.getUsername() + "|");
 			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {	//If the player is the user, update the user's ip and port
 				if (p.ipAddress == null) {									//Remember line 56 in Game.java? we set it to null there and push into server player list array. so now we update
 					p.ipAddress = player.ipAddress;

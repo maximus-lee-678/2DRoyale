@@ -3,6 +3,8 @@ package main;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import net.Packet;
+
 public class KeyHandler implements KeyListener {
 	
 	Game gp;
@@ -101,7 +103,13 @@ public class KeyHandler implements KeyListener {
 				}
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
-					gp.player.setUsername(gp.ui.name);
+					gp.player.setUsername(gp.ui.name.trim());
+					gp.getPlayers().add(gp.player);
+					if (gp.socketServer != null) {
+						gp.socketServer.addConnection(gp.player);
+					}
+					Packet loginPacket = new Packet(1, gp.player.getUsername());
+					gp.socketClient.sendData(loginPacket.getPacket());
 				}
 			}
 			

@@ -63,7 +63,7 @@ public class Game extends JPanel implements Runnable {
 
 	// Server
 	public GameClient socketClient;
-	private GameServer socketServer;
+	public GameServer socketServer;
 
 	// Game State
 	public int gameState;
@@ -159,12 +159,7 @@ public class Game extends JPanel implements Runnable {
 			e.printStackTrace();
 		}
 
-		this.getPlayers().add(player);
-		if (socketServer != null) {
-			socketServer.addConnection(player);
-		}
-		Packet loginPacket = new Packet(1, player.getUsername());
-		socketClient.sendData(loginPacket.getPacket());
+		
 
 	}
 

@@ -19,13 +19,18 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		this.x = e.getX();
-		this.y = e.getY();
+		if (game.gameState == game.playState) {
+			this.x = e.getX();
+			this.y = e.getY();
+		}		
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		game.player.playerMouseScroll(e.getWheelRotation());
+		if (game.gameState == game.playState) {
+			game.player.playerMouseScroll(e.getWheelRotation());
+		}		
+		
 	}
 
 	@Override
@@ -46,8 +51,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 	}
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		this.x = e.getX();
-		this.y = e.getY();
+		if (game.gameState == game.playState) {
+			this.x = e.getX();
+			this.y = e.getY();
+		}	
 	}
 	@Override
 	public void mouseEntered(MouseEvent e) {
