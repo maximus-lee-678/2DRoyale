@@ -81,6 +81,7 @@ public class KeyHandler implements KeyListener {
 					}
 				}
 				if(code == KeyEvent.VK_ENTER) {
+					//user will create a server using his localhost
 					if (gp.ui.commandNum == 0) {
 						gp.ui.titleScreenState = 4;
 						gp.socketServer = new GameServer(gp);
@@ -97,6 +98,7 @@ public class KeyHandler implements KeyListener {
 					}
 				}
 			}
+			//when in "Enter your nickname" page
 			else if(gp.ui.titleScreenState == 4) {
 				char input = e.getKeyChar();
 				if(input == KeyEvent.VK_BACK_SPACE)
@@ -118,6 +120,7 @@ public class KeyHandler implements KeyListener {
 					gp.socketClient.sendData(loginPacket.getPacket());
 				}
 			}
+			//when in "Type the server ip:" page
 			else if(gp.ui.titleScreenState == 5) {
 				char input = e.getKeyChar();
 				if(input == KeyEvent.VK_BACK_SPACE)
@@ -129,7 +132,9 @@ public class KeyHandler implements KeyListener {
 					gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
 				}
 				if(code == KeyEvent.VK_ENTER) {
+					//user type in server address
 					gp.ui.ipAddress = gp.ui.ipAddress.trim();
+					//if user leave it empty, the user will enter localhost alone without a server
 					if (gp.ui.ipAddress.isEmpty() == true) {
 						gp.ui.ipAddress = "localhost";
 					}
