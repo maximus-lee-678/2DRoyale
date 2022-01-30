@@ -24,6 +24,7 @@ public class UI{
 	public int titleScreenState = 0;
 	public String name = "";
 	public String temp = "";
+	public String ipAddress = "";
 	
 	public UI(Game gp) {
 		this.gp = gp;
@@ -213,6 +214,26 @@ public class UI{
 			g2.drawString(name,  x,  y);
 			
 			text = "Let's go";
+			x = getXforCenteredText(text);
+			y += gp.tileSize*3;
+			g2.drawString(text,  x,  y);
+			g2.drawString(">", x-gp.tileSize, y);
+		}
+		else if (titleScreenState == 5) {
+			g2.setColor(Color.white);
+			g2.setFont(g2.getFont().deriveFont(42F));
+			
+			String text = "Type the server ip:";
+			int x = getXforCenteredText(text);
+			int y = gp.tileSize*3;
+			g2.drawString(text, x, y);
+			
+			g2.drawRect(gp.tileSize*6,gp.tileSize*5,gp.screen.screenWidth - gp.tileSize*12,gp.tileSize*2);
+			x = getXforCenteredText(ipAddress);
+			y += gp.tileSize*3;
+			g2.drawString(ipAddress,  x,  y);
+			
+			text = "Ok";
 			x = getXforCenteredText(text);
 			y += gp.tileSize*3;
 			g2.drawString(text,  x,  y);

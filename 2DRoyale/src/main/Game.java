@@ -39,7 +39,7 @@ public class Game extends JPanel implements Runnable {
 	public final int playerSize = tileSize/2;
 
 	private int FPS = 60;
-	private boolean running = false;
+	public boolean running = false;
 	private BufferedImage cursor;
 
 	// World
@@ -99,15 +99,6 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void startGameThread() {
-
-		if (JOptionPane.showConfirmDialog(this, "Do you want to ok run the server") == 0) {
-			socketServer = new GameServer(this);
-			socketServer.start();
-		}
-
-		socketClient = new GameClient(this, "localhost");
-		socketClient.start();
-
 		running = true;
 		new Thread(this).start();
 

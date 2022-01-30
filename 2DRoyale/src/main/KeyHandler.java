@@ -3,6 +3,8 @@ package main;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import net.GameClient;
+import net.GameServer;
 import net.Packet;
 
 public class KeyHandler implements KeyListener {
@@ -81,9 +83,13 @@ public class KeyHandler implements KeyListener {
 				if(code == KeyEvent.VK_ENTER) {
 					if (gp.ui.commandNum == 0) {
 						gp.ui.titleScreenState = 4;
+						gp.socketServer = new GameServer(gp);
+						gp.socketServer.start();
+						gp.socketClient = new GameClient(gp, "localhost");
+						gp.socketClient.start();
 					}
 					else if (gp.ui.commandNum == 1) {
-						gp.ui.titleScreenState = 4;
+						gp.ui.titleScreenState = 5;
 					}
 					else if (gp.ui.commandNum == 2) {
 						gp.ui.titleScreenState = 0;
@@ -99,7 +105,7 @@ public class KeyHandler implements KeyListener {
 			    }
 				else {
 					gp.ui.name += input;
-					gp.ui.name = maxLength(gp.ui.name);
+					gp.ui.name = maxLength(gp.ui.name, 15);
 				}
 				if(code == KeyEvent.VK_ENTER) {
 					gp.gameState = gp.playState;
@@ -110,6 +116,26 @@ public class KeyHandler implements KeyListener {
 					}
 					Packet loginPacket = new Packet(1, gp.player.getUsername());
 					gp.socketClient.sendData(loginPacket.getPacket());
+				}
+			}
+			else if(gp.ui.titleScreenState == 5) {
+				char input = e.getKeyChar();
+				if(input == KeyEvent.VK_BACK_SPACE)
+			    {  
+					gp.ui.ipAddress = removeLastChar(gp.ui.ipAddress);
+			    }
+				else {
+					gp.ui.ipAddress += input;
+					gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
+				}
+				if(code == KeyEvent.VK_ENTER) {
+					gp.ui.ipAddress = gp.ui.ipAddress.trim();
+					if (gp.ui.ipAddress.isEmpty() == true) {
+						gp.ui.ipAddress = "localhost";
+					}
+					gp.ui.titleScreenState = 4;
+					gp.socketClient = new GameClient(gp, gp.ui.ipAddress);
+					gp.socketClient.start();
 				}
 			}
 			
@@ -140,9 +166,9 @@ public class KeyHandler implements KeyListener {
 	    return str;
 	}
 	
-	public String maxLength(String str) {
-		if (str.length() > 15) {
-		    str = str.substring(0, 15);
+	public String maxLength(String str, int max) {
+		if (str.length() > max) {
+		    str = str.substring(0, max);
 		}
 		return str;
 	}
