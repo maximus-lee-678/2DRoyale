@@ -5,9 +5,14 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import item.Rifle;
+import item.SMG;
+import item.SuperWeapon;
 import main.Game;
 import main.KeyHandler;
 import main.MouseHandler;
@@ -21,14 +26,17 @@ public class Player extends Entity { // inherits Entity class
 
 	public final int screenX;
 	public final int screenY;
-	private double mouseX;
-	private double mouseY;
+	public double mouseX;
+	public double mouseY;
 
 	protected String username;
 	public boolean isLocal;
 
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
+	
+	private List<SuperWeapon> playerWeap;
+	private int playerWeapIndex = -1;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
@@ -41,6 +49,10 @@ public class Player extends Entity { // inherits Entity class
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 
 		this.solidArea = new Rectangle(10, 10, 12, 12);
+		
+		this.playerWeap = new ArrayList<SuperWeapon>();
+		playerWeap.add(new Rifle(game));
+		playerWeap.add(new SMG(game));
 
 		setDefaultValues();
 		getPlayerImage();
@@ -57,7 +69,7 @@ public class Player extends Entity { // inherits Entity class
 
 	private void getPlayerImage() {
 		try {
-			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/playerDebug.png"));
+			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/player.png"));
 			this.playerHand = ImageIO.read(getClass().getResourceAsStream("/player/hand.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -97,10 +109,25 @@ public class Player extends Entity { // inherits Entity class
 				Packet mousePacket = new Packet(4, this.username, this.mouseX, this.mouseY);
 				game.socketClient.sendData(mousePacket.getPacket());
 			}
+			if(mouse.mousePressed) {
+				if(playerWeapIndex >= 0) {
+					playerWeap.get(playerWeapIndex).shoot();
+				} 
+			}
 		}
+		
+		for(SuperWeapon weap: playerWeap)
+			weap.update();
 
 	}
 
+	public void playerMouseScroll(int direction) {
+		if(direction < 0 && playerWeapIndex >= 0) 
+			playerWeapIndex--;
+		else if (direction > 0 && playerWeapIndex < playerWeap.size() - 1)
+			playerWeapIndex++;
+	}
+	
 	private void move(int xa, int ya) {
 		if (xa != 0 && ya != 0) {
 			move(xa, 0);
@@ -180,13 +207,23 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	public void render(Graphics2D g2) {
+		
+		BufferedImage holding;		
+		int handOffset;		
 
-		BufferedImage holding = playerHand; // This will be replaced by the img of the weapon the player is holding
-
+		if(playerWeapIndex < 0) {
+			holding = playerHand;
+			handOffset = -4;
+		} else {
+			holding = playerWeap.get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
+			handOffset = playerWeap.get(playerWeapIndex).imgOffset;
+		}
+		
+		for(SuperWeapon weap: playerWeap)
+			weap.render(g2);
+		
 		int x, y;
-		int handX, handY;
-		int handOffset = -5; // How close you want the image to be to the player. can play around this value.
-								// Should retrieve this value inside the weapon object in the future
+		int handX, handY;		
 
 		if (!isLocal) {
 			x = worldX - game.player.worldX + game.player.screenX;

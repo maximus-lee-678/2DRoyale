@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import entity.PlayerMP;
+import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
 import net.Packet;
@@ -35,7 +36,7 @@ public class Game extends JPanel implements Runnable {
 	private final int originalTileSize = 16;
 	private final int scale = 3;
 	public final int tileSize = originalTileSize * scale;
-	public final int playerSize = 32;
+	public final int playerSize = tileSize / 2;
 
 	private int FPS = 60;
 	private boolean running = false;
@@ -50,19 +51,20 @@ public class Game extends JPanel implements Runnable {
 
 	public WindowHandler windowHandler;
 	public TileManager tileM = new TileManager(this);
+	public ItemManager itemM = new ItemManager();
 	public StructuresManager structM = new StructuresManager(this);
 	public Screen screen = new Screen(this);
 	public KeyHandler keys = new KeyHandler(this);
-	public MouseHandler mouse = new MouseHandler();
+	public MouseHandler mouse = new MouseHandler(this);
 	private List<PlayerMP> playerList = new ArrayList<PlayerMP>();
 	public UI ui = new UI(this);
-	
-	public PlayerMP player = new PlayerMP(this, keys, mouse, null, null, -1);
+
+	public PlayerMP player = new PlayerMP(this, keys, mouse, "test", null, -1);
 
 	// Server
 	public GameClient socketClient;
 	private GameServer socketServer;
-	
+
 	// Game State
 	public int gameState;
 	public final int titleState = 0;
@@ -79,6 +81,8 @@ public class Game extends JPanel implements Runnable {
 		this.setFocusable(true);
 		this.addKeyListener(keys);
 		this.addMouseMotionListener(mouse);
+		this.addMouseWheelListener(mouse);
+		this.addMouseListener(mouse);
 
 		window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,14 +98,14 @@ public class Game extends JPanel implements Runnable {
 
 	}
 
-	public void startGameThread() {		
+	public void startGameThread() {
 
 		if (JOptionPane.showConfirmDialog(this, "Do you want to ok run the server") == 0) {
 			socketServer = new GameServer(this);
 			socketServer.start();
 		}
 
-		socketClient = new GameClient(this, "localhost");
+		socketClient = new GameClient(this, "25.62.195.21");
 		socketClient.start();
 
 		running = true;
@@ -134,7 +138,6 @@ public class Game extends JPanel implements Runnable {
 				delta--;
 			}
 
-
 			if (timer >= 1000000000) {
 				window.setTitle("Name: " + player.getUsername() + " FPS: " + frames);
 				timer = 0;
@@ -146,9 +149,7 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void init() {
-		
-		
-		
+
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -156,7 +157,7 @@ public class Game extends JPanel implements Runnable {
 			this.setCursor(c);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
+		}
 
 		this.getPlayers().add(player);
 		if (socketServer != null) {
@@ -164,7 +165,7 @@ public class Game extends JPanel implements Runnable {
 		}
 		Packet loginPacket = new Packet(1, player.getUsername());
 		socketClient.sendData(loginPacket.getPacket());
-		
+
 	}
 
 	public synchronized List<PlayerMP> getPlayers() {
@@ -172,24 +173,23 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void update() {
-		if(gameState == titleState) {
-			//do nothing
+		if (gameState == titleState) {
+			// do nothing
 		}
 		if (gameState == playState) {
 			for (PlayerMP p : getPlayers())
-			p.update();
+				p.update();
 		}
-		
 
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		Graphics2D g2 = (Graphics2D) g;		
+		Graphics2D g2 = (Graphics2D) g;
 		screen.render(g2);
 		g2.dispose();
-		
+
 	}
 
 	public static void main(String[] args) {
