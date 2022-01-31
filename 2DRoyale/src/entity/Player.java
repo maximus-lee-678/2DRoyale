@@ -36,7 +36,7 @@ public class Player extends Entity { // inherits Entity class
 	private BufferedImage playerHand;
 	
 	public List<SuperWeapon> playerWeap;
-	private int playerWeapIndex = -1;
+	public int playerWeapIndex = -1;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
@@ -180,8 +180,7 @@ public class Player extends Entity { // inherits Entity class
 			handOffset = playerWeap.get(playerWeapIndex).imgOffset;
 		}
 		
-		for(SuperWeapon weap: playerWeap)
-			weap.render(g2);
+		
 		
 		int x, y;
 		int handX, handY;		
@@ -206,6 +205,11 @@ public class Player extends Entity { // inherits Entity class
 		g2.drawImage(holding, t, null); // Draw hand (weapons)
 		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
 
+	}
+	
+	public void renderBullets(Graphics2D g2) {
+		for(SuperWeapon weap: playerWeap)
+			weap.render(g2);
 	}
 
 }

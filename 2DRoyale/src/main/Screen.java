@@ -32,7 +32,10 @@ public class Screen {
 			renderWorld(g2);
 			renderBuildings(g2);
 			for (PlayerMP p : game.getPlayers())
+				p.renderBullets(g2);
+			for (PlayerMP p : game.getPlayers())
 				p.render(g2);
+			
 		}
 
 	}

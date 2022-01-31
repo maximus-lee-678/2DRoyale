@@ -24,6 +24,12 @@ public class Packet {
 		this.data = "," + x + "," + y;
 	}
 	
+	public Packet(int id, String username, int x, int y, int weapIndex){
+		this.id = id;
+		this.username = username;
+		this.data = "," + x + "," + y + "," + weapIndex;
+	}
+	
 	public Packet(int id, String username, double x, double y){
 		this.id = id;
 		this.username = username;

@@ -120,7 +120,7 @@ public class KeyHandler implements KeyListener {
 					if (gp.socketServer != null) {
 						gp.socketServer.addConnection(gp.player);
 					}
-					Packet loginPacket = new Packet(1, gp.player.getUsername(), gp.player.worldX, gp.player.worldY);
+					Packet loginPacket = new Packet(1, gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
 					gp.socketClient.sendData(loginPacket.getPacket());
 				}
 			}

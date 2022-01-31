@@ -145,10 +145,10 @@ public class GameServer extends Thread {
 				}
 				isConnected = true;
 			} else {																			//If player is not user,
-				Packet userLoginPacket = new Packet(1, player.getUsername(), player.worldX, player.worldY);	
+				Packet userLoginPacket = new Packet(1, player.getUsername(), player.worldX, player.worldY, player.playerWeapIndex);	
 				sendData(userLoginPacket.getPacket(), p.ipAddress, p.port);						//Tell (other players) that there's a new player that just logged in
 				
-				Packet otherPlayersLoginPacket = new Packet(1, p.getUsername(), p.worldX, p.worldY);	
+				Packet otherPlayersLoginPacket = new Packet(1, p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex);	
 				sendData(otherPlayersLoginPacket.getPacket(), player.ipAddress, player.port);	//Tell (the new player) that other players exist
 			}
 		}

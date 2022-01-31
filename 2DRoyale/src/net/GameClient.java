@@ -55,6 +55,7 @@ public class GameClient extends Thread {
 			PlayerMP player = new PlayerMP(game, dataArr[0], address, port);
 			player.worldX = Integer.parseInt(dataArr[1]);
 			player.worldY = Integer.parseInt(dataArr[2]);
+			player.playerWeapIndex = Integer.parseInt(dataArr[3]);
 			game.getPlayers().add(player); // add new player to playerList
 			break;
 		case 2:
