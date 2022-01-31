@@ -48,9 +48,12 @@ public class GameServer extends Thread {
 		
 		switch (type) {
 		case 1:
-			// LOGIN
-			PlayerMP player = new PlayerMP(game, msgData, address, port);
-			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + msgData + " has connected...");
+			// LOGIN	
+			dataArr = msgData.split(",");
+			PlayerMP player = new PlayerMP(game, dataArr[0], address, port);
+			player.worldX = Integer.parseInt(dataArr[1]);
+			player.worldY = Integer.parseInt(dataArr[2]);
+			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + dataArr[0] + " has connected...");
 			addConnection(player);							//call addConnection()
 			break;
 		case 2:
@@ -64,9 +67,19 @@ public class GameServer extends Thread {
 			handleMove(dataArr);							//call handleMove()
 			break;
 		case 4:
-			// MOUSE
+			// MOUSEMOVE
 			dataArr = msgData.split(",");			//Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
-			handleMouse(dataArr);							//call handleMove()
+			handleMouseMove(dataArr);							//call handleMove()
+			break;
+		case 5:
+			// MOUSESCROLL
+			dataArr = msgData.split(",");
+			handleMouseScroll(dataArr);
+			break;
+		case 6:
+			// SHOOT
+			dataArr = msgData.split(",");
+			handleShoot(dataArr);
 			break;
 		default:
 		case 0:
@@ -74,15 +87,20 @@ public class GameServer extends Thread {
 		}
 	}
 	
-	private void handleMouse(String[] dataArr) {				
-		int index = 0;
-		for (PlayerMP p : connectedPlayers) {				//find player by username
-			if (dataArr[0].equals(p.getUsername())) {
-				break;
-			}
-			index++;
-		}
+	private void handleShoot(String[] dataArr) {
+		Packet shootingPacket = new Packet(6, dataArr[0], dataArr[1], Double.parseDouble(dataArr[2]), Integer.parseInt(dataArr[3]), Integer.parseInt(dataArr[4]));
+		sendDataToAllClients(shootingPacket.getPacket());
+	}
+
+	private void handleMouseScroll(String[] dataArr) {
 		
+		
+		Packet mouseScrollPacket = new Packet(5, dataArr[0], Integer.parseInt(dataArr[1]));		
+		sendDataToAllClients(mouseScrollPacket.getPacket());	
+	}
+
+	private void handleMouseMove(String[] dataArr) {				
+
 		Packet mousePacket = new Packet(4, dataArr[0], Double.parseDouble(dataArr[1]), Double.parseDouble(dataArr[2]));			//Create a move packet [\net\Packet] to send to all clients
 		sendDataToAllClients(mousePacket.getPacket());						//Send the move packet of the player to everyone (Server -> All clients). GameClient will handle this packet
 	}
@@ -118,8 +136,6 @@ public class GameServer extends Thread {
 	public void addConnection(PlayerMP player) {					
 		boolean isConnected = false;
 		for (PlayerMP p : connectedPlayers) {								//Loop thru each player in server playerList array
-			System.out.println("|" + player.getUsername() + "|");
-			System.out.println("|" + p.getUsername() + "|");
 			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {	//If the player is the user, update the user's ip and port
 				if (p.ipAddress == null) {									//Remember line 56 in Game.java? we set it to null there and push into server player list array. so now we update
 					p.ipAddress = player.ipAddress;
@@ -129,11 +145,11 @@ public class GameServer extends Thread {
 				}
 				isConnected = true;
 			} else {																			//If player is not user,
-				Packet userInfoPacket = new Packet(1, player.getUsername());	
-				sendData(userInfoPacket.getPacket(), p.ipAddress, p.port);						//Tell (other players) that there's a new player that just logged in
+				Packet userLoginPacket = new Packet(1, player.getUsername(), player.worldX, player.worldY);	
+				sendData(userLoginPacket.getPacket(), p.ipAddress, p.port);						//Tell (other players) that there's a new player that just logged in
 				
-				Packet otherPlayersInfoPacket = new Packet(1, p.getUsername());	
-				sendData(otherPlayersInfoPacket.getPacket(), player.ipAddress, player.port);	//Tell (the new player) that other players exist
+				Packet otherPlayersLoginPacket = new Packet(1, p.getUsername(), p.worldX, p.worldY);	
+				sendData(otherPlayersLoginPacket.getPacket(), player.ipAddress, player.port);	//Tell (the new player) that other players exist
 			}
 		}
 		if (!isConnected) {

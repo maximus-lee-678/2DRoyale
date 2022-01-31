@@ -30,16 +30,36 @@ public class SuperWeapon extends Entity {
 		this.game = game;
 		this.fireRateTick = 0;
 	}
+	
+	public synchronized List<Projectile> getBullets() {
+		return bullets;
+	}
 
 	public void shoot() {
 
 	}
 
 	public void render(Graphics2D g2) {
+		for (int i = 0; i < getBullets().size(); i++) {
+			int x = (int) getBullets().get(i).worldX - game.player.worldX + game.player.screenX;
+			int y = (int) getBullets().get(i).worldY - game.player.worldY + game.player.screenY;
 
+			g2.drawImage(bulletImg, x, y, bulletSize, bulletSize, null); // Draw player
+		}
 	}
 
 	public void update() {
-
+		for (int i = 0; i < getBullets().size(); i++) {
+			Projectile p = getBullets().get(i);
+			if(p.hasCollided() || p.checkTime())
+				getBullets().remove(i);
+			else
+				p.update();
+		}
+	}
+	
+	public void updateMPProjectiles(double projAngle, int worldX, int worldY) {
+		Projectile bullet = new Projectile(this, projAngle, worldX, worldY);
+		getBullets().add(bullet);
 	}
 }

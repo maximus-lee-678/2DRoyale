@@ -8,6 +8,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import main.Game;
+import net.Packet;
 
 public class SMG extends SuperWeapon {
 	public SMG(Game game) {
@@ -42,36 +43,12 @@ public class SMG extends SuperWeapon {
 			int spreadRad = rand.nextInt(bulletSpread*2+1)-bulletSpread;
 			angle += Math.toRadians(spreadRad);
 			
-			Projectile bullet = new Projectile(this, angle, worldX, worldY);
-			getBullets().add(bullet);
+			Packet shootingPacket = new Packet(6, game.player.getUsername(), this.name, angle, worldX, worldY);
+			game.socketClient.sendData(shootingPacket.getPacket());
 			
 			fireRateTick = 0;
 		}	
 
 	}
-	
-	private synchronized List<Projectile> getBullets() {
-		return bullets;
-	}
 
-	@Override
-	public void update() {
-
-		for (int i = 0; i < getBullets().size(); i++) {
-			getBullets().get(i).update();
-			if (getBullets().get(i).checkTime())
-				getBullets().remove(i);
-		}
-	}
-
-	public void render(Graphics2D g2) {
-
-		for (int i = 0; i < getBullets().size(); i++) {
-			int x = (int) getBullets().get(i).worldX - game.player.worldX + game.player.screenX;
-			int y = (int) getBullets().get(i).worldY - game.player.worldY + game.player.screenY;
-
-			g2.drawImage(bulletImg, x, y, bulletSize, bulletSize, null); // Draw player
-		}
-
-	}
 }

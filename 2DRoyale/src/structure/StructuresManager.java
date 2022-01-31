@@ -27,7 +27,7 @@ public class StructuresManager {
 	}
 
 	private void loadBuildings() {
-		
+
 		building[0] = new Building("/blueprint/building1.txt", 900, 900, buildingTileSize);
 		building[1] = new Building("/blueprint/building2.txt", 1500, 1500, buildingTileSize);
 
@@ -51,58 +51,76 @@ public class StructuresManager {
 	}
 
 	public void render(Graphics2D g2) {
-		
 
-		
 	}
 
-	public boolean hasCollided(int xa, int ya, int entityTopWorldY, int entityBottomWorldY, int entityLeftWorldX,
-			int entityRightWorldX, int buildingIndex) {
+	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
+			int entityBottomWorldY) {
 
-		int checkLimitX = building[buildingIndex].boundingBox.width / buildingTileSize - 1;
-		int checkLimitY = building[buildingIndex].boundingBox.height / buildingTileSize - 1;
-		
-		// get coords of player relative to top left of bounding box
-		int entityLeftCol = (entityLeftWorldX - building[buildingIndex].boundingBox.x) / buildingTileSize;
-		int entityRightCol = (entityRightWorldX - building[buildingIndex].boundingBox.x) / buildingTileSize;
-		int entityTopRow = (entityTopWorldY - building[buildingIndex].boundingBox.y) / buildingTileSize;
-		int entityBottomRow = (entityBottomWorldY - building[buildingIndex].boundingBox.y) / buildingTileSize;
+		int buildingIndex;
+		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
+			int structX = building[buildingIndex].boundingBox.x;
+			int structY = building[buildingIndex].boundingBox.y;
+			int structWidth = building[buildingIndex].boundingBox.width;
+			int structHeight = building[buildingIndex].boundingBox.height;
 
-		// if the player's adjacent tile is not within bounding box, e.g. going down and facing tile 12,
-		// will be out of bound, so set it to face tile 11. Will not interfere with collision, if
-		// the player reached tile 11, they can path through that tile to begin with.
-		if (entityLeftCol > checkLimitX) entityLeftCol = entityRightCol;
-		if (entityRightCol > checkLimitX) entityRightCol = entityLeftCol;
-		if (entityTopRow > checkLimitY) entityTopRow = entityBottomRow;
-		if (entityBottomRow > checkLimitY) entityBottomRow = entityTopRow;
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX
+					&& entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+				int checkLimitX = building[buildingIndex].boundingBox.width / buildingTileSize - 1;
+				int checkLimitY = building[buildingIndex].boundingBox.height / buildingTileSize - 1;
 
-		int tileNum1 = 0, tileNum2 = 0;
-		int[] rowNum;
+				// get coords of player relative to top left of bounding box
+				int entityLeftCol = (entityLeftWorldX - building[buildingIndex].boundingBox.x) / buildingTileSize;
+				int entityRightCol = (entityRightWorldX - building[buildingIndex].boundingBox.x) / buildingTileSize;
+				int entityTopRow = (entityTopWorldY - building[buildingIndex].boundingBox.y) / buildingTileSize;
+				int entityBottomRow = (entityBottomWorldY - building[buildingIndex].boundingBox.y) / buildingTileSize;
 
-		if (ya < 0) { // UP
-			rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
-			tileNum1 = rowNum[entityLeftCol];
-			tileNum2 = rowNum[entityRightCol];			
+				// if the player's adjacent tile is not within bounding box, e.g. going down and
+				// facing tile 12,
+				// will be out of bound, so set it to face tile 11. Will not interfere with
+				// collision, if
+				// the player reached tile 11, they can path through that tile to begin with.
+				if (entityLeftCol > checkLimitX)
+					entityLeftCol = entityRightCol;
+				if (entityRightCol > checkLimitX)
+					entityRightCol = entityLeftCol;
+				if (entityTopRow > checkLimitY)
+					entityTopRow = entityBottomRow;
+				if (entityBottomRow > checkLimitY)
+					entityBottomRow = entityTopRow;
+
+				int tileNum1 = 0, tileNum2 = 0;
+				int[] rowNum;
+
+				if (ya < 0) { // UP
+					rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
+					tileNum1 = rowNum[entityLeftCol];
+					tileNum2 = rowNum[entityRightCol];
+				}
+				if (ya > 0) { // DOWN
+					rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
+					tileNum1 = rowNum[entityLeftCol];
+					tileNum2 = rowNum[entityRightCol];
+				}
+				if (xa < 0) { // LEFT
+					rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
+					tileNum1 = rowNum[entityLeftCol];
+					rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
+					tileNum2 = rowNum[entityLeftCol];
+				}
+				if (xa > 0) { // RIGHT
+					rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
+					tileNum1 = rowNum[entityRightCol];
+					rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
+					tileNum2 = rowNum[entityRightCol];
+				}
+				if (tile[tileNum1].collision || tile[tileNum2].collision)
+					return true;
+			}
+
 		}
-		if (ya > 0) { // DOWN
-			rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
-			tileNum1 = rowNum[entityLeftCol];
-			tileNum2 = rowNum[entityRightCol];
-		}
-		if (xa < 0) { // LEFT
-			rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
-			tileNum1 = rowNum[entityLeftCol];
-			rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
-			tileNum2 = rowNum[entityLeftCol];
-		}
-		if (xa > 0) { // RIGHT
-			rowNum = building[buildingIndex].buildingTileNum.get(entityTopRow);
-			tileNum1 = rowNum[entityRightCol];
-			rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
-			tileNum2 = rowNum[entityRightCol];
-		}
-		if (tile[tileNum1].collision || tile[tileNum2].collision) return true;
 
 		return false;
+
 	}
 }

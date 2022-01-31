@@ -16,7 +16,6 @@ public class Projectile {
 		this.yVel = weap.speed * Math.cos(angle);
 		this.worldX = worldX;
 		this.worldY = worldY;
-		
 	}
 	
 	public void update(){
@@ -31,4 +30,25 @@ public class Projectile {
 			return true;
 		return false;
 	}
+	
+	public boolean hasCollided() {
+		
+		int entityLeftWorldX = (int) (worldX + xVel);
+		int entityRightWorldX = (int) (worldX + weap.bulletSize + xVel);
+		int entityTopWorldY = (int) (worldY + yVel);
+		int entityBottomWorldY = (int) (worldY + weap.bulletSize + yVel);
+
+		if (weap.game.tileM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;
+		if (weap.game.tileM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;
+		
+		if (weap.game.structM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;		
+		if (weap.game.structM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;
+
+		return false;
+	}
+	
 }

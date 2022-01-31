@@ -35,7 +35,7 @@ public class Player extends Entity { // inherits Entity class
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
 	
-	private List<SuperWeapon> playerWeap;
+	public List<SuperWeapon> playerWeap;
 	private int playerWeapIndex = -1;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
@@ -105,7 +105,7 @@ public class Player extends Entity { // inherits Entity class
 				this.mouseX = mouse.x;
 				this.mouseY = mouse.y;
 
-				updateDirection(mouse.x, mouse.y);
+				updateMouseDirection(mouse.x, mouse.y);
 				Packet mousePacket = new Packet(4, this.username, this.mouseX, this.mouseY);
 				game.socketClient.sendData(mousePacket.getPacket());
 			}
@@ -141,70 +141,31 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	private boolean hasCollided(int xa, int ya) {
-		int entityLeftWorldX = worldX + solidArea.x;
-		int entityRightWorldX = worldX + solidArea.x + solidArea.width;
-		int entityTopWorldY = worldY + solidArea.y;
-		int entityBottomWorldY = worldY + solidArea.y + solidArea.height;
+		int entityLeftWorldX = worldX + solidArea.x + xa;
+		int entityRightWorldX = worldX + solidArea.x + solidArea.width + xa;
+		int entityTopWorldY = worldY + solidArea.y + ya;
+		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
 
-		int entityLeftCol = entityLeftWorldX / game.tileSize;
-		int entityRightCol = entityRightWorldX / game.tileSize;
-		int entityTopRow = entityTopWorldY / game.tileSize;
-		int entityBottomRow = entityBottomWorldY / game.tileSize;
-
-		int tileNum1 = 0, tileNum2 = 0;
-
-		if (ya < 0) { // UP
-			entityTopWorldY -= 1;
-			entityTopRow = entityTopWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
-		}
-		if (ya > 0) { // DOWN
-			entityBottomWorldY += 1;
-			entityBottomRow = entityBottomWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
-		}
-		if (xa < 0) { // LEFT
-			entityLeftWorldX -= 1;
-			entityLeftCol = entityLeftWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
-		}
-		if (xa > 0) { // RIGHT
-			entityRightWorldX += 1;
-			entityRightCol = entityRightWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
-		}
-		if (game.tileM.tile[tileNum1].collision || game.tileM.tile[tileNum2].collision) return true;
-
-		int structX, structY, structWidth, structHeight;
-
-		for (int i = 0; i < game.structM.building.length; i++) {
-			structX = game.structM.building[i].boundingBox.x;
-			structY = game.structM.building[i].boundingBox.y;
-			structWidth = game.structM.building[i].boundingBox.width;
-			structHeight = game.structM.building[i].boundingBox.height;
-
-			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
-				return game.structM.hasCollided(xa, ya, entityTopWorldY, entityBottomWorldY, entityLeftWorldX, entityRightWorldX, i);
-			}
-		}
+		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;
+		
+		if (game.structM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			return true;		
 
 		return false;
 	}
 
-	public void updateXY(int worldX, int worldY) {
+	public void updatePlayerXY(int worldX, int worldY) {
 		this.worldX = worldX;
 		this.worldY = worldY;
 	}
 
-	public void updateDirection(double x, double y) {
+	public void updateMouseDirection(double x, double y) {
 		double dx = x - screenX;
 		double dy = y - screenY;
 		this.imageAngleRad = Math.atan2(dy, dx);
 	}
+	
 
 	public void render(Graphics2D g2) {
 		
