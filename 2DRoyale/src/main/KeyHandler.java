@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 import net.GameClient;
 import net.GameServer;
-import net.Packet;
+import net.Pkt01Login;
 
 public class KeyHandler implements KeyListener {
 	
@@ -117,11 +117,11 @@ public class KeyHandler implements KeyListener {
 					gp.gameState = gp.playState;
 					gp.player.setUsername(gp.ui.name.trim());
 					gp.getPlayers().add(gp.player);
+					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
 					if (gp.socketServer != null) {
-						gp.socketServer.addConnection(gp.player);
-					}
-					Packet loginPacket = new Packet(1, gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
-					gp.socketClient.sendData(loginPacket.getPacket());
+						gp.socketServer.addConnection(gp.player, loginPacket);
+					}					
+					loginPacket.sendData(gp.socketClient);
 				}
 			}
 			//when in "Type the server ip:" page

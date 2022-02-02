@@ -15,14 +15,12 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import entity.PlayerMP;
 import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
-import net.Packet;
 import structure.StructuresManager;
 import tile.TileManager;
 
@@ -36,7 +34,7 @@ public class Game extends JPanel implements Runnable {
 	private final int originalTileSize = 16;
 	private final int scale = 3;
 	public final int tileSize = originalTileSize * scale;
-	public final int playerSize = tileSize/2;
+	public final int playerSize = tileSize / 2;
 
 	private int FPS = 60;
 	public boolean running = false;
@@ -142,7 +140,6 @@ public class Game extends JPanel implements Runnable {
 	public void init() {
 		windowHandler = new WindowHandler(this);
 
-
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -151,8 +148,6 @@ public class Game extends JPanel implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		
 
 	}
 

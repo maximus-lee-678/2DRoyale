@@ -3,7 +3,7 @@ package main;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import net.Packet;
+import net.Pkt02Disconnect;
 
 public class WindowHandler implements WindowListener{
 
@@ -17,10 +17,9 @@ public class WindowHandler implements WindowListener{
 	@Override
 	public void windowClosing(WindowEvent e) {
 		if(game.gameState == game.playState) {
-			Packet disconnectPacket = new Packet(2, game.player.getUsername());
-			game.socketClient.sendData(disconnectPacket.getPacket());
-		}
-		
+			Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(game.player.getUsername());
+			disconnectPacket.sendData(game.socketClient);
+		}		
 	}
 	
 	//default funcs, delete will throw warning :(

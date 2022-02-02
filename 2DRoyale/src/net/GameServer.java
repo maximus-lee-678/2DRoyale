@@ -20,7 +20,7 @@ public class GameServer extends Thread {
 	public GameServer(Game game) {
 		this.game = game;
 		try {
-			this.socket = new DatagramSocket(2207);					//create socket, open on port 2207. To send data to server, all clients must send to port 2207
+			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
@@ -28,7 +28,7 @@ public class GameServer extends Thread {
 	}
 
 	public void run() {
-		while (true) {												//listen for new packets
+		while (true) { // listen for new packets
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -36,128 +36,116 @@ public class GameServer extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			readPacket(packet.getData(), packet.getAddress(), packet.getPort());	//call readPacket() to handle packet
+			readPacket(packet.getData(), packet.getAddress(), packet.getPort()); // call readPacket() to handle packet
 		}
 	}
 
 	private void readPacket(byte[] data, InetAddress address, int port) {
-		String message = new String(data).trim();			//first 2 values of the String is the packet type/id
-		int type = lookupPacket(message.substring(0, 2));	//check if that packet type/id exist
-		String msgData = message.substring(2);				//snip away first two values (aka the id)
+		String message = new String(data).trim();
+		int type = lookupPacket(message.substring(0, 2)); 
+		String msgData = message.substring(2);
 		String[] dataArr;
-		
+
 		switch (type) {
 		case 1:
-			// LOGIN	
-			dataArr = msgData.split(",");
-			PlayerMP player = new PlayerMP(game, dataArr[0], address, port);
-			player.worldX = Integer.parseInt(dataArr[1]);
-			player.worldY = Integer.parseInt(dataArr[2]);
-			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + dataArr[0] + " has connected...");
-			addConnection(player);							//call addConnection()
+			// LOGIN
+			Pkt01Login loginPacket = new Pkt01Login(data);
+			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
+			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
+			addConnection(player, loginPacket);
 			break;
 		case 2:
 			// DISCONNECT
-			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + msgData + " has left the game...");
-			removeConnection(msgData);						//call removeConnection()
+			Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(data);
+			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + disconnectPacket.getUsername() + " has left the game...");
+			removeConnection(disconnectPacket); 
 			break;
 		case 3:
 			// MOVEMENT
-			dataArr = msgData.split(",");			//Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
-			handleMove(dataArr);							//call handleMove()
+			Pkt03Move movePacket = new Pkt03Move(data);
+			handleMove(movePacket); 
 			break;
 		case 4:
 			// MOUSEMOVE
-			dataArr = msgData.split(",");			//Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
-			handleMouseMove(dataArr);							//call handleMove()
+			Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(data);
+			handleMouseMove(mouseMovePacket); 
 			break;
 		case 5:
 			// MOUSESCROLL
-			dataArr = msgData.split(",");
-			handleMouseScroll(dataArr);
+			Pkt05MouseScroll mouseScrollPacket = new Pkt05MouseScroll(data);
+			handleMouseScroll(mouseScrollPacket);
 			break;
 		case 6:
 			// SHOOT
-			dataArr = msgData.split(",");
-			handleShoot(dataArr);
+			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
+			handleShoot(shootPacket);
 			break;
 		default:
 		case 0:
 			break;
 		}
 	}
-	
-	private void handleShoot(String[] dataArr) {
-		Packet shootingPacket = new Packet(6, dataArr[0], dataArr[1], Double.parseDouble(dataArr[2]), Integer.parseInt(dataArr[3]), Integer.parseInt(dataArr[4]));
-		sendDataToAllClients(shootingPacket.getPacket());
+
+	private void handleShoot(Pkt06Shoot shootPacket) {
+		shootPacket.sendData(this);
 	}
 
-	private void handleMouseScroll(String[] dataArr) {
-		
-		
-		Packet mouseScrollPacket = new Packet(5, dataArr[0], Integer.parseInt(dataArr[1]));		
-		sendDataToAllClients(mouseScrollPacket.getPacket());	
+	private void handleMouseScroll(Pkt05MouseScroll mouseScrollPacket) {
+		mouseScrollPacket.sendData(this);
 	}
 
-	private void handleMouseMove(String[] dataArr) {				
-
-		Packet mousePacket = new Packet(4, dataArr[0], Double.parseDouble(dataArr[1]), Double.parseDouble(dataArr[2]));			//Create a move packet [\net\Packet] to send to all clients
-		sendDataToAllClients(mousePacket.getPacket());						//Send the move packet of the player to everyone (Server -> All clients). GameClient will handle this packet
+	private void handleMouseMove(Pkt04MouseMove mouseMovePacket) {
+		int index = playerIndex(mouseMovePacket.getUsername());
+		connectedPlayers.get(index).updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
+		mouseMovePacket.sendData(this);
 	}
 
-	private void handleMove(String[] dataArr) {				
-		int index = 0;
-		for (PlayerMP p : connectedPlayers) {				//find player by username
-			if (dataArr[0].equals(p.getUsername())) {
-				break;
-			}
-			index++;
-		}
-		connectedPlayers.get(index).worldX = Integer.parseInt(dataArr[1]);	//update player coordinates on server's playerlist, currently got no purpose
-		connectedPlayers.get(index).worldY = Integer.parseInt(dataArr[2]);
-		Packet movePacket = new Packet(3, dataArr[0], Integer.parseInt(dataArr[1]), Integer.parseInt(dataArr[2]));			//Create a move packet [\net\Packet] to send to all clients
-		sendDataToAllClients(movePacket.getPacket());						//Send the move packet of the player to everyone (Server -> All clients). GameClient will handle this packet
+	private void handleMove(Pkt03Move movePacket) {
+		int index = playerIndex(movePacket.getUsername());
+		connectedPlayers.get(index).updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
+		movePacket.sendData(this);
 	}
 
-	private void removeConnection(String msgData) {
-		int index = 0;
-		for (PlayerMP p : connectedPlayers) {				//find player by username
-			if (msgData.equals(p.getUsername())) {
-				break;
-			}
-			index++;
-		}
-
-		connectedPlayers.remove(index);								//remove player from server playerList
-		Packet disconnectPacket = new Packet(2, msgData);			//Create a move packet [\net\Packet] to send to all clients
-		sendDataToAllClients(disconnectPacket.getPacket());			//Send the disconnect packet of the player to everyone (Server -> All clients). GameClient will handle this packet
+	private void removeConnection(Pkt02Disconnect disconnectPacket) {
+		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername())); 
+		disconnectPacket.sendData(this);
 	}
 
-	public void addConnection(PlayerMP player) {					
+	public void addConnection(PlayerMP player, Pkt01Login loginPacket) {
 		boolean isConnected = false;
-		for (PlayerMP p : connectedPlayers) {								//Loop thru each player in server playerList array
-			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {	//If the player is the user, update the user's ip and port
-				if (p.ipAddress == null) {									//Remember line 56 in Game.java? we set it to null there and push into server player list array. so now we update
+		for (PlayerMP p : connectedPlayers) { 
+			if (player.getUsername().equalsIgnoreCase(p.getUsername())) { 
+				if (p.ipAddress == null) { 
 					p.ipAddress = player.ipAddress;
 				}
 				if (p.port == -1) {
 					p.port = player.port;
 				}
 				isConnected = true;
-			} else {																			//If player is not user,
-				Packet userLoginPacket = new Packet(1, player.getUsername(), player.worldX, player.worldY, player.playerWeapIndex);	
-				sendData(userLoginPacket.getPacket(), p.ipAddress, p.port);						//Tell (other players) that there's a new player that just logged in
-				
-				Packet otherPlayersLoginPacket = new Packet(1, p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex);	
-				sendData(otherPlayersLoginPacket.getPacket(), player.ipAddress, player.port);	//Tell (the new player) that other players exist
+			} else {
+				sendData(loginPacket.getData(), p.ipAddress, p.port); 
+
+				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex);
+				sendData(otherPlayersLoginPacket.getData(), player.ipAddress, player.port);
 			}
 		}
 		if (!isConnected) {
-			connectedPlayers.add(player);					//Add player to server player list array
+			connectedPlayers.add(player); 
 		}
 	}
 
-	private int lookupPacket(String message) {				//match player username to get index
+	private int playerIndex(String username) {
+		int index = 0;
+		for (PlayerMP p : game.getPlayers()) {
+			if (p.getUsername().equals(username)) {
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+
+	private int lookupPacket(String message) { // match player username to get index
 		int packetType;
 
 		try {
@@ -169,7 +157,7 @@ public class GameServer extends Thread {
 		return packetType;
 	}
 
-	public void sendData(byte[] data, InetAddress ipAddress, int port) {		//send data from server to client
+	public void sendData(byte[] data, InetAddress ipAddress, int port) { // send data from server to client
 		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
 		try {
 			socket.send(packet);
@@ -178,7 +166,7 @@ public class GameServer extends Thread {
 		}
 	}
 
-	public void sendDataToAllClients(byte[] data) {								//send data from server to all clients
+	public void sendDataToAllClients(byte[] data) { // send data from server to all clients
 		for (PlayerMP p : connectedPlayers) {
 			sendData(data, p.ipAddress, p.port);
 		}

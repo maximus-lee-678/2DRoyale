@@ -6,7 +6,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import net.Packet;
+import net.Pkt05MouseScroll;
 
 public class MouseHandler implements MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -30,11 +30,9 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (game.gameState == game.playState) {
-//			game.player.playerMouseScroll(e.getWheelRotation());
-			Packet mouseScrollPacket = new Packet(5, game.player.getUsername(), e.getWheelRotation());
-			game.socketClient.sendData(mouseScrollPacket.getPacket());
+			Pkt05MouseScroll mouseScrollPacket = new Pkt05MouseScroll(game.player.getUsername(), e.getWheelRotation());
+			mouseScrollPacket.sendData(game.socketClient);
 		}		
-		
 	}
 
 	@Override

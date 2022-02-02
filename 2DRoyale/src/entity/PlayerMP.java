@@ -17,13 +17,17 @@ public class PlayerMP extends Player{		//inherits Player class
 		super(game, keys, mouse, username, true);
 		this.ipAddress = ipAddress;
 		this.port = port;
+		
 	}
 	
 	//Create using this constructor when player not the user (we do not have keyHandler here, because we do not want to update other player's movement with user inputs)
-	public PlayerMP(Game game, String username, InetAddress ipAddress, int port) {
+	public PlayerMP(Game game, String username, int worldX, int worldY, int playerWeapIndex, InetAddress ipAddress, int port) {
 		super(game, null, null, username, false);
 		this.ipAddress = ipAddress;
 		this.port = port;
+		this.worldX = worldX;
+		this.worldY = worldY;
+		this.playerWeapIndex = playerWeapIndex;
 	}
 	
 	public String getUsername() {

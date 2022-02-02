@@ -8,7 +8,7 @@ import java.util.List;
 import entity.Entity;
 import main.Game;
 
-public class SuperWeapon extends Entity {
+public abstract class SuperWeapon extends Entity {
 
 	public Game game;
 
@@ -35,9 +35,7 @@ public class SuperWeapon extends Entity {
 		return bullets;
 	}
 
-	public void shoot() {
-
-	}
+	public abstract void shoot();
 
 	public void render(Graphics2D g2) {
 		for (int i = 0; i < getBullets().size(); i++) {

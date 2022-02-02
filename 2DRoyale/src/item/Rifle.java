@@ -1,14 +1,12 @@
 package item;
 
-import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 
 import main.Game;
-import net.Packet;
+import net.Pkt06Shoot;
 
 public class Rifle extends SuperWeapon {
 
@@ -45,8 +43,8 @@ public class Rifle extends SuperWeapon {
 			int spreadRad = rand.nextInt(bulletSpread*2+1)-bulletSpread;
 			angle += Math.toRadians(spreadRad);
 			
-			Packet shootingPacket = new Packet(6, game.player.getUsername(), this.name, angle, worldX, worldY);
-			game.socketClient.sendData(shootingPacket.getPacket());
+			Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.name, angle, worldX, worldY);
+			shootPacket.sendData(game.socketClient);
 			
 			fireRateTick = 0;
 		}	

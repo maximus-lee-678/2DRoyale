@@ -1,9 +1,5 @@
 package item;
 
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 public class ItemManager {
 
 	public SuperWeapon[] weaponsArr;

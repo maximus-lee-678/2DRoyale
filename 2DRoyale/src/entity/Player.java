@@ -12,11 +12,13 @@ import javax.imageio.ImageIO;
 
 import item.Rifle;
 import item.SMG;
+import item.Shotgun;
 import item.SuperWeapon;
 import main.Game;
 import main.KeyHandler;
 import main.MouseHandler;
-import net.Packet;
+import net.Pkt03Move;
+import net.Pkt04MouseMove;
 
 public class Player extends Entity { // inherits Entity class
 
@@ -53,6 +55,7 @@ public class Player extends Entity { // inherits Entity class
 		this.playerWeap = new ArrayList<SuperWeapon>();
 		playerWeap.add(new Rifle(game));
 		playerWeap.add(new SMG(game));
+		playerWeap.add(new Shotgun(game));
 
 		setDefaultValues();
 		getPlayerImage();
@@ -92,11 +95,11 @@ public class Player extends Entity { // inherits Entity class
 				if (keys.left == true) xa -= 1;
 				if (keys.right == true) xa += 1;
 
-				for (int i = 0; i < speed; i++) {
+				for (int i = 0; i < speed; i++)
 					move(xa, ya);
-				}
-				Packet movePacket = new Packet(3, this.username, this.worldX, this.worldY);
-				game.socketClient.sendData(movePacket.getPacket());
+				
+				Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
+				movePacket.sendData(game.socketClient);
 			}
 		}
 
@@ -106,19 +109,16 @@ public class Player extends Entity { // inherits Entity class
 				this.mouseY = mouse.y;
 
 				updateMouseDirection(mouse.x, mouse.y);
-				Packet mousePacket = new Packet(4, this.username, this.mouseX, this.mouseY);
-				game.socketClient.sendData(mousePacket.getPacket());
+				Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(this.username, this.mouseX, this.mouseY);
+				mouseMovePacket.sendData(game.socketClient);
 			}
-			if(mouse.mousePressed) {
-				if(playerWeapIndex >= 0) {
+			if(mouse.mousePressed)
+				if(playerWeapIndex >= 0)
 					playerWeap.get(playerWeapIndex).shoot();
-				} 
-			}
 		}
 		
 		for(SuperWeapon weap: playerWeap)
 			weap.update();
-
 	}
 
 	public void playerMouseScroll(int direction) {
@@ -178,9 +178,7 @@ public class Player extends Entity { // inherits Entity class
 		} else {
 			holding = playerWeap.get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
 			handOffset = playerWeap.get(playerWeapIndex).imgOffset;
-		}
-		
-		
+		}		
 		
 		int x, y;
 		int handX, handY;		

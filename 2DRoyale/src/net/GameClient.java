@@ -49,54 +49,37 @@ public class GameClient extends Thread {
 		switch (type) {
 		case 1:
 			// LOGIN
-			dataArr = msgData.split(",");
-			System.out.println(
-					"[" + address.getHostAddress() + ":" + port + "] " + dataArr[0] + " has joined the game...");
-			PlayerMP player = new PlayerMP(game, dataArr[0], address, port);
-			player.worldX = Integer.parseInt(dataArr[1]);
-			player.worldY = Integer.parseInt(dataArr[2]);
-			player.playerWeapIndex = Integer.parseInt(dataArr[3]);
+			Pkt01Login loginPacket = new Pkt01Login(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has joined the game...");
+			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
 			game.getPlayers().add(player); // add new player to playerList
 			break;
 		case 2:
 			// DISCONNECT
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + msgData + " has left the game...");
-			game.getPlayers().remove(playerIndex(msgData)); // delete new player to playerList. Got index to delete from
-															// playerIndex function
+			Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + disconnectPacket.getUsername() + " has left the game...");
+			game.getPlayers().remove(playerIndex(disconnectPacket.getUsername()));
 			break;
 		case 3:
 			// MOVEMENT
-			dataArr = msgData.split(","); // Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
-			int x = Integer.parseInt(dataArr[1]); // x axis
-			int y = Integer.parseInt(dataArr[2]); // y axis
-			game.getPlayers().get(playerIndex(dataArr[0])).updatePlayerXY(x, y); // get player and call move() to update
-																					// player world coordinates
+			Pkt03Move movePacket = new Pkt03Move(data);
+			game.getPlayers().get(playerIndex(movePacket.getUsername())).updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
 			break;
 		case 4:
 			// MOUSEMOVE
-			dataArr = msgData.split(","); // Eg: Bob,1000,800 -> arr[0]username: Bob, arr[1]x: 1000, arr[2]y: 800
-			double mouseX = Double.parseDouble(dataArr[1]); // x axis
-			double mouseY = Double.parseDouble(dataArr[2]); // y axis
-			game.getPlayers().get(playerIndex(dataArr[0])).updateMouseDirection(mouseX, mouseY); // get player and call
-																									// move() to update
-																									// player world
-																									// coordinates
+			Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(data);
+			game.getPlayers().get(playerIndex(mouseMovePacket.getUsername())).updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
 			break;
 		case 5:
 			// MOUSESCROLL
-			dataArr = msgData.split(",");
-			int mouseScrollDir = Integer.parseInt(dataArr[1]);
-			game.getPlayers().get(playerIndex(dataArr[0])).playerMouseScroll(mouseScrollDir);
+			Pkt05MouseScroll mouseScrollPacket = new Pkt05MouseScroll(data);
+			game.getPlayers().get(playerIndex(mouseScrollPacket.getUsername())).playerMouseScroll(mouseScrollPacket.getMouseScrollDir());
 			break;
 		case 6:
 			// SHOOTING
-			dataArr = msgData.split(",");
-			String weapon = dataArr[1];
-			double projAngle = Double.parseDouble(dataArr[2]);
-			int worldX = Integer.parseInt(dataArr[3]);
-			int worldY = Integer.parseInt(dataArr[4]);
-			PlayerMP p = game.getPlayers().get(playerIndex(dataArr[0]));
-			p.playerWeap.get(weapIndex(p, weapon)).updateMPProjectiles(projAngle, worldX, worldY);
+			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
+			PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
+			p.playerWeap.get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
 			break;
 		default:
 		case 0:
@@ -106,7 +89,6 @@ public class GameClient extends Thread {
 	}
 
 	private int weapIndex(PlayerMP player, String name) {
-
 		int index = 0;
 
 		for (SuperWeapon w : player.playerWeap) {
