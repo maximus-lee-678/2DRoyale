@@ -52,15 +52,18 @@ public class TileManager {
 
 			tile[6] = new Tile();
 			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
-			tile[6].collision = true;
+			tile[6].collisionPlayer = true;
+			tile[6].collisionProjectile = true;
 
 			tile[7] = new Tile();
 			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/water.png"));
-			tile[7].collision = true;
+			tile[7].collisionPlayer = true;
+			tile[7].collisionProjectile = false;
 
 			tile[8] = new Tile();
 			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
-			tile[8].collision = true;
+			tile[8].collisionPlayer = true;
+			tile[8].collisionProjectile = true;
 
 			tile[9] = new Tile();
 			tile[9].image = ImageIO.read(getClass().getResourceAsStream("/tiles/sand.png"));
@@ -125,9 +128,8 @@ public class TileManager {
 		}
 	}
 
-	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
-			int entityBottomWorldY) {
-		
+	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
+
 		int entityLeftCol = entityLeftWorldX / game.tileSize;
 		int entityRightCol = entityRightWorldX / game.tileSize;
 		int entityTopRow = entityTopWorldY / game.tileSize;
@@ -155,8 +157,14 @@ public class TileManager {
 			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
 		}
-		if (game.tileM.tile[tileNum1].collision || game.tileM.tile[tileNum2].collision)
-			return true;
+		if (type == "Entity") {
+			if (game.tileM.tile[tileNum1].collisionPlayer || game.tileM.tile[tileNum2].collisionPlayer)
+				return true;
+		} else if (type == "Projectile") {
+			if (game.tileM.tile[tileNum1].collisionProjectile || game.tileM.tile[tileNum2].collisionProjectile)
+				return true;
+		}
+		
 		return false;
 	}
 

@@ -57,13 +57,16 @@ public class Screen {
 				int worldY = building[i].boundingBox.y + (worldRow * buildingTileSize);
 				int gameX = worldX - game.player.worldX + game.player.screenX;
 				int gameY = worldY - game.player.worldY + game.player.screenY;
-
-				if (worldX + game.tileSize > game.player.worldX - game.player.screenX
-						&& worldX - game.tileSize < game.player.worldX + game.player.screenX
-						&& worldY + game.tileSize > game.player.worldY - game.player.screenY
-						&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-					g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
+				
+				if(tileNum != 0) {
+					if (worldX + buildingTileSize > game.player.worldX - game.player.screenX
+							&& worldX - buildingTileSize < game.player.worldX + game.player.screenX
+							&& worldY + buildingTileSize > game.player.worldY - game.player.screenY
+							&& worldY - buildingTileSize < game.player.worldY + game.player.screenY) {
+						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
+					}
 				}
+				
 				worldCol++;
 
 				if (worldCol == building[i].boundingBox.width / buildingTileSize) {

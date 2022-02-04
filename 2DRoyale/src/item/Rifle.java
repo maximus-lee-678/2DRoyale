@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import main.Game;
 import net.Pkt06Shoot;
 
-public class Rifle extends SuperWeapon {
+public class Rifle extends SuperWeapon{
 
 	public Rifle(Game game) {
 		super(game);

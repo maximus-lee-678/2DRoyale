@@ -38,14 +38,14 @@ public class Projectile {
 		int entityTopWorldY = (int) (worldY + yVel);
 		int entityBottomWorldY = (int) (worldY + weap.bulletSize + yVel);
 
-		if (weap.game.tileM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (weap.game.tileM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
-		if (weap.game.tileM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (weap.game.tileM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
 		
-		if (weap.game.structM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (weap.game.structM.hasCollided((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;		
-		if (weap.game.structM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (weap.game.structM.hasCollided(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
 
 		return false;

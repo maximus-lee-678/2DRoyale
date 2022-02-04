@@ -1,9 +1,6 @@
 package net;
 
-public class Pkt06Shoot implements Packet {
-
-	public int id = 6;
-	private String username;
+public class Pkt06Shoot extends Packet {
 
 	private String weapon;
 	private double projAngle;
@@ -11,7 +8,7 @@ public class Pkt06Shoot implements Packet {
 	private int worldY;
 
 	public Pkt06Shoot(String username, String weapon, double projAngle, int worldX, int worldY) {
-		this.username = username;
+		super(6, username);
 		this.weapon = weapon;
 		this.projAngle = projAngle;
 		this.worldX = worldX;
@@ -19,6 +16,7 @@ public class Pkt06Shoot implements Packet {
 	}
 
 	public Pkt06Shoot(byte[] data) {
+		super(6);
 		String message = new String(data).trim().substring(2);
 		String[] dataArr = message.split(",");
 		this.username = dataArr[0];
@@ -27,24 +25,10 @@ public class Pkt06Shoot implements Packet {
 		this.worldX = Integer.parseInt(dataArr[3]);
 		this.worldY = Integer.parseInt(dataArr[4]);
 	}
-	
-	@Override
-	public void sendData(GameClient client) {
-		client.sendData(getData());
-	}
-
-	@Override
-	public void sendData(GameServer server) {
-		server.sendDataToAllClients(getData());
-	}
 
 	@Override
 	public byte[] getData() {
 		return ("06"+getUsername()+","+getWeapon()+","+getProjAngle()+","+getWorldX()+","+getWorldY()).getBytes();
-	}
-	
-	public String getUsername() {
-		return username;
 	}
 
 	public String getWeapon() {

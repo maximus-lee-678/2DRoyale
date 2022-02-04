@@ -36,40 +36,50 @@ public class StructuresManager {
 	private void getTileImage() {
 
 		try {
-
+			
 			tile[0] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/marble.png"));
+			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/missing.png"));
 
 			tile[1] = new Tile();
-			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
-			tile[1].collision = true;
-			
+			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/marble.png"));
+
 			tile[2] = new Tile();
-			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHL.png"));
-			tile[2].collision = true;
+			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
+			tile[2].collisionPlayer = true;
+			tile[2].collisionProjectile = true;
 			
 			tile[3] = new Tile();
-			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHC.png"));
-			tile[3].collision = true;
+			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHL.png"));
+			tile[3].collisionPlayer = true;
+			tile[3].collisionProjectile = true;
 			
 			tile[4] = new Tile();
-			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHR.png"));
-			tile[4].collision = true;
+			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHC.png"));
+			tile[4].collisionPlayer = true;
+			tile[4].collisionProjectile = true;
 			
 			tile[5] = new Tile();
-			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVT.png"));
-			tile[5].collision = true;
+			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHR.png"));
+			tile[5].collisionPlayer = true;
+			tile[5].collisionProjectile = true;
 			
 			tile[6] = new Tile();
-			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVC.png"));
-			tile[6].collision = true;
+			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVT.png"));
+			tile[6].collisionPlayer = true;
+			tile[6].collisionProjectile = true;
 			
 			tile[7] = new Tile();
-			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVB.png"));
-			tile[7].collision = true;
+			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVC.png"));
+			tile[7].collisionPlayer = true;
+			tile[7].collisionProjectile = true;
 			
 			tile[8] = new Tile();
-			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth1.png"));
+			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVB.png"));
+			tile[8].collisionPlayer = true;
+			tile[8].collisionProjectile = true;
+			
+			tile[9] = new Tile();
+			tile[9].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth1.png"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -82,7 +92,7 @@ public class StructuresManager {
 	}
 
 	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
-			int entityBottomWorldY) {
+			int entityBottomWorldY, String type) {
 
 		int buildingIndex;
 		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
@@ -141,8 +151,14 @@ public class StructuresManager {
 					rowNum = building[buildingIndex].buildingTileNum.get(entityBottomRow);
 					tileNum2 = rowNum[entityRightCol];
 				}
-				if (tile[tileNum1].collision || tile[tileNum2].collision)
-					return true;
+				if (type == "Entity") {
+					if (tile[tileNum1].collisionPlayer || tile[tileNum2].collisionPlayer)
+						return true;
+				} else if (type == "Projectile") {
+					if (tile[tileNum1].collisionProjectile || tile[tileNum2].collisionProjectile)
+						return true;
+				}
+				
 			}
 
 		}

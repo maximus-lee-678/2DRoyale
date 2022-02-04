@@ -146,10 +146,10 @@ public class Player extends Entity { // inherits Entity class
 		int entityTopWorldY = worldY + solidArea.y + ya;
 		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
 
-		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 		
-		if (game.structM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+		if (game.structM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;		
 
 		return false;

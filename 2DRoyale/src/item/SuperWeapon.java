@@ -8,7 +8,7 @@ import java.util.List;
 import entity.Entity;
 import main.Game;
 
-public abstract class SuperWeapon extends Entity {
+public class SuperWeapon extends Entity implements shootInterface{
 
 	public Game game;
 
@@ -35,8 +35,6 @@ public abstract class SuperWeapon extends Entity {
 		return bullets;
 	}
 
-	public abstract void shoot();
-
 	public void render(Graphics2D g2) {
 		for (int i = 0; i < getBullets().size(); i++) {
 			int x = (int) getBullets().get(i).worldX - game.player.worldX + game.player.screenX;
@@ -60,4 +58,6 @@ public abstract class SuperWeapon extends Entity {
 		Projectile bullet = new Projectile(this, projAngle, worldX, worldY);
 		getBullets().add(bullet);
 	}
+
+	public void shoot() {};
 }

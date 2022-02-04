@@ -1,22 +1,20 @@
 package net;
 
-public class Pkt01Login implements Packet {
-
-	public int id = 1;
-	private String username;
+public class Pkt01Login extends Packet {
 
 	private int worldX;
 	private int worldY;
 	private int playerWeapIndex;
 
 	public Pkt01Login(String username, int worldX, int worldY, int playerWeapIndex) {
-		this.username = username;
+		super(1, username);
 		this.worldX = worldX;
 		this.worldY = worldY;
 		this.playerWeapIndex = playerWeapIndex;
 	}
 
 	public Pkt01Login(byte[] data) {
+		super(1);
 		String message = new String(data).trim().substring(2);
 		String[] dataArr = message.split(",");
 		this.username = dataArr[0];
@@ -26,22 +24,8 @@ public class Pkt01Login implements Packet {
 	}
 	
 	@Override
-	public void sendData(GameClient client) {
-		client.sendData(getData());
-	}
-
-	@Override
-	public void sendData(GameServer server) {
-		server.sendDataToAllClients(getData());
-	}
-
-	@Override
 	public byte[] getData() {
 		return ("01"+getUsername()+","+getWorldX()+","+getWorldY()+","+getPlayerWeapIndex()).getBytes();
-	}
-	
-	public String getUsername() {
-		return username;
 	}
 	
 	public int getWorldX() {

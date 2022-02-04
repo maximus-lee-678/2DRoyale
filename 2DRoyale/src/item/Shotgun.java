@@ -20,7 +20,7 @@ public class Shotgun extends SuperWeapon {
 		this.fireRate = 20;
 
 		try {
-			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/pistol.png"));
+			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/shottyhand.png"));
 			this.bulletImg = ImageIO.read(getClass().getResourceAsStream("/projectile/bullet1.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
