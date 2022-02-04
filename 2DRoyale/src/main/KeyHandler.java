@@ -113,16 +113,19 @@ public class KeyHandler implements KeyListener {
 					gp.ui.name += input;
 					gp.ui.name = maxLength(gp.ui.name, 15);
 				}
-				if(code == KeyEvent.VK_ENTER) {
-					gp.gameState = gp.playState;
-					gp.player.setUsername(gp.ui.name.trim());
-					gp.getPlayers().add(gp.player);
-					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
-					if (gp.socketServer != null) {
-						gp.socketServer.addConnection(gp.player, loginPacket);
-					}					
-					loginPacket.sendData(gp.socketClient);
+				if(gp.ui.name != "") {
+					if(code == KeyEvent.VK_ENTER) {
+						gp.gameState = gp.playState;
+						gp.player.setUsername(gp.ui.name.trim());
+						gp.getPlayers().add(gp.player);
+						Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
+						if (gp.socketServer != null) {
+							gp.socketServer.addConnection(gp.player, loginPacket);
+						}					
+						loginPacket.sendData(gp.socketClient);
+					}
 				}
+				
 			}
 			//when in "Type the server ip:" page
 			else if(gp.ui.titleScreenState == 5) {
