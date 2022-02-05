@@ -1,6 +1,7 @@
 package structure;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,8 @@ public class StructuresManager {
 
 	private Game game;
 	public int buildingTileSize = 16;
+	public int buildingBlueprintCount = 3;
+	public int buildingOffset = 48;
 
 	public Tile[] tile;
 	public Building[] building;
@@ -32,63 +35,70 @@ public class StructuresManager {
 
 	public void loadBuildings(int numberOfBuildings) {
 		int placedBuildings = 0;
-		int failedAttempts = 0; //debug variable
-		
-		while(placedBuildings < numberOfBuildings) {	// prevent buildings from spawning on top of each other
+		int failedAttempts = 0; // debug variable
+
+		while (placedBuildings < numberOfBuildings) {
 			boolean failed = false;
-			Building tryBuilding = new Building("/blueprint/building1.txt", buildingTileSize);
-			int randomX = (int) (Math.random() * (game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width));
-			int randomY = (int) (Math.random() * (game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height));
-			
-			int topLeftTileX = randomX / game.tileSize;	// int will floor the value
-			int topLeftTileY = randomY / game.tileSize;	// int will floor the value
-			int rows = (int) Math.ceil(1.0 * tryBuilding.boundingBox.height / game.tileSize);
-			int cols = (int) Math.ceil(1.0 * tryBuilding.boundingBox.width / game.tileSize);
-			
-			for(int x = topLeftTileX; x < topLeftTileX + cols; x++) {
-				System.out.println("x:" + x);
-				for(int y = topLeftTileY; y < topLeftTileY + rows; y++) {
-					
-					System.out.println("y:" + y);
-					if(game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collision) {
+			Building tryBuilding = new Building(
+					"/blueprint/building" + (int) (Math.random() * buildingBlueprintCount) + ".txt", buildingTileSize);
+
+			int randomX = buildingOffset + (int) (Math.random()
+					* (game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (buildingOffset * 2)));
+			int randomY = buildingOffset + (int) (Math.random()
+					* (game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (buildingOffset * 2)));
+			Rectangle separationHitbox = new Rectangle(randomX - buildingOffset, randomY - buildingOffset,
+					tryBuilding.boundingBox.width + buildingOffset * 2,
+					tryBuilding.boundingBox.height + buildingOffset * 2);
+
+			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
+			int topLeftTileY = separationHitbox.y / game.tileSize;
+
+			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
+			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+
+			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent buildings from spawning on obstructions
+				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
+					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
 						failed = true;
 						failedAttempts++;
 						break;
 					}
 				}
-				if(failed == true)
+				if (failed == true)
 					break;
 			}
-			
-			if(failed == true)
+
+			if (failed == true)
 				continue;
-			
-			for (int i = 1; i <= placedBuildings; i++) {
-				if (randomX < building[i-1].boundingBox.x + building[i-1].boundingBox.width && randomX + tryBuilding.boundingBox.width > building[i-1].boundingBox.x
-						&& randomY < building[i-1].boundingBox.y + building[i-1].boundingBox.height && randomY + tryBuilding.boundingBox.height > building[i-1].boundingBox.y) {
+
+			for (int i = 1; i <= placedBuildings; i++) { // prevent buildings from spawning on top of each other
+				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x
+						&& separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
 					failed = true;
 					failedAttempts++;
 					break;
 				}
 			}
-			
-			if(failed == true)
+
+			if (failed == true)
 				continue;
-			
+
 			tryBuilding.boundingBox.x = randomX;
 			tryBuilding.boundingBox.y = randomY;
-			
+
 			building[placedBuildings] = tryBuilding;
 			placedBuildings++;
 		}
-		
+
 		System.out.println("Building collisions: " + failedAttempts);
 	}
 
 	private void getTileImage() {
 
 		try {
-			
+
 			tile[0] = new Tile();
 			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/missing.png"));
 
@@ -99,37 +109,37 @@ public class StructuresManager {
 			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
 			tile[2].collisionPlayer = true;
 			tile[2].collisionProjectile = true;
-			
+
 			tile[3] = new Tile();
 			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHL.png"));
 			tile[3].collisionPlayer = true;
 			tile[3].collisionProjectile = true;
-			
+
 			tile[4] = new Tile();
 			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHC.png"));
 			tile[4].collisionPlayer = true;
 			tile[4].collisionProjectile = true;
-			
+
 			tile[5] = new Tile();
 			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallHR.png"));
 			tile[5].collisionPlayer = true;
 			tile[5].collisionProjectile = true;
-			
+
 			tile[6] = new Tile();
 			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVT.png"));
 			tile[6].collisionPlayer = true;
 			tile[6].collisionProjectile = true;
-			
+
 			tile[7] = new Tile();
 			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVC.png"));
 			tile[7].collisionPlayer = true;
 			tile[7].collisionProjectile = true;
-			
+
 			tile[8] = new Tile();
 			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wallVB.png"));
 			tile[8].collisionPlayer = true;
 			tile[8].collisionProjectile = true;
-			
+
 			tile[9] = new Tile();
 			tile[9].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth1.png"));
 
@@ -210,7 +220,7 @@ public class StructuresManager {
 					if (tile[tileNum1].collisionProjectile || tile[tileNum2].collisionProjectile)
 						return true;
 				}
-				
+
 			}
 
 		}

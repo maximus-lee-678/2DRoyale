@@ -96,7 +96,7 @@ public class GameServer extends Thread {
 
 	private void handleMouseMove(Pkt04MouseMove mouseMovePacket) {
 		int index = playerIndex(mouseMovePacket.getUsername());
-		connectedPlayers.get(index).updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
+//		connectedPlayers.get(index).updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
 		mouseMovePacket.sendData(this);
 	}
 
