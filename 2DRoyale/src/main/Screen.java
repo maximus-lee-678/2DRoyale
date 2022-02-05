@@ -45,7 +45,7 @@ public class Screen {
 		Building[] building = game.structM.building;
 		int buildingTileSize = game.structM.buildingTileSize;
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < game.numberOfBuildings; i++) {
 			worldCol = 0;
 			worldRow = 0;
 			while (worldCol < building[i].boundingBox.width / buildingTileSize

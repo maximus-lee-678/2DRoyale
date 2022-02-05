@@ -5,14 +5,14 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 
 public class Building {
 
 	public Rectangle boundingBox;
 	public List<int[]> buildingTileNum;
 
-	public Building(String filePath, int upperXcoord, int upperYcoord, int buildingTileSize) {
+	public Building(String filePath, int buildingTileSize) {
 
 		this.buildingTileNum = new ArrayList<int[]>();
 		int col = 0;
@@ -48,7 +48,7 @@ public class Building {
 			e.printStackTrace();
 		}
 
-		this.boundingBox = new Rectangle(upperXcoord, upperYcoord, col * buildingTileSize, row * buildingTileSize);
+		this.boundingBox = new Rectangle(0, 0, col * buildingTileSize, row * buildingTileSize);
 	}
 
 }
