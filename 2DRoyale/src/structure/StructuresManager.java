@@ -1,7 +1,10 @@
 package structure;
 
 import java.awt.Graphics2D;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
@@ -10,27 +13,76 @@ import tile.Tile;
 
 public class StructuresManager {
 
-//	private Game game;
+	private Game game;
 	public int buildingTileSize = 16;
+
 	public Tile[] tile;
 	public Building[] building;
 
 	public StructuresManager(Game game) {
 
-//		this.game = game;
+		this.game = game;
 		tile = new Tile[10];
-		building = new Building[2];
+		building = new Building[game.numberOfBuildings];
 
 		getTileImage(); // populate tile array
-		loadBuildings();
+		loadBuildings(game.numberOfBuildings);
 
 	}
 
-	private void loadBuildings() {
-
-		building[0] = new Building("/blueprint/building1.txt", 900, 900, buildingTileSize);
-		building[1] = new Building("/blueprint/building2.txt", 1500, 1500, buildingTileSize);
-
+	public void loadBuildings(int numberOfBuildings) {
+		int placedBuildings = 0;
+		int failedAttempts = 0; //debug variable
+		
+		while(placedBuildings < numberOfBuildings) {	// prevent buildings from spawning on top of each other
+			boolean failed = false;
+			Building tryBuilding = new Building("/blueprint/building1.txt", buildingTileSize);
+			int randomX = (int) (Math.random() * (game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width));
+			int randomY = (int) (Math.random() * (game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height));
+			
+			int topLeftTileX = randomX / game.tileSize;	// int will floor the value
+			int topLeftTileY = randomY / game.tileSize;	// int will floor the value
+			int rows = (int) Math.ceil(1.0 * tryBuilding.boundingBox.height / game.tileSize);
+			int cols = (int) Math.ceil(1.0 * tryBuilding.boundingBox.width / game.tileSize);
+			
+			for(int x = topLeftTileX; x < topLeftTileX + cols; x++) {
+				System.out.println("x:" + x);
+				for(int y = topLeftTileY; y < topLeftTileY + rows; y++) {
+					
+					System.out.println("y:" + y);
+					if(game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collision) {
+						failed = true;
+						failedAttempts++;
+						break;
+					}
+				}
+				if(failed == true)
+					break;
+			}
+			
+			if(failed == true)
+				continue;
+			
+			for (int i = 1; i <= placedBuildings; i++) {
+				if (randomX < building[i-1].boundingBox.x + building[i-1].boundingBox.width && randomX + tryBuilding.boundingBox.width > building[i-1].boundingBox.x
+						&& randomY < building[i-1].boundingBox.y + building[i-1].boundingBox.height && randomY + tryBuilding.boundingBox.height > building[i-1].boundingBox.y) {
+					failed = true;
+					failedAttempts++;
+					break;
+				}
+			}
+			
+			if(failed == true)
+				continue;
+			
+			tryBuilding.boundingBox.x = randomX;
+			tryBuilding.boundingBox.y = randomY;
+			
+			building[placedBuildings] = tryBuilding;
+			placedBuildings++;
+		}
+		
+		System.out.println("Building collisions: " + failedAttempts);
 	}
 
 	private void getTileImage() {
