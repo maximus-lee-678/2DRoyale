@@ -123,7 +123,6 @@ public class StructuresManager {
 
 		mainLoop:
 		while (placedBuildings < numberOfBuildings) {
-			boolean failed = false;
 			Building tryBuilding = new Building(
 					"/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
 
@@ -143,9 +142,8 @@ public class StructuresManager {
 			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent buildings from spawning on obstructions
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
 					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
-						failed = true;
 						failedBuildingAttempts++;
-						break;
+						continue mainLoop;
 					}
 				}
 			}
@@ -155,9 +153,8 @@ public class StructuresManager {
 						&& separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x
 						&& separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height
 						&& separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
-					failed = true;
 					failedBuildingAttempts++;
-					break;
+					continue mainLoop;
 				}
 			}
 
@@ -177,7 +174,8 @@ public class StructuresManager {
 
 		int placedCrates = 0;
 		int failedCrateAttempts = 0; // debug variable
-
+		
+		mainLoop:
 		while (placedCrates < numberOfCrates) {
 			boolean failed = false;
 			Crate tryCrate = new Crate(crateTileSize, interactRadius, crateTileNum.get(0));
@@ -196,31 +194,22 @@ public class StructuresManager {
 			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent crates from spawning on obstructions
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
 					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
-						failed = true;
 						failedCrateAttempts++;
-						break;
+						continue mainLoop;
 					}
 				}
-				if (failed == true)
-					break;
 			}
-
-			if (failed == true)
-				continue;
 
 			for (int i = 0; i < building.length; i++) { // prevent crates from spawning on top of buildings
 				if (separationHitbox.x < building[i].boundingBox.x + building[i].boundingBox.width
 						&& separationHitbox.x + separationHitbox.width > building[i].boundingBox.x
 						&& separationHitbox.y < building[i].boundingBox.y + building[i].boundingBox.height
 						&& separationHitbox.y + separationHitbox.height > building[i].boundingBox.y) {
-					failed = true;
 					failedCrateAttempts++;
-					break;
+					continue mainLoop;
 				}
 			}
 
-			if (failed == true)
-				continue;
 
 			tryCrate.collisionBoundingBox.x = randomX;
 			tryCrate.collisionBoundingBox.y = randomY;

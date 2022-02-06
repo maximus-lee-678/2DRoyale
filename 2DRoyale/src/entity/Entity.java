@@ -12,7 +12,7 @@ public class Entity{
 	public int speed;
 	
 	public BufferedImage sprite;
-	
+
 	public Rectangle solidArea;
 	
 }
