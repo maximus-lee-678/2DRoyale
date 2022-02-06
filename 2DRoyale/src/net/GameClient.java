@@ -95,6 +95,8 @@ public class GameClient extends Thread {
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].serverHit(serverHitPacket.getBullet());
+			PlayerMP p3 = game.getPlayers().get(playerIndex(serverHitPacket.getVictim()));
+			p3.health -= p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].damage;
 			break;
 		case 10:
 			// PICK UP WEAPON

@@ -129,7 +129,8 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 			}
 			if (mouse.mousePressed)
 				if (playerWeapIndex >= 0)
-					getWeapons()[playerWeapIndex].shoot();
+					if (getWeapons()[playerWeapIndex] != null)
+						getWeapons()[playerWeapIndex].shoot();
 		}
 
 		for (SuperWeapon weap : getWeapons())

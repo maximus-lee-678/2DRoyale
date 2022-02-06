@@ -16,9 +16,10 @@ public class Shotgun extends SuperWeapon {
 		this.imgOffset = -3;
 		this.speed = 10;
 		this.range = 5 * game.tileSize;
-		this.bulletSpread = 10; //in degrees
+		this.bulletSpread = 5; //in degrees
 		this.bulletSize = 8;
 		this.fireRate = 20;		
+		this.damage = 10;
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/shottyhand.png"));

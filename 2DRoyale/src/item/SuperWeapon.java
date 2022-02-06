@@ -94,6 +94,8 @@ public class SuperWeapon extends Entity implements shootInterface{
 		
 	}
 
-	public void shoot() {};
+	public void shoot() {
+		return;
+	};
 	
 }

@@ -21,6 +21,7 @@ public class Rifle extends SuperWeapon{
 		this.bulletSpread = 0; // in degrees
 		this.bulletSize = 12;
 		this.fireRate = 10;
+		this.damage = 20;
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/riflehand.png"));

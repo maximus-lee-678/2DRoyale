@@ -20,6 +20,7 @@ public class SMG extends SuperWeapon  {
 		this.bulletSpread = 10; //in degrees
 		this.bulletSize = 8;
 		this.fireRate = 2;
+		this.damage = 5;
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/smghand.png"));
