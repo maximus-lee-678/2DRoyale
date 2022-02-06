@@ -16,7 +16,7 @@ public class StructuresManager {
 
 	private Game game;
 	public int buildingTileSize = 16;
-	public int buildingBlueprintCount = 3;
+	public int buildingBlueprintCount = 7;
 	public int buildingOffset = 48;
 
 	public Tile[] tile;
