@@ -24,6 +24,7 @@ public class SuperWeapon extends Entity implements shootInterface{
 	public int bulletSpread;
 	public int bulletSize;
 	public int bulletIdCount;
+	public BufferedImage imgIcon;
 
 	public int fireRateTick;
 	public int imgOffset;

@@ -22,7 +22,6 @@ import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
 import net.Pkt08ServerTick;
-import object.SuperObject;
 import structure.StructuresManager;
 import tile.TileManager;
 
@@ -41,10 +40,6 @@ public class Game extends JPanel implements Runnable {
 	private int FPS = 60;
 	public boolean running = false;
 	private BufferedImage cursor;
-	
-	//Objects
-	public AssetSetter aSetter = new AssetSetter(this);
-	public SuperObject obj[] = new SuperObject[10];
 
 	// World
 	public long randSeed = System.currentTimeMillis();
@@ -76,8 +71,6 @@ public class Game extends JPanel implements Runnable {
 	public final int titleState = 0;
 	public final int playState = 1;
 	public final int endState = 2;
-	
-	private int cycles = 0;
 
 	public Game() {
 
@@ -176,44 +169,23 @@ public class Game extends JPanel implements Runnable {
 			// do nothing
 		}
 		if (gameState == playState) {
-			for (PlayerMP p : getPlayers())
+			for (PlayerMP p : getPlayers()) 
 				p.update();
+							
 			if(socketServer != null) {
 				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
 				serverTickPacket.sendData(socketClient);
-			}
-			
+			}			
 		}
-
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
-		
-		//Screen
 		screen.render(g2);
-		
-		//Object
-		if (gameState == playState) {
-			setupGame();
-			ui.draw(g2);
-			for(int i = 0; i < obj.length; i++) {
-				if(obj[i] != null) {
-					obj[i].draw(g2,  this);
-				}
-			}
-		}
-		
-		
 		g2.dispose();
 
-	}
-	
-	public void setupGame() {
-		aSetter.setObject();
-		
 	}
 
 	public static void main(String[] args) {

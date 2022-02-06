@@ -23,6 +23,7 @@ public class SMG extends SuperWeapon  {
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/smghand.png"));
+			this.imgIcon = ImageIO.read(getClass().getResourceAsStream("/weap/SMG.png"));
 			this.bulletImg = ImageIO.read(getClass().getResourceAsStream("/projectile/bullet1.png"));
 		} catch (IOException e) {
 			e.printStackTrace();

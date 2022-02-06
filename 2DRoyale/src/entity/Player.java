@@ -20,7 +20,7 @@ import main.MouseHandler;
 import net.Pkt03Move;
 import net.Pkt04MouseMove;
 
-public class Player extends Entity implements Cloneable{ // inherits Entity class
+public class Player extends Entity implements Cloneable { // inherits Entity class
 
 	private Game game;
 	private KeyHandler keys;
@@ -36,9 +36,9 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
-	
-	public ArrayList<SuperWeapon> playerWeap;
-	public int playerWeapIndex = -1;
+
+	public SuperWeapon[] playerWeap;
+	public int playerWeapIndex = 0;
 	public int health;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
@@ -52,10 +52,9 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 
 		this.solidArea = new Rectangle(6, 6, 12, 12);
-		
-		this.playerWeap = new ArrayList<SuperWeapon>();
 
-		
+		this.playerWeap = new SuperWeapon[4];
+
 		this.health = 100;
 		this.speed = 4;
 
@@ -67,7 +66,6 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 		worldX = game.tileSize * 23 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
 		worldY = game.tileSize * 21 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
 
-		
 		mouseX = 0;
 		mouseY = 0;
 	}
@@ -82,20 +80,20 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 	}
 
 	public void addWeapon() {
-		playerWeap.add(new Rifle(this, game));
-		playerWeap.add(new SMG(this, game));
-		playerWeap.add(new Shotgun(this, game));
+		playerWeap[0] = new Rifle(this, game);
+		playerWeap[1] = new SMG(this, game);
+		playerWeap[2] = new Shotgun(this, game);
 	}
-	
+
 	public void setUsername(String username) {
 		this.username = username;
-		
+
 	}
 
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public void update() {
 
 		if (keys != null) {
@@ -103,14 +101,18 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 				int xa = 0;
 				int ya = 0;
 
-				if (keys.up == true) ya -= 1;
-				if (keys.down == true) ya += 1;
-				if (keys.left == true) xa -= 1;
-				if (keys.right == true) xa += 1;
+				if (keys.up == true)
+					ya -= 1;
+				if (keys.down == true)
+					ya += 1;
+				if (keys.left == true)
+					xa -= 1;
+				if (keys.right == true)
+					xa += 1;
 
 				for (int i = 0; i < speed; i++)
 					move(xa, ya);
-				
+
 				Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
 				movePacket.sendData(game.socketClient);
 			}
@@ -125,29 +127,31 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 				Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(this.username, this.mouseX, this.mouseY);
 				mouseMovePacket.sendData(game.socketClient);
 			}
-			if(mouse.mousePressed)
-				if(playerWeapIndex >= 0)
-					getWeapons().get(playerWeapIndex).shoot();
+			if (mouse.mousePressed)
+				if (playerWeapIndex >= 0)
+					getWeapons()[playerWeapIndex].shoot();
 		}
-		
-		for(SuperWeapon weap: getWeapons())
-			weap.update();
+
+		for (SuperWeapon weap : getWeapons())
+			if (weap != null)
+				weap.update();
+
 	}
 
 	public void playerMouseScroll(int direction) {
-		if(direction < 0 && playerWeapIndex >= 0) 
+		if (direction < 0 && playerWeapIndex > 0)
 			playerWeapIndex--;
-		else if (direction > 0 && playerWeapIndex < playerWeap.size() - 1)
+		else if (direction > 0 && playerWeapIndex < playerWeap.length - 1)
 			playerWeapIndex++;
 	}
-	
+
 	private void move(int xa, int ya) {
 		if (xa != 0 && ya != 0) {
 			move(xa, 0);
 			move(0, ya);
 			return;
 		}
-		if (!hasCollided(xa, ya)) {			
+		if (!hasCollided(xa, ya)) {
 			worldX += xa;
 			worldY += ya;
 		}
@@ -161,9 +165,9 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 
 		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
-		
+
 		if (game.structM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
-			return true;		
+			return true;
 
 		return false;
 	}
@@ -178,26 +182,27 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 		double dy = y - screenY;
 		this.imageAngleRad = Math.atan2(dy, dx);
 	}
-	
-	public synchronized List<SuperWeapon> getWeapons() {
+
+	public synchronized SuperWeapon[] getWeapons() {
 		return playerWeap;
 	}
 
 	public void render(Graphics2D g2) {
-		
-		BufferedImage holding;		
-		int handOffset;		
 
-		if(playerWeapIndex < 0) {
+		BufferedImage holding;
+		int handOffset;
+
+		SuperWeapon sp = getWeapons()[playerWeapIndex];
+		if (sp != null) {
+			holding = sp.sprite; // This will be replaced by the img of the weapon the player is holding
+			handOffset = sp.imgOffset;
+		} else {
 			holding = playerHand;
 			handOffset = -4;
-		} else {
-			holding = getWeapons().get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
-			handOffset = getWeapons().get(playerWeapIndex).imgOffset;
-		}		
-		
+		}
+
 		int x, y;
-		int handX, handY;		
+		int handX, handY;
 
 		if (!isLocal) {
 			x = worldX - game.player.worldX + game.player.screenX;
@@ -220,16 +225,17 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
 
 	}
-	
+
 	public void renderBullets(Graphics2D g2) {
-		for(SuperWeapon weap: getWeapons())
-			weap.render(g2);
+		for (SuperWeapon weap : getWeapons())
+			if (weap != null)
+				weap.render(g2);
 	}
-	
+
 	@Override
-	public Object clone() throws CloneNotSupportedException{
+	public Object clone() throws CloneNotSupportedException {
 		Player cloned = (Player) super.clone();
-		cloned.playerWeap = new ArrayList<SuperWeapon>();
+		cloned.playerWeap = new SuperWeapon[4];
 		return cloned;
 	}
 

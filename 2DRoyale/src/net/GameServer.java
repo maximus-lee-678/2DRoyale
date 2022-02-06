@@ -19,7 +19,6 @@ public class GameServer extends Thread {
 	private Game game;
 	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
-	private int cycles = 0;
 
 	public GameServer(Game game, long seed) {
 		this.game = game;
@@ -46,10 +45,7 @@ public class GameServer extends Thread {
 	}
 
 	private void readPacket(byte[] data, InetAddress address, int port) {
-		String message = new String(data).trim();
-		int type = lookupPacket(message.substring(0, 2));
-		String msgData = message.substring(2);
-		String[] dataArr;
+		int type = lookupPacket(data);
 
 		switch (type) {
 		case 1:
@@ -101,7 +97,6 @@ public class GameServer extends Thread {
 
 	private void handlePickUpWeapon(Pkt10PickupWeapon pickUpPacket) {
 		connectedPlayers.get(playerIndex(pickUpPacket.getUsername())).addWeapon();
-
 		pickUpPacket.sendData(this);
 	}
 
@@ -110,18 +105,17 @@ public class GameServer extends Thread {
 			return;
 		for (PlayerMP p : connectedPlayers) {
 			for (SuperWeapon weap : p.getWeapons()) {
-				weap.checkPlayerHit(connectedPlayers);
-				weap.update();				
+				if (weap != null) {
+					weap.checkPlayerHit(connectedPlayers);
+					weap.update();
+				}
 			}
 		}
-			
 	}
 
 	private void handleShoot(Pkt06Shoot shootPacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
-		p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
-
-		System.out.println(p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).bullets.size());
+		p.getWeapons()[weapIndex(p, shootPacket.getWeapon())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
 
 		shootPacket.sendData(this);
 	}
@@ -143,7 +137,6 @@ public class GameServer extends Thread {
 	private void handleMove(Pkt03Move movePacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(movePacket.getUsername()));
 		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
-		System.out.println(movePacket.getWorldX() + " | " + movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
 
@@ -202,9 +195,9 @@ public class GameServer extends Thread {
 		return index;
 	}
 
-	private int lookupPacket(String message) { // match player username to get index
+	private int lookupPacket(byte[] data) { // match player username to get index
+		String message = new String(data).trim().substring(0, 2);
 		int packetType;
-
 		try {
 			packetType = Integer.parseInt(message);
 		} catch (NumberFormatException e) {
@@ -228,6 +221,5 @@ public class GameServer extends Thread {
 			sendData(data, p.ipAddress, p.port);
 		}
 	}
-
 
 }

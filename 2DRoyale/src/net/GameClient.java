@@ -45,10 +45,7 @@ public class GameClient extends Thread {
 	}
 
 	private void readPacket(byte[] data, InetAddress address, int port) {
-		String message = new String(data).trim(); // first 2 values of the String is the packet type/id
-		int type = lookupPacket(message.substring(0, 2)); // check if that packet type/id exist
-		String msgData = message.substring(2); // snip away first two values (aka the id)
-		String[] dataArr;
+		int type = lookupPacket(data); // check if that packet type/id exist
 
 		switch (type) {
 		case 1:
@@ -83,7 +80,7 @@ public class GameClient extends Thread {
 			// SHOOTING
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
 			PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
-			p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			p.getWeapons()[weapIndex(p, shootPacket.getWeapon())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
 			break;
 		case 7:
 			// SERVER SEED
@@ -97,7 +94,7 @@ public class GameClient extends Thread {
 			// SERVER BULLET HIT
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
-			p2.getWeapons().get(weapIndex(p2, serverHitPacket.getWeapon())).serverHit(serverHitPacket.getBullet());
+			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].serverHit(serverHitPacket.getBullet());
 			break;
 		case 10:
 			// PICK UP WEAPON
@@ -136,9 +133,9 @@ public class GameClient extends Thread {
 		return index;
 	}
 
-	private int lookupPacket(String message) { // check if packet exist
+	private int lookupPacket(byte[] data) { // match player username to get index
+		String message = new String(data).trim().substring(0, 2);
 		int packetType;
-
 		try {
 			packetType = Integer.parseInt(message);
 		} catch (NumberFormatException e) {
@@ -149,8 +146,7 @@ public class GameClient extends Thread {
 	}
 
 	public void sendData(byte[] data) { // send data from client to server
-		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 2207); // 2207 is a random port number
-																						// i thought of
+		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 2207);
 		try {
 			socket.send(packet);
 		} catch (IOException e) {

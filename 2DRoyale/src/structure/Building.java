@@ -45,6 +45,7 @@ public class Building {
 			br.close();
 
 		} catch (Exception e) {
+			System.out.println(filePath);
 			e.printStackTrace();
 		}
 

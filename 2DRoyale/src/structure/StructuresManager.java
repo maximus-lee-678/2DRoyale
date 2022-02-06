@@ -37,15 +37,15 @@ public class StructuresManager {
 		int placedBuildings = 0;
 		int failedAttempts = 0; // debug variable
 
+		mainLoop:
 		while (placedBuildings < numberOfBuildings) {
-			boolean failed = false;
 			Building tryBuilding = new Building("/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
 
 			int randomX = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (buildingOffset * 2)));
 			int randomY = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (buildingOffset * 2)));
 			Rectangle separationHitbox = new Rectangle(randomX - buildingOffset, randomY - buildingOffset, tryBuilding.boundingBox.width + buildingOffset * 2, tryBuilding.boundingBox.height + buildingOffset * 2);
 
-			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
+			int topLeftTileX = separationHitbox.x / game.tileSize;
 			int topLeftTileY = separationHitbox.y / game.tileSize;
 
 			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
@@ -54,34 +54,26 @@ public class StructuresManager {
 			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent buildings from spawning on obstructions
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
 					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
-						failed = true;
 						failedAttempts++;
-						break;
+						continue mainLoop;
 					}
 				}
-				if (failed == true)
-					break;
 			}
-
-			if (failed == true)
-				continue;
 
 			for (int i = 1; i <= placedBuildings; i++) { // prevent buildings from spawning on top of each other
 				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width && separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x && separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height && separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
-					failed = true;
 					failedAttempts++;
-					break;
+					continue mainLoop;
 				}
 			}
-
-			if (failed == true)
-				continue;
 
 			tryBuilding.boundingBox.x = randomX;
 			tryBuilding.boundingBox.y = randomY;
 
 			building[placedBuildings] = tryBuilding;
 			placedBuildings++;
+			
+			System.out.println("Generated " + placedBuildings + "/" + numberOfBuildings + " buildings...");
 		}
 
 		System.out.println("Building collisions: " + failedAttempts);
