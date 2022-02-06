@@ -174,18 +174,18 @@ public class KeyHandler implements KeyListener {
 				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
 				pickupWeapon.sendData(gp.socketClient);
 			}
-//			if(code == KeyEvent.VK_1) {
-//				gp.ui.slotRow = 0;
-//			}
-//			if(code == KeyEvent.VK_2) {
-//				gp.ui.slotRow = 1;
-//			}
-//			if(code == KeyEvent.VK_3) {
-//				gp.ui.slotRow = 2;
-//			}
-//			if(code == KeyEvent.VK_4) {
-//				gp.ui.slotRow = 3;
-//			}
+			if(code == KeyEvent.VK_1) {
+				gp.player.playerWeapIndex = 0;
+			}
+			if(code == KeyEvent.VK_2) {
+				gp.player.playerWeapIndex = 1;
+			}
+			if(code == KeyEvent.VK_3) {
+				gp.player.playerWeapIndex = 2;
+			}
+			if(code == KeyEvent.VK_4) {
+				gp.player.playerWeapIndex = 3;
+			}
 				
 		}
 		
