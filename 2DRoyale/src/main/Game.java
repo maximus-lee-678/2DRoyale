@@ -21,6 +21,7 @@ import entity.PlayerMP;
 import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
+import object.SuperObject;
 import structure.StructuresManager;
 import tile.TileManager;
 
@@ -39,6 +40,10 @@ public class Game extends JPanel implements Runnable {
 	private int FPS = 60;
 	public boolean running = false;
 	private BufferedImage cursor;
+	
+	//Objects
+	public AssetSetter aSetter = new AssetSetter(this);
+	public SuperObject obj[] = new SuperObject[10];
 
 	// World
 	public final Random rand = new Random(System.currentTimeMillis());
@@ -171,13 +176,33 @@ public class Game extends JPanel implements Runnable {
 		super.paintComponent(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+		
+		//Screen
 		screen.render(g2);
+		
+		//Object
+		if (gameState == playState) {
+			setupGame();
+			for(int i = 0; i < obj.length; i++) {
+				if(obj[i] != null) {
+					obj[i].draw(g2,  this);
+				}
+			}
+		}
+		
+		
 		g2.dispose();
 
 	}
+	
+	public void setupGame() {
+		aSetter.setObject();
+	}
 
 	public static void main(String[] args) {
+		
 		new Game().startGameThread();
+		
 	}
 
 }

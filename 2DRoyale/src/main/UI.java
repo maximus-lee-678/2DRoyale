@@ -5,8 +5,11 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+
+import object.OBJ_Health;
 
 
 
@@ -25,6 +28,7 @@ public class UI{
 	public String name = "";
 	public String temp = "";
 	public String ipAddress = "";
+	public BufferedImage healthImage;
 	
 	public UI(Game gp) {
 		this.gp = gp;
@@ -37,6 +41,11 @@ public class UI{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		OBJ_Health health = new OBJ_Health();
+		healthImage = health.image;
+		
+		
 	}
 
 	public void draw(Graphics2D g2) {
