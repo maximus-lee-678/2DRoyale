@@ -183,6 +183,7 @@ public class Game extends JPanel implements Runnable {
 		//Object
 		if (gameState == playState) {
 			setupGame();
+			ui.draw(g2);
 			for(int i = 0; i < obj.length; i++) {
 				if(obj[i] != null) {
 					obj[i].draw(g2,  this);
@@ -197,6 +198,7 @@ public class Game extends JPanel implements Runnable {
 	
 	public void setupGame() {
 		aSetter.setObject();
+		
 	}
 
 	public static void main(String[] args) {

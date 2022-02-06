@@ -14,7 +14,9 @@ public class SuperObject {
 	public int worldX, worldY;
 	
 	public void draw(Graphics2D g2, Game gp) {
+		//display health logo
 		g2.drawImage(image, worldX, worldY, 25, 25, null);
+		//display health bar
 		Color c = new Color(255,50,50);
 		g2.setColor(c);
 		g2.fillRect(worldX*2, worldY, quantity*2, worldY/2);

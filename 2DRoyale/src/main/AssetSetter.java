@@ -15,6 +15,7 @@ public class AssetSetter {
 		gp.obj[0] = new OBJ_Health();
 		gp.obj[0].worldX = gp.tileSize;
 		gp.obj[0].worldY = gp.tileSize;
+		//change player health here
 		gp.obj[0].quantity = 100;
 		
 	}

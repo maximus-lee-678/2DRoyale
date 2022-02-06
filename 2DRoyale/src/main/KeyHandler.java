@@ -152,6 +152,20 @@ public class KeyHandler implements KeyListener {
 			}
 			
 		}
+		if (gp.gameState == gp.playState) {
+			if(code == KeyEvent.VK_1) {
+				gp.ui.slotRow = 0;
+			}
+			if(code == KeyEvent.VK_2) {
+				gp.ui.slotRow = 1;
+			}
+			if(code == KeyEvent.VK_3) {
+				gp.ui.slotRow = 2;
+			}
+			if(code == KeyEvent.VK_4) {
+				gp.ui.slotRow = 3;
+			}
+		}
 		//true if user presses button
 		if(code == KeyEvent.VK_W) up = true;
 		if(code == KeyEvent.VK_A) left = true;

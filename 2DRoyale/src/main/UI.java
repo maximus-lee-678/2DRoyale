@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -29,6 +30,8 @@ public class UI{
 	public String temp = "";
 	public String ipAddress = "";
 	public BufferedImage healthImage;
+	public int slotCol = 0;
+	public int slotRow = 0;
 	
 	public UI(Game gp) {
 		this.gp = gp;
@@ -46,6 +49,8 @@ public class UI{
 		healthImage = health.image;
 		
 		
+		
+		
 	}
 
 	public void draw(Graphics2D g2) {
@@ -59,6 +64,11 @@ public class UI{
 		if(gp.gameState == gp.titleState) {
 			drawTitleScreen();
 		}
+		//playstate
+		if(gp.gameState == gp.playState) {
+			drawInventory();
+		}
+		
 	}
 	public void drawTitleScreen() {
 		
@@ -256,5 +266,44 @@ public class UI{
 		int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
 		int x = gp.screen.screenWidth/2 - length/2;
 		return x;
+	}
+	
+	public void drawInventory() {
+		
+		//frame
+		int frameX = gp.tileSize;
+		int frameY = gp.tileSize*5;
+		int frameWidth = gp.tileSize*2;
+		int frameHeight = gp.tileSize*5;
+		drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+		
+		//slot
+		final int slotXstart = frameX + 24;
+		final int slotYstart = frameY + 20;
+		int slotX = slotXstart;
+		int slotY = slotYstart;
+		
+		//cursor
+		int cursorX = slotXstart + (gp.tileSize * slotCol);
+		int cursorY = slotYstart + (gp.tileSize * slotRow);
+		int cursorWidth = gp.tileSize;
+		int cursorHeight = gp.tileSize;
+		
+		//draw cursor
+		g2.setColor(Color.white);
+		g2.setStroke(new BasicStroke(3));
+		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+		
+		
+	}
+	public void drawSubWindow(int x, int y, int width, int height) {
+		Color c = new Color(0,0,0,100);
+		g2.setColor(c);
+		g2.fillRoundRect(x, y, width, height, 35, 35);
+		
+		c = new Color(255,255,255);
+		g2.setColor(c);
+		g2.setStroke(new BasicStroke(5));
+		g2.drawRoundRect(x+5, y+5, width-10, height-10, 25, 25);
 	}
 }
