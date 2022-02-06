@@ -54,6 +54,7 @@ public class Game extends JPanel implements Runnable {
 	public final int worldWidth = tileSize * maxWorldCol;
 	public final int worldHeight = tileSize * maxWorldRow;
 	public final int numberOfBuildings = 10;
+	public final int numberOfCrates = 10;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;

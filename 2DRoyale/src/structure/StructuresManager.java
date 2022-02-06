@@ -2,10 +2,9 @@ package structure;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -15,76 +14,39 @@ import tile.Tile;
 public class StructuresManager {
 
 	private Game game;
+
+	// Building Variables
 	public int buildingTileSize = 16;
 	public int buildingBlueprintCount = 7;
-	public int buildingOffset = 48;
+
+	// Crate Variables
+	public int crateTileSize = 32;
+	public int interactRadius = 16;
+	public List<Integer> crateTileNum;
+
+	// Universal Variables
+	public int offset = 48;
 
 	public Tile[] tile;
+	public Tile[] obstruction;
 	public Building[] building;
+	public Crate[] crate;
 
 	public StructuresManager(Game game) {
 
 		this.game = game;
 		tile = new Tile[10];
+		obstruction = new Tile[10];
 		building = new Building[game.numberOfBuildings];
+		crate = new Crate[game.numberOfCrates];
+		crateTileNum = new ArrayList<Integer>();
 
 		getTileImage(); // populate tile array
+		getObstructionImage();
+		
+		//generate buildings, then crates, then environmental obstructions(wip)
 		loadBuildings(game.numberOfBuildings);
-
-	}
-
-	public void loadBuildings(int numberOfBuildings) {
-		int placedBuildings = 0;
-		int failedAttempts = 0; // debug variable
-
-		while (placedBuildings < numberOfBuildings) {
-			boolean failed = false;
-			Building tryBuilding = new Building("/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
-
-			int randomX = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (buildingOffset * 2)));
-			int randomY = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (buildingOffset * 2)));
-			Rectangle separationHitbox = new Rectangle(randomX - buildingOffset, randomY - buildingOffset, tryBuilding.boundingBox.width + buildingOffset * 2, tryBuilding.boundingBox.height + buildingOffset * 2);
-
-			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
-			int topLeftTileY = separationHitbox.y / game.tileSize;
-
-			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
-			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
-
-			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent buildings from spawning on obstructions
-				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
-						failed = true;
-						failedAttempts++;
-						break;
-					}
-				}
-				if (failed == true)
-					break;
-			}
-
-			if (failed == true)
-				continue;
-
-			for (int i = 1; i <= placedBuildings; i++) { // prevent buildings from spawning on top of each other
-				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width && separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x && separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height && separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
-					failed = true;
-					failedAttempts++;
-					break;
-				}
-			}
-
-			if (failed == true)
-				continue;
-
-			tryBuilding.boundingBox.x = randomX;
-			tryBuilding.boundingBox.y = randomY;
-
-			building[placedBuildings] = tryBuilding;
-			placedBuildings++;
-		}
-
-		System.out.println("Building collisions: " + failedAttempts);
+		loadCrates(game.numberOfCrates);
 	}
 
 	private void getTileImage() {
@@ -141,11 +103,144 @@ public class StructuresManager {
 
 	}
 
-	public void render(Graphics2D g2) {
+	private void getObstructionImage() {
+		try {
 
+			obstruction[0] = new Tile();
+			obstruction[0].image = ImageIO.read(getClass().getResourceAsStream("/crate/crate.png"));
+			obstruction[0].collisionPlayer = true;
+			obstruction[0].collisionProjectile = true;
+			crateTileNum.add(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
+	public void loadBuildings(int numberOfBuildings) {
+		int placedBuildings = 0;
+		int failedBuildingAttempts = 0; // debug variable
+
+		while (placedBuildings < numberOfBuildings) {
+			boolean failed = false;
+			Building tryBuilding = new Building(
+					"/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
+
+			int randomX = offset + game.rand
+					.nextInt((game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (offset * 2)));
+			int randomY = offset + game.rand
+					.nextInt((game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (offset * 2)));
+			Rectangle separationHitbox = new Rectangle(randomX - offset, randomY - offset,
+					tryBuilding.boundingBox.width + offset * 2, tryBuilding.boundingBox.height + offset * 2);
+
+			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
+			int topLeftTileY = separationHitbox.y / game.tileSize;
+
+			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
+			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+
+			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent buildings from spawning on obstructions
+				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
+					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
+						failed = true;
+						failedBuildingAttempts++;
+						break;
+					}
+				}
+				if (failed == true)
+					break;
+			}
+
+			if (failed == true)
+				continue;
+
+			for (int i = 1; i <= placedBuildings; i++) { // prevent buildings from spawning on top of each other
+				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x
+						&& separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
+					failed = true;
+					failedBuildingAttempts++;
+					break;
+				}
+			}
+
+			if (failed == true)
+				continue;
+
+			tryBuilding.boundingBox.x = randomX;
+			tryBuilding.boundingBox.y = randomY;
+
+			building[placedBuildings] = tryBuilding;
+			placedBuildings++;
+		}
+
+		System.out.println("Building collisions: " + failedBuildingAttempts);
+	}
+
+	public void loadCrates(int numberOfCrates) {
+
+		int placedCrates = 0;
+		int failedCrateAttempts = 0; // debug variable
+
+		while (placedCrates < numberOfCrates) {
+			boolean failed = false;
+			Crate tryCrate = new Crate(crateTileSize, interactRadius, crateTileNum.get(0));
+
+			int randomX = offset + game.rand.nextInt((game.tileSize * game.maxWorldCol - crateTileSize - (offset * 2)));
+			int randomY = offset + game.rand.nextInt((game.tileSize * game.maxWorldRow - crateTileSize - (offset * 2)));
+			Rectangle separationHitbox = new Rectangle(randomX - offset, randomY - offset, crateTileSize + offset * 2,
+					crateTileSize + offset * 2);
+
+			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
+			int topLeftTileY = separationHitbox.y / game.tileSize;
+
+			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
+			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+
+			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent crates from spawning on obstructions
+				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
+					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
+						failed = true;
+						failedCrateAttempts++;
+						break;
+					}
+				}
+				if (failed == true)
+					break;
+			}
+
+			if (failed == true)
+				continue;
+
+			for (int i = 0; i < building.length; i++) { // prevent crates from spawning on top of buildings
+				if (separationHitbox.x < building[i].boundingBox.x + building[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > building[i].boundingBox.x
+						&& separationHitbox.y < building[i].boundingBox.y + building[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > building[i].boundingBox.y) {
+					failed = true;
+					failedCrateAttempts++;
+					break;
+				}
+			}
+
+			if (failed == true)
+				continue;
+
+			tryCrate.collisionBoundingBox.x = randomX;
+			tryCrate.collisionBoundingBox.y = randomY;
+			tryCrate.interactBoundingBox.x = randomX - interactRadius;
+			tryCrate.interactBoundingBox.y = randomY - interactRadius;
+
+			crate[placedCrates] = tryCrate;
+			placedCrates++;
+		}
+
+		System.out.println("Crate collisions: " + failedCrateAttempts);
+	}
+
+	public boolean hasCollidedBuilding(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
+			int entityBottomWorldY, String type) {
 
 		int buildingIndex;
 		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
@@ -154,7 +249,8 @@ public class StructuresManager {
 			int structWidth = building[buildingIndex].boundingBox.width;
 			int structHeight = building[buildingIndex].boundingBox.height;
 
-			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX
+					&& entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
 				int checkLimitX = building[buildingIndex].boundingBox.width / buildingTileSize - 1;
 				int checkLimitY = building[buildingIndex].boundingBox.height / buildingTileSize - 1;
 

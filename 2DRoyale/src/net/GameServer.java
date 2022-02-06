@@ -143,7 +143,7 @@ public class GameServer extends Thread {
 	private void handleMove(Pkt03Move movePacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(movePacket.getUsername()));
 		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
-		System.out.println(movePacket.getWorldX() + " | " + movePacket.getWorldY());
+//		System.out.println(movePacket.getWorldX() + " | " + movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
 

@@ -162,7 +162,7 @@ public class Player extends Entity implements Cloneable{ // inherits Entity clas
 		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 		
-		if (game.structM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
+		if (game.structM.hasCollidedBuilding(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;		
 
 		return false;
