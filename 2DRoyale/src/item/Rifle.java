@@ -5,19 +5,20 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import entity.Player;
 import main.Game;
 import net.Pkt06Shoot;
 
 public class Rifle extends SuperWeapon{
 
-	public Rifle(Game game) {
-		super(game);
+	public Rifle(Player player, Game game) {
+		super(player, game);
 
 		this.name = "Rifle";
 		this.imgOffset = -3;
 		this.speed = 2;
 		this.range = 20 * game.tileSize;
-		this.bulletSpread = 5; // in degrees
+		this.bulletSpread = 0; // in degrees
 		this.bulletSize = 12;
 		this.fireRate = 10;
 

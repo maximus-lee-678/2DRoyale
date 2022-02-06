@@ -6,8 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import entity.PlayerMP;
+import item.Rifle;
+import item.SMG;
+import item.Shotgun;
 import item.SuperWeapon;
 import main.Game;
 
@@ -79,10 +83,30 @@ public class GameClient extends Thread {
 			// SHOOTING
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
 			PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
-			p.playerWeap.get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			break;
+		case 7:
+			// SERVER SEED
+			Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(data);
+			game.randSeed = seedPacket.getServerSeed();
+			game.rand = new Random(game.randSeed);	
+			game.loadDefaults();
+			game.gameState = game.playState;
+			break;
+		case 9:
+			// SERVER BULLET HIT
+			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
+			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
+			p2.getWeapons().get(weapIndex(p2, serverHitPacket.getWeapon())).serverHit(serverHitPacket.getBullet());
+			break;
+		case 10:
+			// PICK UP WEAPON
+			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
+			game.getPlayers().get(playerIndex(pickUpPacket.getUsername())).addWeapon();
 			break;
 		default:
 		case 0:
+		case 8:
 			break;
 		}
 
@@ -91,7 +115,7 @@ public class GameClient extends Thread {
 	private int weapIndex(PlayerMP player, String name) {
 		int index = 0;
 
-		for (SuperWeapon w : player.playerWeap) {
+		for (SuperWeapon w : player.getWeapons()) {
 			if (w.name.equals(name)) {
 				break;
 			}

@@ -1,12 +1,14 @@
 package entity;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
+import item.SuperWeapon;
+import main.Game;
 import main.KeyHandler;
 import main.MouseHandler;
-import main.Game;
 
-public class PlayerMP extends Player{		//inherits Player class
+public class PlayerMP extends Player implements Cloneable {		//inherits Player class
 	
 	public InetAddress ipAddress;
 	public int port;
@@ -28,15 +30,17 @@ public class PlayerMP extends Player{		//inherits Player class
 		this.worldX = worldX;
 		this.worldY = worldY;
 		this.playerWeapIndex = playerWeapIndex;
-	}
-	
-	public String getUsername() {
-		return username;
-	}
+	}	
 	
 	@Override
 	public void update() {
 		super.update();
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException{
+		PlayerMP cloned = (PlayerMP) super.clone();
+		return cloned;
 	}
 
 }

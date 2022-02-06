@@ -2,6 +2,7 @@ package item;
 
 public class Projectile {
 
+	public int id;
 	public double worldX;
 	public double worldY;
 	private double travelDistance;
@@ -10,7 +11,8 @@ public class Projectile {
 	private double xVel;
 	private double yVel;
 	
-	public Projectile(SuperWeapon weap, double angle, int worldX, int worldY) {
+	public Projectile(int id, SuperWeapon weap, double angle, int worldX, int worldY) {
+		this.id = id;
 		this.weap = weap;
 		this.xVel = weap.speed * Math.sin(angle);
 		this.yVel = weap.speed * Math.cos(angle);

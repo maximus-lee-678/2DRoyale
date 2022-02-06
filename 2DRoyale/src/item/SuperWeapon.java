@@ -6,11 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Entity;
+import entity.Player;
+import entity.PlayerMP;
 import main.Game;
+import net.Pkt09ServerBulletHit;
 
 public class SuperWeapon extends Entity implements shootInterface{
 
 	public Game game;
+	public Player player;
 
 	public String name;
 	public double damage;
@@ -19,6 +23,7 @@ public class SuperWeapon extends Entity implements shootInterface{
 	public int fireRate;
 	public int bulletSpread;
 	public int bulletSize;
+	public int bulletIdCount;
 
 	public int fireRateTick;
 	public int imgOffset;
@@ -26,9 +31,11 @@ public class SuperWeapon extends Entity implements shootInterface{
 	public List<Projectile> bullets = new ArrayList<Projectile>();
 	public BufferedImage bulletImg;
 
-	public SuperWeapon(Game game) {
+	public SuperWeapon(Player player, Game game) {
+		this.player = player;
 		this.game = game;
 		this.fireRateTick = 0;
+		this.bulletIdCount = 0;
 	}
 	
 	public synchronized List<Projectile> getBullets() {
@@ -45,19 +52,47 @@ public class SuperWeapon extends Entity implements shootInterface{
 	}
 
 	public void update() {
-		for (int i = 0; i < getBullets().size(); i++) {
+		
+		for (int i = 0; i < getBullets().size(); i++) {			
 			Projectile p = getBullets().get(i);
 			if(p.hasCollided() || p.checkTime())
-				getBullets().remove(i);
+				getBullets().remove(i--);
 			else
 				p.update();
 		}
 	}
 	
 	public void updateMPProjectiles(double projAngle, int worldX, int worldY) {
-		Projectile bullet = new Projectile(this, projAngle, worldX, worldY);
+		Projectile bullet = new Projectile(bulletIdCount++,this, projAngle, worldX, worldY);
 		getBullets().add(bullet);
+	}
+	
+	public void serverHit(int bulletId) {
+		for (int i = 0; i < getBullets().size(); i++) {
+			Projectile p = getBullets().get(i);
+			if(bulletId == p.id)
+				getBullets().remove(i--);
+		}
+	}
+	
+	public void checkPlayerHit(List<PlayerMP> connectedPlayers) {
+		for(PlayerMP p : connectedPlayers) {
+			if(player.getUsername() == p.getUsername()) continue;			
+			for (int i = 0; i < getBullets().size(); i++) {				
+				Projectile proj = getBullets().get(i);
+					
+				if (p.worldX < proj.worldX + bulletSize && p.worldX + game.playerSize > proj.worldX && p.worldY < proj.worldY + bulletSize && p.worldY + game.playerSize > proj.worldY) {
+					System.out.println(player.getUsername() + " hit " + p.getUsername());
+
+					getBullets().remove(i--);
+					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.name, proj.id);
+					serverHitPacket.sendData(game.socketServer);
+				}
+			}
+		}
+		
 	}
 
 	public void shoot() {};
+	
 }

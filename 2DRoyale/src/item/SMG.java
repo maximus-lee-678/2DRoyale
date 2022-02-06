@@ -5,12 +5,13 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import entity.Player;
 import main.Game;
 import net.Pkt06Shoot;
 
 public class SMG extends SuperWeapon  {
-	public SMG(Game game) {
-		super(game);
+	public SMG(Player player, Game game) {
+		super(player, game);
 
 		this.name = "SMG";
 		this.imgOffset = -5;

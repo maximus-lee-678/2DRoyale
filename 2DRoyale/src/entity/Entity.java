@@ -2,8 +2,11 @@ package entity;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
-public class Entity {
+import item.SuperWeapon;
+
+public class Entity{
 
 	public int worldX, worldY;
 	public int speed;
@@ -11,5 +14,6 @@ public class Entity {
 	public BufferedImage sprite;
 	
 	public Rectangle solidArea;
+	
 }
 

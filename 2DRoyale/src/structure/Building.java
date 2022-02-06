@@ -35,12 +35,12 @@ public class Building {
 				buildingTileNum.add(lineNums);
 				row++;
 			}
-			for (int x = 0; x < row; x++) {
-				for (int y = 0; y < col; y++) {
+//			for (int x = 0; x < row; x++) {
+//				for (int y = 0; y < col; y++) {
 //					System.out.print(buildingTileNum.get(x)[y]);
-				}
+//				}
 //				System.out.println();
-			}
+//			}
 
 			br.close();
 

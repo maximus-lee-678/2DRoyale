@@ -39,16 +39,11 @@ public class StructuresManager {
 
 		while (placedBuildings < numberOfBuildings) {
 			boolean failed = false;
-			Building tryBuilding = new Building(
-					"/blueprint/building" + (int) (Math.random() * buildingBlueprintCount) + ".txt", buildingTileSize);
+			Building tryBuilding = new Building("/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
 
-			int randomX = buildingOffset + (int) (Math.random()
-					* (game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (buildingOffset * 2)));
-			int randomY = buildingOffset + (int) (Math.random()
-					* (game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (buildingOffset * 2)));
-			Rectangle separationHitbox = new Rectangle(randomX - buildingOffset, randomY - buildingOffset,
-					tryBuilding.boundingBox.width + buildingOffset * 2,
-					tryBuilding.boundingBox.height + buildingOffset * 2);
+			int randomX = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldCol - tryBuilding.boundingBox.width - (buildingOffset * 2)));
+			int randomY = buildingOffset + game.rand.nextInt((game.tileSize * game.maxWorldRow - tryBuilding.boundingBox.height - (buildingOffset * 2)));
+			Rectangle separationHitbox = new Rectangle(randomX - buildingOffset, randomY - buildingOffset, tryBuilding.boundingBox.width + buildingOffset * 2, tryBuilding.boundingBox.height + buildingOffset * 2);
 
 			int topLeftTileX = separationHitbox.x / game.tileSize; // int will floor the value
 			int topLeftTileY = separationHitbox.y / game.tileSize;
@@ -72,10 +67,7 @@ public class StructuresManager {
 				continue;
 
 			for (int i = 1; i <= placedBuildings; i++) { // prevent buildings from spawning on top of each other
-				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x
-						&& separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
+				if (separationHitbox.x < building[i - 1].boundingBox.x + building[i - 1].boundingBox.width && separationHitbox.x + separationHitbox.width > building[i - 1].boundingBox.x && separationHitbox.y < building[i - 1].boundingBox.y + building[i - 1].boundingBox.height && separationHitbox.y + separationHitbox.height > building[i - 1].boundingBox.y) {
 					failed = true;
 					failedAttempts++;
 					break;
@@ -153,8 +145,7 @@ public class StructuresManager {
 
 	}
 
-	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
-			int entityBottomWorldY, String type) {
+	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
 
 		int buildingIndex;
 		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
@@ -163,8 +154,7 @@ public class StructuresManager {
 			int structWidth = building[buildingIndex].boundingBox.width;
 			int structHeight = building[buildingIndex].boundingBox.height;
 
-			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX
-					&& entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
 				int checkLimitX = building[buildingIndex].boundingBox.width / buildingTileSize - 1;
 				int checkLimitY = building[buildingIndex].boundingBox.height / buildingTileSize - 1;
 

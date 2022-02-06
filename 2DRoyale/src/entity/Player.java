@@ -20,7 +20,7 @@ import main.MouseHandler;
 import net.Pkt03Move;
 import net.Pkt04MouseMove;
 
-public class Player extends Entity { // inherits Entity class
+public class Player extends Entity implements Cloneable{ // inherits Entity class
 
 	private Game game;
 	private KeyHandler keys;
@@ -37,8 +37,9 @@ public class Player extends Entity { // inherits Entity class
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
 	
-	public List<SuperWeapon> playerWeap;
+	public ArrayList<SuperWeapon> playerWeap;
 	public int playerWeapIndex = -1;
+	public int health;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
@@ -53,9 +54,10 @@ public class Player extends Entity { // inherits Entity class
 		this.solidArea = new Rectangle(6, 6, 12, 12);
 		
 		this.playerWeap = new ArrayList<SuperWeapon>();
-		playerWeap.add(new Rifle(game));
-		playerWeap.add(new SMG(game));
-		playerWeap.add(new Shotgun(game));
+
+		
+		this.health = 100;
+		this.speed = 4;
 
 		setDefaultValues();
 		getPlayerImage();
@@ -65,7 +67,7 @@ public class Player extends Entity { // inherits Entity class
 		worldX = game.tileSize * 23 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
 		worldY = game.tileSize * 21 + ((int) (Math.random() * (25 + 25 + 1)) - 25) * 4;
 
-		speed = 4;
+		
 		mouseX = 0;
 		mouseY = 0;
 	}
@@ -79,10 +81,21 @@ public class Player extends Entity { // inherits Entity class
 		}
 	}
 
+	public void addWeapon() {
+		playerWeap.add(new Rifle(this, game));
+		playerWeap.add(new SMG(this, game));
+		playerWeap.add(new Shotgun(this, game));
+	}
+	
 	public void setUsername(String username) {
 		this.username = username;
+		
 	}
 
+	public String getUsername() {
+		return username;
+	}
+	
 	public void update() {
 
 		if (keys != null) {
@@ -114,10 +127,10 @@ public class Player extends Entity { // inherits Entity class
 			}
 			if(mouse.mousePressed)
 				if(playerWeapIndex >= 0)
-					playerWeap.get(playerWeapIndex).shoot();
+					getWeapons().get(playerWeapIndex).shoot();
 		}
 		
-		for(SuperWeapon weap: playerWeap)
+		for(SuperWeapon weap: getWeapons())
 			weap.update();
 	}
 
@@ -134,7 +147,7 @@ public class Player extends Entity { // inherits Entity class
 			move(0, ya);
 			return;
 		}
-		if (!hasCollided(xa, ya)) {
+		if (!hasCollided(xa, ya)) {			
 			worldX += xa;
 			worldY += ya;
 		}
@@ -166,6 +179,9 @@ public class Player extends Entity { // inherits Entity class
 		this.imageAngleRad = Math.atan2(dy, dx);
 	}
 	
+	public synchronized List<SuperWeapon> getWeapons() {
+		return playerWeap;
+	}
 
 	public void render(Graphics2D g2) {
 		
@@ -176,8 +192,8 @@ public class Player extends Entity { // inherits Entity class
 			holding = playerHand;
 			handOffset = -4;
 		} else {
-			holding = playerWeap.get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
-			handOffset = playerWeap.get(playerWeapIndex).imgOffset;
+			holding = getWeapons().get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
+			handOffset = getWeapons().get(playerWeapIndex).imgOffset;
 		}		
 		
 		int x, y;
@@ -206,8 +222,15 @@ public class Player extends Entity { // inherits Entity class
 	}
 	
 	public void renderBullets(Graphics2D g2) {
-		for(SuperWeapon weap: playerWeap)
+		for(SuperWeapon weap: getWeapons())
 			weap.render(g2);
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException{
+		Player cloned = (Player) super.clone();
+		cloned.playerWeap = new ArrayList<SuperWeapon>();
+		return cloned;
 	}
 
 }

@@ -9,16 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.PlayerMP;
+import item.Projectile;
+import item.SuperWeapon;
 import main.Game;
 
 public class GameServer extends Thread {
 
 	private DatagramSocket socket;
 	private Game game;
+	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
+	private int cycles = 0;
 
-	public GameServer(Game game) {
+	public GameServer(Game game, long seed) {
 		this.game = game;
+		this.seed = seed;
 		try {
 			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
@@ -42,7 +47,7 @@ public class GameServer extends Thread {
 
 	private void readPacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
-		int type = lookupPacket(message.substring(0, 2)); 
+		int type = lookupPacket(message.substring(0, 2));
 		String msgData = message.substring(2);
 		String[] dataArr;
 
@@ -58,17 +63,17 @@ public class GameServer extends Thread {
 			// DISCONNECT
 			Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(data);
 			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + disconnectPacket.getUsername() + " has left the game...");
-			removeConnection(disconnectPacket); 
+			removeConnection(disconnectPacket);
 			break;
 		case 3:
 			// MOVEMENT
 			Pkt03Move movePacket = new Pkt03Move(data);
-			handleMove(movePacket); 
+			handleMove(movePacket);
 			break;
 		case 4:
 			// MOUSEMOVE
 			Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(data);
-			handleMouseMove(mouseMovePacket); 
+			handleMouseMove(mouseMovePacket);
 			break;
 		case 5:
 			// MOUSESCROLL
@@ -80,42 +85,78 @@ public class GameServer extends Thread {
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
 			handleShoot(shootPacket);
 			break;
+		case 8:
+			update();
+			break;
+		case 10:
+			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
+			handlePickUpWeapon(pickUpPacket);
+			break;
 		default:
 		case 0:
+		case 7:
 			break;
 		}
 	}
 
+	private void handlePickUpWeapon(Pkt10PickupWeapon pickUpPacket) {
+		connectedPlayers.get(playerIndex(pickUpPacket.getUsername())).addWeapon();
+
+		pickUpPacket.sendData(this);
+	}
+
+	private void update() {
+		if (game.gameState != game.playState)
+			return;
+		for (PlayerMP p : connectedPlayers) {
+			for (SuperWeapon weap : p.getWeapons()) {
+				weap.checkPlayerHit(connectedPlayers);
+				weap.update();				
+			}
+		}
+			
+	}
+
 	private void handleShoot(Pkt06Shoot shootPacket) {
+		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
+		p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+
+		System.out.println(p.getWeapons().get(weapIndex(p, shootPacket.getWeapon())).bullets.size());
+
 		shootPacket.sendData(this);
 	}
 
 	private void handleMouseScroll(Pkt05MouseScroll mouseScrollPacket) {
+		PlayerMP p = connectedPlayers.get(playerIndex(mouseScrollPacket.getUsername()));
+		p.playerMouseScroll(mouseScrollPacket.getMouseScrollDir());
+
 		mouseScrollPacket.sendData(this);
 	}
 
 	private void handleMouseMove(Pkt04MouseMove mouseMovePacket) {
-		int index = playerIndex(mouseMovePacket.getUsername());
-//		connectedPlayers.get(index).updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
+		PlayerMP p = connectedPlayers.get(playerIndex(mouseMovePacket.getUsername()));
+		p.updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
+
 		mouseMovePacket.sendData(this);
 	}
 
 	private void handleMove(Pkt03Move movePacket) {
-		int index = playerIndex(movePacket.getUsername());
-		connectedPlayers.get(index).updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
+		PlayerMP p = connectedPlayers.get(playerIndex(movePacket.getUsername()));
+		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
+		System.out.println(movePacket.getWorldX() + " | " + movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
 
 	private void removeConnection(Pkt02Disconnect disconnectPacket) {
-		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername())); 
+		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
 		disconnectPacket.sendData(this);
 	}
 
 	public void addConnection(PlayerMP player, Pkt01Login loginPacket) {
 		boolean isConnected = false;
-		for (PlayerMP p : connectedPlayers) { 
-			if (player.getUsername().equalsIgnoreCase(p.getUsername())) { 
-				if (p.ipAddress == null) { 
+		for (PlayerMP p : connectedPlayers) {
+			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
+				if (p.ipAddress == null) {
 					p.ipAddress = player.ipAddress;
 				}
 				if (p.port == -1) {
@@ -123,21 +164,37 @@ public class GameServer extends Thread {
 				}
 				isConnected = true;
 			} else {
-				sendData(loginPacket.getData(), p.ipAddress, p.port); 
+				sendData(loginPacket.getData(), p.ipAddress, p.port);
 
 				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex);
 				sendData(otherPlayersLoginPacket.getData(), player.ipAddress, player.port);
 			}
 		}
 		if (!isConnected) {
-			connectedPlayers.add(player); 
+			connectedPlayers.add(player);
+			if (!player.isLocal) {
+				Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(this.seed);
+				sendData(seedPacket.getData(), player.ipAddress, player.port);
+			}
 		}
 	}
 
 	private int playerIndex(String username) {
 		int index = 0;
-		for (PlayerMP p : game.getPlayers()) {
+		for (PlayerMP p : connectedPlayers) {
 			if (p.getUsername().equals(username)) {
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+
+	private int weapIndex(PlayerMP player, String name) {
+		int index = 0;
+
+		for (SuperWeapon w : player.getWeapons()) {
+			if (w.name.equals(name)) {
 				break;
 			}
 			index++;
@@ -171,5 +228,6 @@ public class GameServer extends Thread {
 			sendData(data, p.ipAddress, p.port);
 		}
 	}
+
 
 }

@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import entity.Player;
 import main.Game;
 import net.Pkt06Shoot;
 
 public class Shotgun extends SuperWeapon {
-	public Shotgun(Game game) {
-		super(game);
+	public Shotgun(Player player, Game game) {
+		super(player, game);
 
 		this.name = "Shotgun";
 		this.imgOffset = -3;

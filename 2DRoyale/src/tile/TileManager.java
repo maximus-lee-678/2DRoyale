@@ -92,7 +92,7 @@ public class TileManager {
 					int green = color.getGreen();
 					int blue = color.getBlue();
 
-					double roll = Math.random();
+					double roll = game.rand.nextDouble();
 
 					mapTileNum[x][y][1] = game.rand.nextInt(2);
 					if (red == 34 && green == 177 && blue == 76) { // grass

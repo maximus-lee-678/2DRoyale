@@ -59,10 +59,10 @@ public class Screen {
 				int gameY = worldY - game.player.worldY + game.player.screenY;
 				
 				if(tileNum != 0) {
-					if (worldX + buildingTileSize > game.player.worldX - game.player.screenX
-							&& worldX - buildingTileSize < game.player.worldX + game.player.screenX
-							&& worldY + buildingTileSize > game.player.worldY - game.player.screenY
-							&& worldY - buildingTileSize < game.player.worldY + game.player.screenY) {
+					if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+							&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+							&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+							&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
 						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
 					}
 				}
@@ -80,7 +80,6 @@ public class Screen {
 	private void renderWorld(Graphics2D g2) {
 		int worldCol = 0;
 		int worldRow = 0;
-		
 		
 		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
 

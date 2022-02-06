@@ -21,6 +21,7 @@ import entity.PlayerMP;
 import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
+import net.Pkt08ServerTick;
 import object.SuperObject;
 import structure.StructuresManager;
 import tile.TileManager;
@@ -46,7 +47,8 @@ public class Game extends JPanel implements Runnable {
 	public SuperObject obj[] = new SuperObject[10];
 
 	// World
-	public final Random rand = new Random(System.currentTimeMillis());
+	public long randSeed = System.currentTimeMillis();
+	public Random rand = new Random(randSeed);
 	public final int maxWorldCol = 50;
 	public final int maxWorldRow = 50;
 	public final int worldWidth = tileSize * maxWorldCol;
@@ -54,9 +56,9 @@ public class Game extends JPanel implements Runnable {
 	public final int numberOfBuildings = 10;
 
 	public WindowHandler windowHandler;
-	public TileManager tileM = new TileManager(this);
-	public ItemManager itemM = new ItemManager();
-	public StructuresManager structM = new StructuresManager(this);
+	public TileManager tileM;
+	public ItemManager itemM;
+	public StructuresManager structM;
 	public Screen screen = new Screen(this);
 	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler(this);
@@ -74,6 +76,8 @@ public class Game extends JPanel implements Runnable {
 	public final int titleState = 0;
 	public final int playState = 1;
 	public final int endState = 2;
+	
+	private int cycles = 0;
 
 	public Game() {
 
@@ -142,9 +146,15 @@ public class Game extends JPanel implements Runnable {
 		}
 
 	}
-
-	public void init() {
+	
+	public void loadDefaults() {
 		windowHandler = new WindowHandler(this);
+		tileM = new TileManager(this);
+		itemM = new ItemManager();
+		structM = new StructuresManager(this);
+	}
+
+	public void init() {		
 
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
@@ -168,6 +178,11 @@ public class Game extends JPanel implements Runnable {
 		if (gameState == playState) {
 			for (PlayerMP p : getPlayers())
 				p.update();
+			if(socketServer != null) {
+				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
+				serverTickPacket.sendData(socketClient);
+			}
+			
 		}
 
 	}
