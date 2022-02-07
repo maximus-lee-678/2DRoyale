@@ -12,15 +12,13 @@ public class TileManager {
 
 	private Game game;
 	public Tile[] tile;
+	public int maxWorldCol, maxWorldRow;
 	public int mapTileNum[][][];
 
 	public TileManager(Game game) {
 
 		this.game = game;
 		tile = new Tile[20]; // Currently we just store 20 types of tiles
-
-		mapTileNum = new int[game.maxWorldCol][game.maxWorldRow][2]; // create 2d array of the dimension of the world
-																		// (units: tileSize)
 
 		getTileImage(); // populate tile array
 		loadMap("/maps/picture.png"); // load map
@@ -81,8 +79,13 @@ public class TileManager {
 		try {
 			BufferedImage img = ImageIO.read(getClass().getResourceAsStream(filePath));
 
-			for (int y = 0; y < game.maxWorldCol; y++) {
-				for (int x = 0; x < game.maxWorldRow; x++) {
+			maxWorldCol = img.getWidth();
+			maxWorldRow = img.getHeight();
+			mapTileNum = new int[maxWorldCol][maxWorldRow][2]; // create 2d array of the dimension of the world
+			// (units: tileSize)
+
+			for (int y = 0; y < maxWorldRow; y++) {
+				for (int x = 0; x < maxWorldCol; x++) {
 					// Retrieving contents of a pixel
 					int pixel = img.getRGB(x, y);
 					// Creating a Color object from pixel value
@@ -128,12 +131,22 @@ public class TileManager {
 		}
 	}
 
-	public boolean hasCollided(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
+	public boolean hasCollidedWorld(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
+			int entityBottomWorldY, String type) {
 
 		int entityLeftCol = entityLeftWorldX / game.tileSize;
 		int entityRightCol = entityRightWorldX / game.tileSize;
 		int entityTopRow = entityTopWorldY / game.tileSize;
 		int entityBottomRow = entityBottomWorldY / game.tileSize;
+
+		int checkLimitX = game.maxWorldCol - 1;
+		int checkLimitY = game.maxWorldRow - 1;
+		// Out of bounds prevention
+		if (entityLeftCol > checkLimitX || entityRightCol > checkLimitX || entityTopRow > checkLimitY
+				|| entityBottomRow > checkLimitY)
+			return true;
+		if (entityLeftWorldX < 0 || entityRightWorldX < 0 || entityTopWorldY < 0 || entityBottomWorldY < 0)
+			return true;
 
 		int tileNum1 = 0, tileNum2 = 0;
 
@@ -164,7 +177,7 @@ public class TileManager {
 			if (game.tileM.tile[tileNum1].collisionProjectile || game.tileM.tile[tileNum2].collisionProjectile)
 				return true;
 		}
-		
+
 		return false;
 	}
 

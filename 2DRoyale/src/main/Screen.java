@@ -37,6 +37,38 @@ public class Screen {
 
 	}
 
+	private void renderWorld(Graphics2D g2) {
+		int worldCol = 0;
+		int worldRow = 0;
+
+		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
+
+			int tileNum = game.tileM.mapTileNum[worldCol][worldRow][0];
+			int worldX = worldCol * game.tileSize;
+			int worldY = worldRow * game.tileSize;
+			int gameX = worldX - game.player.worldX + game.player.screenX;
+			int gameY = worldY - game.player.worldY + game.player.screenY;
+
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
+				else
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize,
+							game.tileSize, null);
+			}
+			
+			worldCol++;
+
+			if (worldCol == game.maxWorldCol) {
+				worldCol = 0;
+				worldRow++;
+			}
+		}
+	}
+
 	private void renderBuildings(Graphics2D g2) {
 		int worldCol, worldRow;
 		Building[] building = game.structM.building;
@@ -53,7 +85,7 @@ public class Screen {
 				int worldY = building[i].boundingBox.y + (worldRow * buildingTileSize);
 				int gameX = worldX - game.player.worldX + game.player.screenX;
 				int gameY = worldY - game.player.worldY + game.player.screenY;
-
+				
 				if (tileNum != 0) {
 					if (worldX + game.tileSize > game.player.worldX - game.player.screenX
 							&& worldX - game.tileSize < game.player.worldX + game.player.screenX
@@ -62,7 +94,7 @@ public class Screen {
 						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize,
 								null);
 					}
-				}
+				} 
 
 				worldCol++;
 
@@ -97,35 +129,4 @@ public class Screen {
 
 	}
 
-	private void renderWorld(Graphics2D g2) {
-		int worldCol = 0;
-		int worldRow = 0;
-
-		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
-
-			int tileNum = game.tileM.mapTileNum[worldCol][worldRow][0];
-			int worldX = worldCol * game.tileSize;
-			int worldY = worldRow * game.tileSize;
-			int gameX = worldX - game.player.worldX + game.player.screenX;
-			int gameY = worldY - game.player.worldY + game.player.screenY;
-
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
-					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
-					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
-					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
-					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
-				else
-					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize,
-							game.tileSize, null);
-			}
-
-			worldCol++;
-
-			if (worldCol == game.maxWorldCol) {
-				worldCol = 0;
-				worldRow++;
-			}
-		}
-	}
 }

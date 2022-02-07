@@ -1,6 +1,5 @@
 package structure;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class StructuresManager {
 
 	// Crate Variables
 	public int crateTileSize = 32;
-	public int interactRadius = 16;
+	public int interactRadius = 32;
 	public List<Integer> crateTileNum;
 
 	// Universal Variables
@@ -43,8 +42,8 @@ public class StructuresManager {
 
 		getTileImage(); // populate tile array
 		getObstructionImage();
-		
-		//generate buildings, then crates, then environmental obstructions(wip)
+
+		// generate buildings, then crates, then environmental obstructions(wip)
 		loadBuildings(game.numberOfBuildings);
 		loadCrates(game.numberOfCrates);
 	}
@@ -297,5 +296,54 @@ public class StructuresManager {
 
 		return false;
 
+	}
+
+	public boolean hasCollidedCrate(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
+			int entityBottomWorldY, String type) {
+
+		int crateIndex;
+		for (crateIndex = 0; crateIndex < crate.length; crateIndex++) {
+			int structX = crate[crateIndex].collisionBoundingBox.x;
+			int structY = crate[crateIndex].collisionBoundingBox.y;
+			int structWidth = crate[crateIndex].collisionBoundingBox.width;
+			int structHeight = crate[crateIndex].collisionBoundingBox.height;
+
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX
+					&& entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+				if (type == "Entity") {
+					if (obstruction[crate[crateIndex].crateTileNum].collisionPlayer
+							|| obstruction[crate[crateIndex].crateTileNum].collisionPlayer)
+						return true;
+				} else if (type == "Projectile") {
+					if (obstruction[crate[crateIndex].crateTileNum].collisionProjectile
+							|| obstruction[crate[crateIndex].crateTileNum].collisionProjectile)
+						return true;
+				}
+			}
+
+		}
+
+		return false;
+
+	}
+
+	public boolean withinCrateRange(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
+			int entityBottomWorldY) {
+		int crateIndex;
+
+		for (crateIndex = 0; crateIndex < crate.length; crateIndex++) {
+			int structX = crate[crateIndex].interactBoundingBox.x;
+			int structY = crate[crateIndex].interactBoundingBox.y;
+			int structWidth = crate[crateIndex].interactBoundingBox.width;
+			int structHeight = crate[crateIndex].interactBoundingBox.height;
+			
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX
+					&& entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
+				return true;
+			}
+		}
+		
+		return false;
+		
 	}
 }

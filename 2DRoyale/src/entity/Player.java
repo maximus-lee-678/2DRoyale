@@ -112,7 +112,9 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 
 				for (int i = 0; i < speed; i++)
 					move(xa, ya);
-
+				
+				withinRange(xa, ya);
+				
 				Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
 				movePacket.sendData(game.socketClient);
 			}
@@ -152,10 +154,12 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 			move(0, ya);
 			return;
 		}
-		if (!hasCollided(xa, ya)) {
+		
+		if (!hasCollided(xa, ya)) {			
 			worldX += xa;
 			worldY += ya;
 		}
+		
 	}
 
 	private boolean hasCollided(int xa, int ya) {
@@ -164,13 +168,26 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 		int entityTopWorldY = worldY + solidArea.y + ya;
 		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
 
-		if (game.tileM.hasCollided(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
+		if (game.tileM.hasCollidedWorld(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 		
 		if (game.structM.hasCollidedBuilding(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
-			return true;		
+			return true;	
+		
+		if (game.structM.hasCollidedCrate(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
+			return true;
 
 		return false;
+	}
+	
+	private void withinRange(int xa, int ya) {
+		int entityLeftWorldX = worldX + solidArea.x + xa;
+		int entityRightWorldX = worldX + solidArea.x + solidArea.width + xa;
+		int entityTopWorldY = worldY + solidArea.y + ya;
+		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
+		
+		if (game.structM.withinCrateRange(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
+			System.out.println("Near Crate!");
 	}
 
 	public void updatePlayerXY(int worldX, int worldY) {
