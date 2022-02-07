@@ -49,11 +49,11 @@ public class Game extends JPanel implements Runnable {
 	// World
 	public long randSeed = System.currentTimeMillis();
 	public Random rand = new Random(randSeed);
-	public final int maxWorldCol = 50;
-	public final int maxWorldRow = 50;
-	public final int worldWidth = tileSize * maxWorldCol;
-	public final int worldHeight = tileSize * maxWorldRow;
-	public final int numberOfBuildings = 10;
+	public int maxWorldCol;
+	public int maxWorldRow;
+	public int worldWidth;
+	public int worldHeight;
+	public final int numberOfBuildings = 100;
 	public final int numberOfCrates = 10;
 
 	public WindowHandler windowHandler;
@@ -145,14 +145,23 @@ public class Game extends JPanel implements Runnable {
 			}
 
 		}
-
+		
 	}
 	
 	public void loadDefaults() {
 		windowHandler = new WindowHandler(this);
+		
 		tileM = new TileManager(this);
+		loadMapDimensions();
 		itemM = new ItemManager();
 		structM = new StructuresManager(this);
+	}
+	
+	public void loadMapDimensions() {
+		maxWorldCol = tileM.maxWorldCol;
+		maxWorldRow = tileM.maxWorldRow;
+		worldWidth = tileSize * maxWorldCol;
+		worldHeight = tileSize * maxWorldRow;
 	}
 
 	public void init() {		
