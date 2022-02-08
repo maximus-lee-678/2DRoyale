@@ -13,7 +13,7 @@ import net.Pkt10PickupWeapon;
 public class KeyHandler implements KeyListener {
 
 	Game gp;
-	public boolean up, down, left, right = false;
+	public boolean up, down, left, right, interact = false;
 	String pattern = "^[a-zA-Z0-9]*$";
 	String ipPattern = "^[0-9\\.]*$";
 
@@ -22,7 +22,7 @@ public class KeyHandler implements KeyListener {
 	}
 
 	public void keyTyped(KeyEvent e) {
-	}; // default func, delete will throw warning :(
+	}; 
 
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
@@ -171,8 +171,9 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_D)
 				right = true;
 			if (code == KeyEvent.VK_E) {
-				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
-				pickupWeapon.sendData(gp.socketClient);
+				interact = false;
+//				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
+//				pickupWeapon.sendData(gp.socketClient);
 			}
 			if(code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
@@ -186,14 +187,10 @@ public class KeyHandler implements KeyListener {
 			if(code == KeyEvent.VK_4) {
 				gp.player.playerWeapIndex = 3;
 			}
+			
 				
 		}
 		
-		//true if user presses button
-		if(code == KeyEvent.VK_W) up = true;
-		if(code == KeyEvent.VK_A) left = true;
-		if(code == KeyEvent.VK_S) down = true;
-		if(code == KeyEvent.VK_D) right = true;
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -208,6 +205,8 @@ public class KeyHandler implements KeyListener {
 			down = false;
 		if (code == KeyEvent.VK_D)
 			right = false;
+		if (code == KeyEvent.VK_E)
+			interact = true;
 	}
 
 	public String removeLastChar(String str) {

@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import entity.PlayerMP;
 import item.Projectile;
@@ -19,10 +20,13 @@ public class GameServer extends Thread {
 	private Game game;
 	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
+	
+	private int weaponIdCount;
 
 	public GameServer(Game game, long seed) {
 		this.game = game;
 		this.seed = seed;
+		this.weaponIdCount = 0;
 		try {
 			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
@@ -88,6 +92,9 @@ public class GameServer extends Thread {
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
 			handlePickUpWeapon(pickUpPacket);
 			break;
+		case 11:
+			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
+			handleCrateOpen(crateOpenPacket);
 		default:
 		case 0:
 		case 7:
@@ -95,8 +102,15 @@ public class GameServer extends Thread {
 		}
 	}
 
+	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
+		Random r = new Random();
+		crateOpenPacket.setWeapType(r.nextInt(game.itemM.weaponsArr.length));
+		crateOpenPacket.setWeapId(weaponIdCount++);
+		crateOpenPacket.sendData(this);	
+	}
+
 	private void handlePickUpWeapon(Pkt10PickupWeapon pickUpPacket) {
-		connectedPlayers.get(playerIndex(pickUpPacket.getUsername())).addWeapon();
+		connectedPlayers.get(playerIndex(pickUpPacket.getUsername())).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
 		pickUpPacket.sendData(this);
 	}
 
@@ -187,7 +201,7 @@ public class GameServer extends Thread {
 		int index = 0;
 
 		for (SuperWeapon w : player.getWeapons()) {
-			if (w.name.equals(name)) {
+			if (w != null && w.name.equals(name)) {
 				break;
 			}
 			index++;

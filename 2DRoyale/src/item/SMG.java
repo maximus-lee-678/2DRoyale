@@ -1,5 +1,6 @@
 package item;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Random;
 
@@ -14,21 +15,32 @@ public class SMG extends SuperWeapon  {
 		super(player, game);
 
 		this.name = "SMG";
+		this.typeId = 1;
 		this.imgOffset = -5;
 		this.speed = 20;
 		this.range = 10 * game.tileSize;
 		this.bulletSpread = 10; //in degrees
 		this.bulletSize = 8;
-		this.fireRate = 2;
+		this.fireRate = 8;
 		this.damage = 5;
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/smghand.png"));
-			this.imgIcon = ImageIO.read(getClass().getResourceAsStream("/weap/SMG.png"));
+			this.entityImg = ImageIO.read(getClass().getResourceAsStream("/weap/SMG.png"));
 			this.bulletImg = ImageIO.read(getClass().getResourceAsStream("/projectile/bullet1.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		this.imgIconWidth = 64;
+		double scale = (double) imgIconWidth / entityImg.getWidth();
+		this.imgIconHeight = (int) (entityImg.getHeight() * scale);
+		
+		this.entityArea = new Rectangle();
+		entityArea.height = 18;
+		entityArea.width = 18;
+		entityArea.x = imgIconWidth/2 - entityArea.width/2;
+		entityArea.y = imgIconHeight/2 - entityArea.height/2;
 	}
 
 	@Override

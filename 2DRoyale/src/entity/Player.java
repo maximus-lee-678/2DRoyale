@@ -19,8 +19,11 @@ import main.KeyHandler;
 import main.MouseHandler;
 import net.Pkt03Move;
 import net.Pkt04MouseMove;
+import net.Pkt10PickupWeapon;
+import net.Pkt11CrateOpen;
+import structure.Crate;
 
-public class Player extends Entity implements Cloneable { // inherits Entity class
+public class Player extends Entity { // inherits Entity class
 
 	private Game game;
 	private KeyHandler keys;
@@ -39,7 +42,7 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 
 	public SuperWeapon[] playerWeap;
 	public int playerWeapIndex = 0;
-	public int health;
+	public double health;
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
@@ -51,7 +54,7 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 
-		this.solidArea = new Rectangle(6, 6, 12, 12);
+		this.entityArea = new Rectangle(6, 6, 12, 12);
 
 		this.playerWeap = new SuperWeapon[4];
 
@@ -79,10 +82,21 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 		}
 	}
 
-	public void addWeapon() {
-		playerWeap[0] = new Rifle(this, game);
-		playerWeap[1] = new SMG(this, game);
-		playerWeap[2] = new Shotgun(this, game);
+	public void addWeapon(int playerWeapIndex, int weapType, int weapId) {
+
+		try {
+
+			SuperWeapon newWeap;
+			newWeap = (SuperWeapon) game.itemM.weaponsArr[weapType].clone();
+			newWeap.id = weapId;
+			newWeap.player = this;
+
+			playerWeap[playerWeapIndex] = newWeap;
+
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void setUsername(String username) {
@@ -112,12 +126,15 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 
 				for (int i = 0; i < speed; i++)
 					move(xa, ya);
-				
-				withinRange(xa, ya);
-				
+
 				Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
 				movePacket.sendData(game.socketClient);
 			}
+			if (keys.interact == true) {
+				withinRange();
+				keys.interact = false;
+			}
+
 		}
 
 		if (mouse != null) {
@@ -154,40 +171,59 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 			move(0, ya);
 			return;
 		}
-		
-		if (!hasCollided(xa, ya)) {			
+
+		if (!hasCollided(xa, ya)) {
 			worldX += xa;
 			worldY += ya;
 		}
-		
+
 	}
 
 	private boolean hasCollided(int xa, int ya) {
-		int entityLeftWorldX = worldX + solidArea.x + xa;
-		int entityRightWorldX = worldX + solidArea.x + solidArea.width + xa;
-		int entityTopWorldY = worldY + solidArea.y + ya;
-		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
+		int entityLeftWorldX = worldX + entityArea.x + xa;
+		int entityRightWorldX = worldX + entityArea.x + entityArea.width + xa;
+		int entityTopWorldY = worldY + entityArea.y + ya;
+		int entityBottomWorldY = worldY + entityArea.y + entityArea.height + ya;
 
 		if (game.tileM.hasCollidedWorld(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
-		
+
 		if (game.structM.hasCollidedBuilding(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
-			return true;	
-		
+			return true;
+
 		if (game.structM.hasCollidedCrate(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 
 		return false;
 	}
-	
-	private void withinRange(int xa, int ya) {
-		int entityLeftWorldX = worldX + solidArea.x + xa;
-		int entityRightWorldX = worldX + solidArea.x + solidArea.width + xa;
-		int entityTopWorldY = worldY + solidArea.y + ya;
-		int entityBottomWorldY = worldY + solidArea.y + solidArea.height + ya;
+
+	private void withinRange() {
+		int entityLeftWorldX = worldX + entityArea.x;
+		int entityRightWorldX = worldX + entityArea.x + entityArea.width;
+		int entityTopWorldY = worldY + entityArea.y;
+		int entityBottomWorldY = worldY + entityArea.y + entityArea.height;
+
+		SuperWeapon weapon = game.itemM.withinWeaponsRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 		
-		if (game.structM.withinCrateRange(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY))
-			System.out.println("Near Crate!");
+		if (weapon != null) {
+			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id);
+			pickUpPacket.sendData(game.socketClient);
+			return;
+		}
+		
+		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
+		if (crateIndex != -1) {
+			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(username, crateIndex);
+			crateOpenPacket.sendData(game.socketClient);
+			return;
+		}
+
+		
+
+	}
+	
+	public void updatePlayerHP(double health) {
+		this.health += health;
 	}
 
 	public void updatePlayerXY(int worldX, int worldY) {
@@ -248,13 +284,6 @@ public class Player extends Entity implements Cloneable { // inherits Entity cla
 		for (SuperWeapon weap : getWeapons())
 			if (weap != null)
 				weap.render(g2);
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		Player cloned = (Player) super.clone();
-		cloned.playerWeap = new SuperWeapon[4];
-		return cloned;
 	}
 
 }

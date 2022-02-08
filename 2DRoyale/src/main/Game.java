@@ -48,8 +48,8 @@ public class Game extends JPanel implements Runnable {
 	public int maxWorldRow;
 	public int worldWidth;
 	public int worldHeight;
-	public final int numberOfBuildings = 100;
-	public final int numberOfCrates = 10;
+	public final int numberOfBuildings = 10;
+	public final int numberOfCrates = 80;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;
@@ -146,7 +146,7 @@ public class Game extends JPanel implements Runnable {
 		
 		tileM = new TileManager(this);
 		loadMapDimensions();
-		itemM = new ItemManager();
+		itemM = new ItemManager(this);
 		structM = new StructuresManager(this);
 	}
 	

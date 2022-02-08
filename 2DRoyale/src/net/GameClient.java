@@ -9,11 +9,9 @@ import java.net.UnknownHostException;
 import java.util.Random;
 
 import entity.PlayerMP;
-import item.Rifle;
-import item.SMG;
-import item.Shotgun;
 import item.SuperWeapon;
 import main.Game;
+import structure.Crate;
 
 public class GameClient extends Thread {
 
@@ -95,14 +93,19 @@ public class GameClient extends Thread {
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].serverHit(serverHitPacket.getBullet());
-			PlayerMP p3 = game.getPlayers().get(playerIndex(serverHitPacket.getVictim()));
-			p3.health -= p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].damage;
+			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].damage;
+			game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
 			break;
 		case 10:
 			// PICK UP WEAPON
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
-			game.getPlayers().get(playerIndex(pickUpPacket.getUsername())).addWeapon();
+			game.getPlayers().get(playerIndex(pickUpPacket.getUsername())).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
+			game.itemM.deleteWorldWeapon(pickUpPacket.getWeapId());
 			break;
+		case 11:
+			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
+			Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
+			game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());
 		default:
 		case 0:
 		case 8:
@@ -113,8 +116,9 @@ public class GameClient extends Thread {
 
 	private int weapIndex(PlayerMP player, String name) {
 		int index = 0;
-
+		
 		for (SuperWeapon w : player.getWeapons()) {
+//			System.out.println(w.name + " " +  name);
 			if (w.name.equals(name)) {
 				break;
 			}

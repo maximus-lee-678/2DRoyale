@@ -11,12 +11,14 @@ import entity.PlayerMP;
 import main.Game;
 import net.Pkt09ServerBulletHit;
 
-public class SuperWeapon extends Entity implements shootInterface{
+public class SuperWeapon extends Entity implements shootInterface, Cloneable{
 
 	public Game game;
 	public Player player;
 
 	public String name;
+	public int id;
+	public int typeId;
 	public double damage;
 	public int range;
 	public int speed;
@@ -24,9 +26,11 @@ public class SuperWeapon extends Entity implements shootInterface{
 	public int bulletSpread;
 	public int bulletSize;
 	public int bulletIdCount;
-	public BufferedImage imgIcon;
-
 	public int fireRateTick;
+	
+	public BufferedImage entityImg;
+	public int imgIconWidth;
+	public int imgIconHeight;
 	public int imgOffset;
 
 	public List<Projectile> bullets = new ArrayList<Projectile>();
@@ -78,7 +82,8 @@ public class SuperWeapon extends Entity implements shootInterface{
 	
 	public void checkPlayerHit(List<PlayerMP> connectedPlayers) {
 		for(PlayerMP p : connectedPlayers) {
-			if(player.getUsername() == p.getUsername()) continue;			
+			
+			if(player.getUsername().equals(p.getUsername())) continue;			
 			for (int i = 0; i < getBullets().size(); i++) {				
 				Projectile proj = getBullets().get(i);
 					
@@ -98,4 +103,10 @@ public class SuperWeapon extends Entity implements shootInterface{
 		return;
 	};
 	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		SuperWeapon cloned = (SuperWeapon) super.clone();
+		cloned.bullets = new ArrayList<Projectile>();
+		return cloned;
+	}
 }

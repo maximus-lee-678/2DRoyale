@@ -13,7 +13,7 @@ public class Entity{
 	
 	public BufferedImage sprite;
 
-	public Rectangle solidArea;
+	public Rectangle entityArea;
 	
 }
 

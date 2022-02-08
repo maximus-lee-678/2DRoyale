@@ -38,8 +38,9 @@ public class PlayerMP extends Player implements Cloneable {		//inherits Player c
 	}
 	
 	@Override
-	public Object clone() throws CloneNotSupportedException{
+	public Object clone() throws CloneNotSupportedException {
 		PlayerMP cloned = (PlayerMP) super.clone();
+		cloned.playerWeap = new SuperWeapon[4];
 		return cloned;
 	}
 

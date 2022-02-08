@@ -265,7 +265,7 @@ public class UI {
 		// display health bar
 		Color c = new Color(255, 50, 50);
 		g2.setColor(c);
-		g2.fillRect(game.tileSize * 2, game.tileSize, game.player.health * 2, game.tileSize / 2);
+		g2.fillRect(game.tileSize * 2, game.tileSize, (int) (game.player.health * 2), game.tileSize / 2);
 	}
 
 	public void drawInventory() {
