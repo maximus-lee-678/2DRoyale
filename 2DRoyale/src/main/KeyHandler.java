@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -29,7 +31,7 @@ public class KeyHandler implements KeyListener {
 		// when in menu page
 		if (gp.gameState == gp.titleState) {
 			if (gp.ui.titleScreenState == 0) {
-				if (code == KeyEvent.VK_W) {
+				if (code == KeyEvent.VK_S) {
 					gp.ui.commandNum--;
 					if (gp.ui.commandNum < 0) {
 						gp.ui.commandNum = 3;
@@ -96,6 +98,7 @@ public class KeyHandler implements KeyListener {
 						gp.socketClient.start();
 					} else if (gp.ui.commandNum == 1) {
 						gp.ui.titleScreenState = 5;
+						gp.ui.commandNum = 0;
 					} else if (gp.ui.commandNum == 2) {
 						gp.ui.titleScreenState = 0;
 						gp.ui.commandNum = 0;
@@ -134,28 +137,62 @@ public class KeyHandler implements KeyListener {
 
 			}
 			// when in "Type the server ip:" page
+			
 			else if (gp.ui.titleScreenState == 5) {
-				char input = e.getKeyChar();
-				String tempInput = "";
-				tempInput += input;
-				if (input == KeyEvent.VK_BACK_SPACE) {
-					gp.ui.ipAddress = removeLastChar(gp.ui.ipAddress);
-				} else if (tempInput.matches(ipPattern)) {
-					gp.ui.ipAddress += input;
-					gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
-				}
-				if (code == KeyEvent.VK_ENTER) {
-					// user type in server address
-					gp.ui.ipAddress = gp.ui.ipAddress.trim();
-					// if user leave it empty, the user will enter localhost alone without a server
-					if (gp.ui.ipAddress.isEmpty() == true) {
-						gp.ui.ipAddress = "localhost";
+				if (code == KeyEvent.VK_W) {
+					gp.ui.commandNum--;
+					if (gp.ui.commandNum < 0) {
+						gp.ui.commandNum = 1;
 					}
-					gp.ui.titleScreenState = 4;
-					gp.socketClient = new GameClient(gp, gp.ui.ipAddress);
-					gp.socketClient.start();
-					
 				}
+				if (code == KeyEvent.VK_S) {
+					gp.ui.commandNum++;
+					if (gp.ui.commandNum > 1) {
+						gp.ui.commandNum = 0;
+					}
+				}
+				if (gp.ui.commandNum == 0) {
+					char input = e.getKeyChar();
+					String tempInput = "";
+					tempInput += input;
+					if (input == KeyEvent.VK_BACK_SPACE) {
+						gp.ui.ipAddress = removeLastChar(gp.ui.ipAddress);
+					} else if (tempInput.matches(ipPattern)) {
+						gp.ui.ipAddress += input;
+						gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
+					}
+					if (code == KeyEvent.VK_ENTER) {
+						// user type in server address
+						gp.ui.ipAddress = gp.ui.ipAddress.trim();
+						// if user leave it empty, the user will enter localhost alone without a server
+						if (gp.ui.ipAddress.isEmpty() == true) {
+							gp.ui.ipAddress = "localhost";
+						}
+						gp.ui.titleScreenState = 4;
+						gp.socketClient = new GameClient(gp, gp.ui.ipAddress);
+						gp.socketClient.start();
+						
+					}
+				} else if (gp.ui.commandNum == 1) {
+					if (code == KeyEvent.VK_ENTER) {
+						try {
+							String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+							if (data.matches(ipPattern)) {
+								gp.ui.ipAddress = data;
+								gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
+							}									
+							else
+								System.out.println("bad syntax");
+						}
+						catch(Exception x){
+							System.out.println(x);
+						}
+						
+					}
+				}
+				
+				
+				
 			}
 
 		}

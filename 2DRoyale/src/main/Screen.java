@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import entity.PlayerMP;
 import item.SuperWeapon;
 import structure.Building;
@@ -36,11 +38,115 @@ public class Screen {
 				p.renderBullets(g2);
 			for (PlayerMP p : game.getPlayers())
 				p.render(g2);
-			
+			renderMinimap(g2);
 		}
 
 		game.ui.draw(g2);
 
+	}
+
+	private void renderMinimap(Graphics2D g2) {
+		int minimapRadius = 18;
+		int minimapTileSize = 4;
+		int minimapRenderAt = 48;
+
+		int minimapBackSize = (minimapRadius * 2 + 1) * minimapTileSize + (minimapTileSize * 2);
+		int minimapBackRenderAt = minimapRenderAt - minimapTileSize;
+
+		// Draw minimap back
+		g2.drawImage(game.structM.tile[0].image, minimapBackRenderAt, minimapBackRenderAt, minimapBackSize,
+				minimapBackSize, null);
+
+		int playerTileX = game.player.worldX / game.tileSize;
+		int playerTileY = game.player.worldY / game.tileSize;
+
+		// For making minimap stop at border
+		int xLowerBound = playerTileX - minimapRadius;
+		int xUpperBound = playerTileX + minimapRadius;
+		int yLowerBound = playerTileY - minimapRadius;
+		int yUpperBound = playerTileY + minimapRadius;
+
+		int xOffset = 0;
+		int yOffset = 0;
+
+		if (xLowerBound < 0) {
+			xOffset = -xLowerBound;
+			xLowerBound = 0;
+		}
+		if (xUpperBound < 0) {
+			xOffset = -xLowerBound;
+			xUpperBound = 0;
+		}
+		if (yLowerBound < 0) {
+			yOffset = -yLowerBound;
+			yLowerBound = 0;
+		}
+		if (yUpperBound < 0) {
+			yOffset = -yLowerBound;
+			yUpperBound = 0;
+		}
+
+		if (xLowerBound > game.maxWorldCol - 1)
+			xLowerBound = game.maxWorldCol - 1;
+		if (xUpperBound > game.maxWorldCol - 1)
+			xUpperBound = game.maxWorldCol - 1;
+		if (yLowerBound > game.maxWorldRow - 1)
+			yLowerBound = game.maxWorldCol - 1;
+		if (yUpperBound > game.maxWorldRow - 1)
+			yUpperBound = game.maxWorldCol - 1;
+
+		int minimapX = 0;
+		int minimapY = 0;
+
+		// Draw tiles
+		for (int y = yLowerBound; y < yUpperBound + 1; y++) {
+			minimapX = 0;
+			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
+				int tileNum = game.tileM.mapTileNum[x][y][0];
+
+				if (game.tileM.mapTileNum[x][y][1] == 1)
+					g2.drawImage(game.tileM.tile[tileNum].image,
+							minimapRenderAt + minimapX + (xOffset * minimapTileSize),
+							minimapRenderAt + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize,
+							null);
+				else
+					g2.drawImage(game.tileM.tile[tileNum].image,
+							minimapRenderAt + minimapX + minimapTileSize + (xOffset * minimapTileSize),
+							minimapRenderAt + minimapY + (yOffset * minimapTileSize), -minimapTileSize, minimapTileSize,
+							null);
+				minimapX += minimapTileSize;
+			}
+			minimapY += minimapTileSize;
+		}
+
+//		Building[] building = game.structM.building;
+//		int[][] buildingOccupiesTile = new int[game.maxWorldRow][game.maxWorldCol];
+//
+//		for (int y = 0; y < game.maxWorldCol; y++) {
+//			for (int x = 0; x < game.maxWorldRow; x++) {
+//				buildingOccupiesTile[x][y] = 0;
+//			}
+//		}
+//
+//		for (int i = 0; i < game.numberOfBuildings; i++) {
+//			int buildingTopLeftX;
+//			int buildingTopLeftY;
+//			int buildingBottomRightX;
+//			int buildingBottomRightY;
+//
+//			buildingTopLeftX = building[i].boundingBox.x / game.tileSize;
+//			buildingTopLeftY = building[i].boundingBox.y / game.tileSize;
+//			buildingBottomRightX = (building[i].boundingBox.x + building[i].boundingBox.width) / game.tileSize;
+//			buildingBottomRightY = (building[i].boundingBox.y + building[i].boundingBox.height) / game.tileSize;
+//			
+//			for (int j = buildingTopLeftX ; j <= buildingBottomRightX ; j++) {
+//				
+//			}
+//		}
+
+		// Draw player sprite (terrible quality)
+		g2.drawImage(game.player.sprite, minimapRenderAt + (minimapRadius * minimapTileSize),
+				minimapRenderAt + (minimapRadius * minimapTileSize), minimapTileSize, minimapTileSize, null);
 	}
 
 	private void renderWorld(Graphics2D g2) {
@@ -69,6 +175,7 @@ public class Screen {
 				worldRow++;
 			}
 		}
+
 	}
 
 	private void renderBuildings(Graphics2D g2) {
@@ -79,7 +186,8 @@ public class Screen {
 		for (int i = 0; i < game.numberOfBuildings; i++) {
 			worldCol = 0;
 			worldRow = 0;
-			while (worldCol < building[i].boundingBox.width / buildingTileSize && worldRow < building[i].boundingBox.height / buildingTileSize) {
+			while (worldCol < building[i].boundingBox.width / buildingTileSize
+					&& worldRow < building[i].boundingBox.height / buildingTileSize) {
 
 				int[] rowNum = building[i].buildingTileNum.get(worldRow);
 				int tileNum = rowNum[worldCol];
