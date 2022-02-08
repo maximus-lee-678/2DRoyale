@@ -3,6 +3,7 @@ package main;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -20,11 +21,18 @@ public class Screen {
 	public final int maxScreenRow = 18;
 	public final int screenWidth;
 	public final int screenHeight;
+	private BufferedImage minimapBack;
 
 	public Screen(Game game) {
 		this.game = game;
 		this.screenWidth = game.tileSize * maxScreenCol;
 		this.screenHeight = game.tileSize * maxScreenRow;
+		try {
+			minimapBack = ImageIO.read(getClass().getResourceAsStream("/UI/minimap_back.png"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void render(Graphics2D g2) {
@@ -48,14 +56,15 @@ public class Screen {
 	private void renderMinimap(Graphics2D g2) {
 		int minimapRadius = 18;
 		int minimapTileSize = 4;
-		int minimapRenderAt = 48;
-
-		int minimapBackSize = (minimapRadius * 2 + 1) * minimapTileSize + (minimapTileSize * 2);
-		int minimapBackRenderAt = minimapRenderAt - minimapTileSize;
+		int minimapRenderAtX = 48;
+		int minimapRenderAtY = 48;
+		int minimapBorderSize = 1 * minimapTileSize;
+		int minimapBackSize = (minimapRadius * 2 + 1) * minimapTileSize + (minimapBorderSize * 2);
+		int minimapBackRenderAtX = minimapRenderAtX - minimapBorderSize;
+		int minimapBackRenderAtY = minimapRenderAtY - minimapBorderSize;
 
 		// Draw minimap back
-		g2.drawImage(game.structM.tile[0].image, minimapBackRenderAt, minimapBackRenderAt, minimapBackSize,
-				minimapBackSize, null);
+		g2.drawImage(minimapBack, minimapBackRenderAtX, minimapBackRenderAtY, minimapBackSize, minimapBackSize, null);
 
 		int playerTileX = game.player.worldX / game.tileSize;
 		int playerTileY = game.player.worldY / game.tileSize;
@@ -98,6 +107,19 @@ public class Screen {
 		int minimapX = 0;
 		int minimapY = 0;
 
+		// Draw void fill
+		for (int y = 0; y < minimapRadius * 2 + 1; y++) {
+			minimapX = 0;
+			for (int x = 0; x < minimapRadius * 2 + 1; x++) {
+				g2.drawImage(game.tileM.tile[7].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY,
+						minimapTileSize, minimapTileSize, null);
+				minimapX += minimapTileSize;
+			}
+			minimapY += minimapTileSize;
+		}
+
+		minimapX = 0;
+		minimapY = 0;
 		// Draw tiles
 		for (int y = yLowerBound; y < yUpperBound + 1; y++) {
 			minimapX = 0;
@@ -106,19 +128,24 @@ public class Screen {
 
 				if (game.tileM.mapTileNum[x][y][1] == 1)
 					g2.drawImage(game.tileM.tile[tileNum].image,
-							minimapRenderAt + minimapX + (xOffset * minimapTileSize),
-							minimapRenderAt + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize,
+							minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
+							minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize,
 							null);
-				else
-					g2.drawImage(game.tileM.tile[tileNum].image,
-							minimapRenderAt + minimapX + minimapTileSize + (xOffset * minimapTileSize),
-							minimapRenderAt + minimapY + (yOffset * minimapTileSize), -minimapTileSize, minimapTileSize,
-							null);
+				else {
+					if (tileNum != 7)
+						g2.drawImage(game.tileM.tile[tileNum].image,
+								minimapRenderAtX + minimapX + minimapTileSize + (xOffset * minimapTileSize),
+								minimapRenderAtY + minimapY + (yOffset * minimapTileSize), -minimapTileSize,
+								minimapTileSize, null);
+				}
+
 				minimapX += minimapTileSize;
 			}
 			minimapY += minimapTileSize;
 		}
 
+		// WIP DONT TOUCH
+		
 //		Building[] building = game.structM.building;
 //		int[][] buildingOccupiesTile = new int[game.maxWorldRow][game.maxWorldCol];
 //
@@ -145,8 +172,8 @@ public class Screen {
 //		}
 
 		// Draw player sprite (terrible quality)
-		g2.drawImage(game.player.sprite, minimapRenderAt + (minimapRadius * minimapTileSize),
-				minimapRenderAt + (minimapRadius * minimapTileSize), minimapTileSize, minimapTileSize, null);
+		g2.drawImage(game.player.sprite, minimapRenderAtX + (minimapRadius * minimapTileSize),
+				minimapRenderAtY + (minimapRadius * minimapTileSize), minimapTileSize, minimapTileSize, null);
 	}
 
 	private void renderWorld(Graphics2D g2) {
@@ -161,11 +188,15 @@ public class Screen {
 			int gameX = worldX - game.player.worldX + game.player.screenX;
 			int gameY = worldY - game.player.worldY + game.player.screenY;
 
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX && worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
 				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
 					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
 				else
-					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize, game.tileSize, null);
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize,
+							game.tileSize, null);
 			}
 
 			worldCol++;
@@ -197,8 +228,12 @@ public class Screen {
 				int gameY = worldY - game.player.worldY + game.player.screenY;
 
 				if (tileNum != 0) {
-					if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX && worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
+					if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+							&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+							&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+							&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize,
+								null);
 					}
 				}
 
@@ -223,32 +258,39 @@ public class Screen {
 			int gameX = worldX - game.player.worldX + game.player.screenX;
 			int gameY = worldY - game.player.worldY + game.player.screenY;
 
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX && worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-				g2.drawImage(game.structM.obstruction[crate.crateTileNum].image, gameX, gameY, crateTileSize, crateTileSize, null);
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				g2.drawImage(game.structM.obstruction[crate.crateTileNum].image, gameX, gameY, crateTileSize,
+						crateTileSize, null);
 			}
 		}
 	}
-	
+
 	private void renderItems(Graphics2D g2) {
 		List<SuperWeapon> worldWeapons = game.itemM.worldWeapons;
 		for (int i = 0; i < worldWeapons.size(); i++) {
-			
+
 			SuperWeapon weap = worldWeapons.get(i);
-			
+
 			int worldX = weap.worldX;
 			int worldY = weap.worldY;
 			int gameX = worldX - game.player.worldX + game.player.screenX;
 			int gameY = worldY - game.player.worldY + game.player.screenY;
-						
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX && worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
 				Color c = new Color(255, 255, 50);
 				g2.setColor(c);
 				g2.setStroke(new BasicStroke(2));
 				g2.drawOval(gameX + weap.entityArea.x, gameY + weap.entityArea.y, 18, 18);
-				g2.drawImage(weap.entityImg, gameX, gameY, weap.imgIconWidth, weap.imgIconHeight, null);				
+				g2.drawImage(weap.entityImg, gameX, gameY, weap.imgIconWidth, weap.imgIconHeight, null);
 			}
 		}
-		
+
 	}
 
 }

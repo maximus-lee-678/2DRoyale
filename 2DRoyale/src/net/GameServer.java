@@ -123,7 +123,7 @@ public class GameServer extends Thread {
 					weap.checkPlayerHit(connectedPlayers);
 					weap.update();
 				}
-			}
+			}		
 		}
 	}
 

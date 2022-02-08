@@ -49,7 +49,7 @@ public class Game extends JPanel implements Runnable {
 	public int worldWidth;
 	public int worldHeight;
 	public final int numberOfBuildings = 10;
-	public final int numberOfCrates = 80;
+	public final int numberOfCrates = 25;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;
