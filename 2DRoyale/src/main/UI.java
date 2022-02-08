@@ -234,7 +234,7 @@ public class UI {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(42F));
 
-			String text = "Type the server ip:";
+			String text = "Enter server IP:";
 			int x = getXforCenteredText(text);
 			int y = game.tileSize * 3;
 			g2.drawString(text, x, y);
@@ -248,7 +248,17 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += game.tileSize * 3;
 			g2.drawString(text, x, y);
-			g2.drawString(">", x - game.tileSize, y);
+			if (commandNum == 0) {
+				g2.drawString(">", x - game.tileSize, y);
+			}
+			
+			text = "Copy From Keyboard";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			if (commandNum == 1) {
+				g2.drawString(">", x - game.tileSize, y);
+			}
 		}
 
 	}
@@ -261,11 +271,11 @@ public class UI {
 
 	public void drawHP() {
 		// display health logo
-		g2.drawImage(healthImage, game.tileSize, game.tileSize, 25, 25, null);
+		g2.drawImage(healthImage, game.tileSize, game.tileSize * 16, 25, 25, null);
 		// display health bar
 		Color c = new Color(255, 50, 50);
 		g2.setColor(c);
-		g2.fillRect(game.tileSize * 2, game.tileSize, game.player.health * 2, game.tileSize / 2);
+		g2.fillRect(game.tileSize * 2, game.tileSize * 16, game.player.health * 2, game.tileSize / 2);
 	}
 
 	public void drawInventory() {
