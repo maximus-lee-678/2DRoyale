@@ -31,7 +31,7 @@ public class KeyHandler implements KeyListener {
 		// when in menu page
 		if (gp.gameState == gp.titleState) {
 			if (gp.ui.titleScreenState == 0) {
-				if (code == KeyEvent.VK_S) {
+				if (code == KeyEvent.VK_W) {
 					gp.ui.commandNum--;
 					if (gp.ui.commandNum < 0) {
 						gp.ui.commandNum = 3;
