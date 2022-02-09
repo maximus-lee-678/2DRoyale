@@ -298,10 +298,11 @@ public class UI {
 		final int slotYstart = frameY + 20;
 		
 		//draw player's items in inventory
-		for (SuperWeapon weap : game.player.getWeapons())
-			if (weap != null)
-				weap.drawWeapon(g2);
-				
+		for(int i = 0; i < game.player.getWeapons().length; i++ ) {
+            SuperWeapon weap = game.player.getWeapons()[i];
+            if (weap != null)
+                g2.drawImage(weap.entityImg, slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.imgIconHeight/2, 50, 20, null);
+        } 
 		// cursor
 		cursorX = slotXstart;
 		cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);

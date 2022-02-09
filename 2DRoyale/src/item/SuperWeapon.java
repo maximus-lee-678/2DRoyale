@@ -55,13 +55,7 @@ public class SuperWeapon extends Entity implements shootInterface, Cloneable{
 			g2.drawImage(bulletImg, x, y, bulletSize, bulletSize, null); // Draw player
 		}
 	}
-	
-	public void drawWeapon(Graphics2D g2) {
-		int x = main.UI.cursorX;
-		int y = main.UI.cursorY;
-		g2.drawImage(entityImg, x, y + 15, 50, 20, null); // Draw weapon in inventory
-	}
-	
+
 
 	public void update() {
 		
