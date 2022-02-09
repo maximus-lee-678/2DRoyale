@@ -9,6 +9,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -24,6 +25,8 @@ public class UI {
 	Font maruMonica;
 	public boolean messageOn = false;
 	public boolean gameFinished = false;
+	ArrayList<String> message = new ArrayList<>();
+	ArrayList<Integer> messageCounter = new ArrayList<>();
 	public int commandNum = 0;
 	public int titleScreenState = 0;
 	public String name = "";
@@ -68,6 +71,7 @@ public class UI {
 			drawInventory();
 			drawKillsStat(69);
 			drawPlayerCount(game.getPlayers().size());
+			drawMessage();
 			
 		}
 		// End state
@@ -338,12 +342,44 @@ public class UI {
 	
 	public void drawPlayerCount(int playerCount){
 		int x = game.screen.screenWidth - game.tileSize*4;
-		int y =  game.tileSize*2;
+		int y = game.tileSize*2;
 		drawSubWindow(x, y, game.tileSize*3, game.tileSize);
 		String text = "Remaining: " + playerCount;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
 		g2.drawString(text, x + 10, y + 30);
+	}
+	
+	public void addMessage(String text) {
+		message.add(text);
+		messageCounter.add(0);
+		// add this line to the killed function -> game.iu.addMessage("blank killed blank")
+		
+	}
+	
+	public void drawMessage() {
+		int messageX = game.screen.screenWidth - game.tileSize*4;
+		int messageY = game.tileSize*4;
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+		
+		for(int i = 0; i < message.size(); i++) {
+			if(message.get(i) != null) {
+				
+				g2.setColor(Color.black);
+				g2.drawString(message.get(i),messageX+2, messageY+2);
+				g2.setColor(Color.white);
+				g2.drawString(message.get(i),messageX, messageY);
+			
+				int counter = messageCounter.get(i) + 1; //messageCounter++
+				messageCounter.set(i,  counter); //set the counter to the array
+				messageY += 50;
+				
+				if(messageCounter.get(i) > 180) {
+					message.remove(i);
+					messageCounter.remove(i);
+				}
+			}
+		}
 	}
 	
 	public void drawEndGame(boolean win) {
