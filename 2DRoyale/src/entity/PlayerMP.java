@@ -20,7 +20,7 @@ public class PlayerMP extends Player implements Cloneable {		//inherits Player c
 		this.ipAddress = ipAddress;
 		this.port = port;
 		
-	}
+	} 
 	
 	//Create using this constructor when player not the user (we do not have keyHandler here, because we do not want to update other player's movement with user inputs)
 	public PlayerMP(Game game, String username, int worldX, int worldY, int playerWeapIndex, InetAddress ipAddress, int port) {

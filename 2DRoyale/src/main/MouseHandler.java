@@ -24,7 +24,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 		if (game.gameState == game.playState) {
 			this.x = e.getX();
 			this.y = e.getY();
-		}		
+		}	
 	}
 
 	@Override

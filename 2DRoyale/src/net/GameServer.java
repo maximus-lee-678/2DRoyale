@@ -20,7 +20,7 @@ public class GameServer extends Thread {
 	private Game game;
 	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
-	
+
 	private int weaponIdCount;
 
 	public GameServer(Game game, long seed) {
@@ -106,7 +106,7 @@ public class GameServer extends Thread {
 		Random r = new Random();
 		crateOpenPacket.setWeapType(r.nextInt(game.itemM.weaponsArr.length));
 		crateOpenPacket.setWeapId(weaponIdCount++);
-		crateOpenPacket.sendData(this);	
+		crateOpenPacket.sendData(this);
 	}
 
 	private void handlePickUpWeapon(Pkt10PickupWeapon pickUpPacket) {
@@ -123,13 +123,13 @@ public class GameServer extends Thread {
 					weap.checkPlayerHit(connectedPlayers);
 					weap.update();
 				}
-			}		
+			}
 		}
 	}
 
 	private void handleShoot(Pkt06Shoot shootPacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
-		p.getWeapons()[weapIndex(p, shootPacket.getWeapon())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+		p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
 
 		shootPacket.sendData(this);
 	}
@@ -197,11 +197,11 @@ public class GameServer extends Thread {
 		return index;
 	}
 
-	private int weapIndex(PlayerMP player, String name) {
+	private int weapIndex(PlayerMP player, int weapId) {
 		int index = 0;
 
 		for (SuperWeapon w : player.getWeapons()) {
-			if (w != null && w.name.equals(name)) {
+			if (w != null && w.id == weapId) {
 				break;
 			}
 			index++;

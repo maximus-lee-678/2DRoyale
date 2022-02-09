@@ -77,8 +77,9 @@ public class GameClient extends Thread {
 		case 6:
 			// SHOOTING
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
+			if(game.player.getUsername() == shootPacket.getUsername()) return;
 			PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
-			p.getWeapons()[weapIndex(p, shootPacket.getWeapon())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
 			break;
 		case 7:
 			// SERVER SEED
@@ -92,8 +93,8 @@ public class GameClient extends Thread {
 			// SERVER BULLET HIT
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
-			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].serverHit(serverHitPacket.getBullet());
-			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapon())].damage;
+			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
+			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
 			game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
 			break;
 		case 10:
@@ -114,12 +115,11 @@ public class GameClient extends Thread {
 
 	}
 
-	private int weapIndex(PlayerMP player, String name) {
+	private int weapIndex(PlayerMP player, int weapId) {
 		int index = 0;
-		
+
 		for (SuperWeapon w : player.getWeapons()) {
-//			System.out.println(w.name + " " +  name);
-			if (w.name.equals(name)) {
+			if (w != null && w.id == weapId) {
 				break;
 			}
 			index++;

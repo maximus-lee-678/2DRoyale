@@ -53,7 +53,7 @@ public class Shotgun extends SuperWeapon {
 			
 			for(int i = -2; i < 3; i++) {
 				double spreadRad = Math.toRadians(bulletSpread*i);				
-				Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.name, angle+spreadRad, worldX, worldY);
+				Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.id, angle+spreadRad, worldX, worldY);
 				shootPacket.sendData(game.socketClient);
 			}
 			

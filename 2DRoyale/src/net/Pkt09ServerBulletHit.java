@@ -2,15 +2,15 @@ package net;
 
 public class Pkt09ServerBulletHit extends Packet{
 
-	private String weapon;
 	private int bullet;
+	private int weapId;
 	private String victim;
 
-	public Pkt09ServerBulletHit(String username, String victim, String weapon, int bullet) {
+	public Pkt09ServerBulletHit(String username, String victim, int weapId, int bullet) {
 		super(9, username);
-		this.victim = victim;
-		this.weapon = weapon;
 		this.bullet = bullet;
+		this.weapId = weapId;
+		this.victim = victim;		
 	}
 
 	public Pkt09ServerBulletHit(byte[] data) {
@@ -19,17 +19,17 @@ public class Pkt09ServerBulletHit extends Packet{
 		String[] dataArr = message.split(",");
 		this.username = dataArr[0];
 		this.victim = dataArr[1];
-		this.weapon = dataArr[2];		
+		this.weapId = Integer.parseInt(dataArr[2]);		
 		this.bullet = Integer.parseInt(dataArr[3]);		
 	}
 
 	@Override
 	public byte[] getData() {
-		return ("09" + getUsername() + "," + getVictim() + "," +getWeapon() + "," + getBullet()).getBytes();
+		return ("09" + getUsername() + "," + getVictim() + "," +getWeapId() + "," + getBullet()).getBytes();
 	}
 
-	public String getWeapon() {
-		return weapon;
+	public int getWeapId() {
+		return weapId;
 	}
 	
 	public int getBullet() {

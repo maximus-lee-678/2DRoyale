@@ -2,14 +2,14 @@ package net;
 
 public class Pkt06Shoot extends Packet {
 
-	private String weapon;
+	private int weapId;
 	private double projAngle;
 	private int worldX;
 	private int worldY;
 
-	public Pkt06Shoot(String username, String weapon, double projAngle, int worldX, int worldY) {
+	public Pkt06Shoot(String username, int weapId, double projAngle, int worldX, int worldY) {
 		super(6, username);
-		this.weapon = weapon;
+		this.weapId = weapId;
 		this.projAngle = projAngle;
 		this.worldX = worldX;
 		this.worldY = worldY;
@@ -20,7 +20,7 @@ public class Pkt06Shoot extends Packet {
 		String message = new String(data).trim().substring(2);
 		String[] dataArr = message.split(",");
 		this.username = dataArr[0];
-		this.weapon = dataArr[1];
+		this.weapId = Integer.parseInt(dataArr[1]);
 		this.projAngle = Double.parseDouble(dataArr[2]);
 		this.worldX = Integer.parseInt(dataArr[3]);
 		this.worldY = Integer.parseInt(dataArr[4]);
@@ -28,11 +28,11 @@ public class Pkt06Shoot extends Packet {
 
 	@Override
 	public byte[] getData() {
-		return ("06"+getUsername()+","+getWeapon()+","+getProjAngle()+","+getWorldX()+","+getWorldY()).getBytes();
+		return ("06"+getUsername()+","+getWeapId()+","+getProjAngle()+","+getWorldX()+","+getWorldY()).getBytes();
 	}
 
-	public String getWeapon() {
-		return weapon;
+	public int getWeapId() {
+		return weapId;
 	}
 
 	public double getProjAngle() {

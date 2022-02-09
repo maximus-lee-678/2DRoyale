@@ -57,7 +57,7 @@ public class Rifle extends SuperWeapon{
 			int spreadRad = rand.nextInt(bulletSpread*2+1)-bulletSpread;
 			angle += Math.toRadians(spreadRad);
 			
-			Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.name, angle, worldX, worldY);
+			Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.id, angle, worldX, worldY);
 			shootPacket.sendData(game.socketClient);
 			
 			fireRateTick = 0;

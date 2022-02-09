@@ -89,7 +89,7 @@ public class SuperWeapon extends Entity implements shootInterface, Cloneable{
 					
 				if (p.worldX < proj.worldX + bulletSize && p.worldX + game.playerSize > proj.worldX && p.worldY < proj.worldY + bulletSize && p.worldY + game.playerSize > proj.worldY) {
 					getBullets().remove(i--);
-					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.name, proj.id);
+					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.id);
 					serverHitPacket.sendData(game.socketServer);
 				}
 			}
