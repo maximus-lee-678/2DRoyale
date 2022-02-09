@@ -112,7 +112,6 @@ public class GameClient extends Thread {
 		case 8:
 			break;
 		}
-
 	}
 
 	private int weapIndex(PlayerMP player, int weapId) {

@@ -164,7 +164,6 @@ public class StructuresManager {
 
 			System.out.println("Generated " + placedBuildings + "/" + numberOfBuildings + " buildings...");
 		}
-
 		System.out.println("Building collisions: " + failedBuildingAttempts);
 	}
 
@@ -245,7 +244,7 @@ public class StructuresManager {
 
 	public boolean hasCollidedBuilding(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
 			int entityBottomWorldY, String type) {
-
+		
 		int buildingIndex;
 		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
 			int structX = building[buildingIndex].boundingBox.x;

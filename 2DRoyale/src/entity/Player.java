@@ -217,9 +217,6 @@ public class Player extends Entity { // inherits Entity class
 			crateOpenPacket.sendData(game.socketClient);
 			return;
 		}
-
-		
-
 	}
 	
 	public void updatePlayerHP(double health) {

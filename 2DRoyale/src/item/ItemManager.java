@@ -14,7 +14,7 @@ public class ItemManager {
 
 	public ItemManager(Game game) {
 		this.game = game;
-		this.weaponsArr = new SuperWeapon[3];
+		this.weaponsArr = new SuperWeapon[4];
 		this.worldWeapons = new ArrayList<SuperWeapon>();
 
 		loadWeapons();
@@ -25,6 +25,7 @@ public class ItemManager {
 		weaponsArr[0] = new Rifle(null, game);
 		weaponsArr[1] = new SMG(null, game);
 		weaponsArr[2] = new Shotgun(null, game);	
+		weaponsArr[3] = new Sniper(null, game);
 	}
 
 	public void spawnWeap(Crate crate, int weapType, int weapId) {

@@ -21,6 +21,8 @@ public class GameServer extends Thread {
 	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
 
+	private int gameTicks = 0;
+
 	private int weaponIdCount;
 
 	public GameServer(Game game, long seed) {
@@ -144,7 +146,6 @@ public class GameServer extends Thread {
 	private void handleMouseMove(Pkt04MouseMove mouseMovePacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(mouseMovePacket.getUsername()));
 		p.updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
-
 		mouseMovePacket.sendData(this);
 	}
 

@@ -10,24 +10,24 @@ import entity.Player;
 import main.Game;
 import net.Pkt06Shoot;
 
-public class Rifle extends SuperWeapon{
+public class Sniper extends SuperWeapon{
 
-	public Rifle(Player player, Game game) {
+	public Sniper(Player player, Game game) {
 		super(player, game);
 
-		this.name = "Rifle";
-		this.typeId = 0;
+		this.name = "Sniper";
+		this.typeId = 3;
 		this.imgOffset = -3;
-		this.speed = 5;
-		this.range = 20 * game.tileSize;
-		this.bulletSpread = 5; // in degrees
-		this.bulletSize = 12;
-		this.fireRate = 15;
-		this.damage = 18;
+		this.speed = 10;
+		this.range = 30 * game.tileSize;
+		this.bulletSpread = 0; // in degrees
+		this.bulletSize = 30;
+		this.fireRate = 30;
+		this.damage = 50;
 
 		try {
-			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/riflehand.png"));
-			this.entityImg = ImageIO.read(getClass().getResourceAsStream("/weap/rifle.png"));
+			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/sniperhand.png"));
+			this.entityImg = ImageIO.read(getClass().getResourceAsStream("/weap/sniper.png"));
 			this.bulletImg = ImageIO.read(getClass().getResourceAsStream("/projectile/bullet1.png"));
 		} catch (IOException e) {
 			e.printStackTrace();

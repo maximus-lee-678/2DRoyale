@@ -12,14 +12,16 @@ public class TileManager {
 
 	private Game game;
 	public Tile[] tile;
+	public Tile gasTile;
 	public int maxWorldCol, maxWorldRow;
 	public int mapTileNum[][][];
+	private int gasCounter;
 
 	public TileManager(Game game) {
 
 		this.game = game;
 		tile = new Tile[20]; // Currently we just store 20 types of tiles
-
+		gasCounter = 0;
 		getTileImage(); // populate tile array
 		loadMap("/maps/picture.png"); // load map
 
@@ -27,7 +29,6 @@ public class TileManager {
 
 	private void getTileImage() {
 
-		// load png image [\res\tiles] and store into tile arr
 		try {
 
 			tile[0] = new Tile();
@@ -69,6 +70,9 @@ public class TileManager {
 			tile[10] = new Tile();
 			tile[10].image = ImageIO.read(getClass().getResourceAsStream("/tiles/missing.png"));
 
+			gasTile = new Tile();
+			gasTile.image = ImageIO.read(getClass().getResourceAsStream("/tiles/gas.png"));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,7 +85,7 @@ public class TileManager {
 
 			maxWorldCol = img.getWidth();
 			maxWorldRow = img.getHeight();
-			mapTileNum = new int[maxWorldCol][maxWorldRow][2]; // create 2d array of the dimension of the world
+			mapTileNum = new int[maxWorldCol][maxWorldRow][3]; // create 2d array of the dimension of the world
 			// (units: tileSize)
 
 			for (int y = 0; y < maxWorldRow; y++) {
@@ -131,8 +135,21 @@ public class TileManager {
 		}
 	}
 
-	public boolean hasCollidedWorld(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
-			int entityBottomWorldY, String type) {
+	public void closeGas() {		
+		for (int y = 0; y < maxWorldRow; y++) {
+			mapTileNum[gasCounter][y][2] = 1;
+			mapTileNum[maxWorldCol-gasCounter-1][y][2] = 1;
+		}
+		for (int x = 0; x < maxWorldCol; x++) {
+			mapTileNum[x][gasCounter][2] = 1;
+			mapTileNum[x][maxWorldRow-gasCounter-1][2] = 1;
+		}
+		gasCounter++;
+		if(gasCounter > maxWorldCol - 1|| gasCounter > maxWorldRow - 1)
+			gasCounter--;
+	}
+
+	public boolean hasCollidedWorld(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
 
 		int entityLeftCol = entityLeftWorldX / game.tileSize;
 		int entityRightCol = entityRightWorldX / game.tileSize;
@@ -142,8 +159,7 @@ public class TileManager {
 		int checkLimitX = game.maxWorldCol - 1;
 		int checkLimitY = game.maxWorldRow - 1;
 		// Out of bounds prevention
-		if (entityLeftCol > checkLimitX || entityRightCol > checkLimitX || entityTopRow > checkLimitY
-				|| entityBottomRow > checkLimitY)
+		if (entityLeftCol > checkLimitX || entityRightCol > checkLimitX || entityTopRow > checkLimitY || entityBottomRow > checkLimitY)
 			return true;
 		if (entityLeftWorldX < 0 || entityRightWorldX < 0 || entityTopWorldY < 0 || entityBottomWorldY < 0)
 			return true;

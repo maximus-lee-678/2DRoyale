@@ -46,6 +46,7 @@ public class Screen {
 				p.renderBullets(g2);
 			for (PlayerMP p : game.getPlayers())
 				p.render(g2);
+			renderGas(g2);
 			renderMinimap(g2);
 		}
 
@@ -206,7 +207,34 @@ public class Screen {
 				worldRow++;
 			}
 		}
+	}
+	
+	private void renderGas(Graphics2D g2) {
+		int worldCol = 0;
+		int worldRow = 0;
 
+		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
+
+			int worldX = worldCol * game.tileSize;
+			int worldY = worldRow * game.tileSize;
+			int gameX = worldX - game.player.worldX + game.player.screenX;
+			int gameY = worldY - game.player.worldY + game.player.screenY;
+
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				if (game.tileM.mapTileNum[worldCol][worldRow][2] == 1)
+					g2.drawImage(game.tileM.gasTile.image, gameX, gameY, game.tileSize, game.tileSize, null);
+			}
+
+			worldCol++;
+
+			if (worldCol == game.maxWorldCol) {
+				worldCol = 0;
+				worldRow++;
+			}
+		}
 	}
 
 	private void renderBuildings(Graphics2D g2) {

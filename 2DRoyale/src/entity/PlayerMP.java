@@ -9,7 +9,7 @@ import main.KeyHandler;
 import main.MouseHandler;
 
 public class PlayerMP extends Player implements Cloneable {		//inherits Player class
-	
+
 	public InetAddress ipAddress;
 	public int port;
 	

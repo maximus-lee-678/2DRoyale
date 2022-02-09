@@ -130,13 +130,12 @@ public class Game extends JPanel implements Runnable {
 				frames++;
 				delta--;
 			}
-
+			
 			if (timer >= 1000000000) {
 				window.setTitle("Name: " + player.getUsername() + " FPS: " + frames);
 				timer = 0;
 				frames = 0;
 			}
-
 		}
 		
 	}
@@ -185,7 +184,10 @@ public class Game extends JPanel implements Runnable {
 			if(socketServer != null) {
 				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
 				serverTickPacket.sendData(socketClient);
-			}			
+			}
+			
+//			if (++gameTicks % 10 == 0)
+//				tileM.closeGas();
 		}
 	}
 
