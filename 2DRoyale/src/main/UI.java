@@ -68,6 +68,7 @@ public class UI {
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			drawHP();
 			drawInventory();
+			drawKillsStat(69);
 			
 		}
 		// End state
@@ -288,6 +289,16 @@ public class UI {
 		g2.setColor(c);
 		g2.fillRect(game.tileSize * 2, game.tileSize * 16, (int) (game.player.health * 2), game.tileSize / 2);
 	}
+	
+	public void drawKillsStat(int kills) {
+		int x = game.screen.screenWidth - game.tileSize*4;
+		int y =  game.tileSize;
+		drawSubWindow(x, y, game.tileSize*2, game.tileSize);
+		String text = "Killed: " + kills;
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+		g2.drawString(text, x + 10, y + 30);
+	}
 
 	public void drawInventory() {
 
@@ -324,12 +335,7 @@ public class UI {
 	public void drawSubWindow(int x, int y, int width, int height) {
 		Color c = new Color(0, 0, 0, 100);
 		g2.setColor(c);
-		g2.fillRoundRect(x, y, width, height, 35, 35);
-
-		c = new Color(255, 255, 255);
-		g2.setColor(c);
-		g2.setStroke(new BasicStroke(5));
-		g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
+		g2.fillRoundRect(x, y, width, height, 10, 10);
 	}
 	
 	public void drawEndGame(boolean win) {
