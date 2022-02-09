@@ -224,6 +224,10 @@ public class Player extends Entity { // inherits Entity class
 		if(this.health < 0)
 			this.health = 0;
 	}
+	
+	public double getPlayerHP() {
+		return this.health;
+	}
 
 	public void updatePlayerXY(int worldX, int worldY) {
 		this.worldX = worldX;

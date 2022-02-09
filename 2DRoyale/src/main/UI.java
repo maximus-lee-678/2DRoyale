@@ -32,8 +32,6 @@ public class UI {
 	public String temp = "";
 	public String ipAddress = "";
 	public BufferedImage healthImage;
-	public static int cursorX;
-	public static int cursorY;
 
 	public UI(Game game) {
 		this.game = game;
@@ -70,7 +68,14 @@ public class UI {
 		if (game.gameState == game.playState) {
 			drawHP();
 			drawInventory();
+			
 		}
+		// End state
+		if (game.gameState == game.endState) {
+			//true if player wins, false if player loses
+			drawEndGame(false);
+		}
+		
 
 	}
 
@@ -304,8 +309,8 @@ public class UI {
                 g2.drawImage(weap.entityImg, slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.imgIconHeight/2, 50, 20, null);
         } 
 		// cursor
-		cursorX = slotXstart;
-		cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
+		int cursorX = slotXstart;
+		int cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
 		int cursorWidth = game.tileSize;
 		int cursorHeight = game.tileSize;
 
@@ -325,5 +330,46 @@ public class UI {
 		g2.setColor(c);
 		g2.setStroke(new BasicStroke(5));
 		g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
+	}
+	
+	public void drawEndGame(boolean win) {
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(42F));
+		String text;
+		int x;
+		int y;
+
+		if (win) {
+			text = "You Win!";
+			x = getXforCenteredText(text);
+			y = game.tileSize * 3;
+			g2.drawString(text, x, y);
+		}
+		else {
+			text = "You Died!";
+			x = getXforCenteredText(text);
+			y = game.tileSize * 3;
+			g2.drawString(text, x, y);
+		}
+		
+		//get kills from player
+		int kills = 69;
+		text = "Number of Kills: " + kills;
+		x = getXforCenteredText(text);
+		y += game.tileSize * 3;
+		g2.drawString(text, x, y);
+		
+		//get position of player from the length of array
+		int position = 69;
+		text = "Position: #" + position;
+		x = getXforCenteredText(text);
+		y += game.tileSize;
+		g2.drawString(text, x, y);
+		
+		text = "Back to Main Menu";
+		x = getXforCenteredText(text);
+		y += game.tileSize * 3;
+		g2.drawString(text, x, y);
+		g2.drawString(">", x - game.tileSize, y);
 	}
 }

@@ -21,6 +21,7 @@ import entity.PlayerMP;
 import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
+import net.Pkt02Disconnect;
 import net.Pkt08ServerTick;
 import structure.StructuresManager;
 import tile.TileManager;
@@ -68,7 +69,7 @@ public class Game extends JPanel implements Runnable {
 	public GameServer socketServer;
 
 	// Game State
-	public int gameState;
+	public int gameState = 0;
 	public final int titleState = 0;
 	public final int playState = 1;
 	public final int endState = 2;
@@ -188,6 +189,11 @@ public class Game extends JPanel implements Runnable {
 			
 //			if (++gameTicks % 10 == 0)
 //				tileM.closeGas();
+		
+		}
+		//when user dies, disconnect user and change to end state
+		if (player.getPlayerHP() == 0) {
+			gameState = endState;
 		}
 	}
 

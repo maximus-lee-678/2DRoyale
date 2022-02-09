@@ -227,6 +227,12 @@ public class KeyHandler implements KeyListener {
 			
 				
 		}
+		if (gp.gameState == gp.endState) {
+			if (code == KeyEvent.VK_ENTER) {
+				gp.gameState = gp.titleState;
+				System.out.println("dsdasd");
+			}
+		}
 		
 	}
 
