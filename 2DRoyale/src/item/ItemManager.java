@@ -24,7 +24,7 @@ public class ItemManager {
 	private void loadWeapons() {
 		weaponsArr[0] = new Rifle(null, game);
 		weaponsArr[1] = new SMG(null, game);
-		weaponsArr[2] = new Shotgun(null, game);	
+		weaponsArr[2] = new Shotgun(null, game);
 		weaponsArr[3] = new Sniper(null, game);
 	}
 
@@ -41,10 +41,22 @@ public class ItemManager {
 		}
 
 	}
-	
+
+	public void dropWeap(int weapType, int weapId, int worldX, int worldY) {
+		try {
+			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
+			newWeap.id = weapId;
+			newWeap.worldX = worldX;
+			newWeap.worldY = worldY;
+			worldWeapons.add(newWeap);
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void deleteWorldWeapon(int weapId) {
-		for(SuperWeapon w : worldWeapons) {
-			if(w.id == weapId) {
+		for (SuperWeapon w : worldWeapons) {
+			if (w.id == weapId) {
 				worldWeapons.remove(w);
 				return;
 			}

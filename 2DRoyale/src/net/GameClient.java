@@ -91,8 +91,7 @@ public class GameClient extends Thread {
 			game.player.generatePlayerXY();
 			break;
 		case 9:
-			// SERVER BULLET HIT
-			
+			// SERVER BULLET HIT			
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
@@ -107,27 +106,36 @@ public class GameClient extends Thread {
 			game.itemM.deleteWorldWeapon(pickUpPacket.getWeapId());
 			break;
 		case 11:
+			//OPEN CRATE
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
 			game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());
 			break;
+		case 12:
+			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
+			game.getPlayers().get(playerIndex(dropPacket.getUsername())).dropWeapon(dropPacket.getPlayerWeapIndex());
+			game.itemM.dropWeap(dropPacket.getWeapType(), dropPacket.getWeapId(), dropPacket.getWorldX(), dropPacket.getWorldY());
+			break;
 		case 13:
+			//CLOSE GAS
 			game.tileM.closeGas();
 			break;
 		case 14:
+			//GAME START
 			game.gameState = game.playState;			
 			game.loadDefaults();
 			game.player.generatePlayerXY();
-			game.player.setDefaultValues();
+			game.player.setPlayerDefault();
 			game.player.freeze = true;
 			break;
 		case 15:
+			//COUNTDOWN SEQUENCE
 			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(data);
-			if(countDownPacket.getCountDown() == 0) {
+			if(countDownPacket.getCountDown() > 0) 
+				System.out.println("Game Starting in " + countDownPacket.getCountDown());
+			else {
 				System.out.println("GO");
 				game.player.freeze = false;
-			} else {
-				System.out.println("Game Starting in " + countDownPacket.getCountDown());
 			}
 			break;
 		default:

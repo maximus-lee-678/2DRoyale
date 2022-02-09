@@ -21,6 +21,7 @@ import net.Pkt03Move;
 import net.Pkt04MouseMove;
 import net.Pkt10PickupWeapon;
 import net.Pkt11CrateOpen;
+import net.Pkt12DropWeapon;
 import structure.Crate;
 
 public class Player extends Entity { // inherits Entity class
@@ -63,11 +64,11 @@ public class Player extends Entity { // inherits Entity class
 
 		this.freeze = false;
 
-		setDefaultValues();
+		setPlayerDefault();
 		getPlayerImage();
 	}
 
-	public void setDefaultValues() {
+	public void setPlayerDefault() {
 		this.playerWeap = new SuperWeapon[4];
 		this.health = 100;
 	}
@@ -117,14 +118,8 @@ public class Player extends Entity { // inherits Entity class
 		}
 
 		System.out.println("Player collisions: " + failedPlayerAttempts);
-//		if (game.gameState == game.playState ) {
-			Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
-			movePacket.sendData(game.socketClient);
-//		}
-	}
-
-	public void setPlayerCoords() {
-
+		Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
+		movePacket.sendData(game.socketClient);
 	}
 
 	private void getPlayerImage() {
@@ -137,20 +132,20 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	public void addWeapon(int playerWeapIndex, int weapType, int weapId) {
-
 		try {
-
 			SuperWeapon newWeap;
 			newWeap = (SuperWeapon) game.itemM.weaponsArr[weapType].clone();
 			newWeap.id = weapId;
 			newWeap.player = this;
 
 			playerWeap[playerWeapIndex] = newWeap;
-
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
+	}
 
+	public void dropWeapon(int playerWeapIndex) {
+		playerWeap[playerWeapIndex] = null;
 	}
 
 	public void setUsername(String username) {
@@ -187,6 +182,14 @@ public class Player extends Entity { // inherits Entity class
 			if (keys.interact == true) {
 				withinRange();
 				keys.interact = false;
+			}
+			if (keys.drop == true) {
+				if (playerWeap[playerWeapIndex] != null) {
+					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
+					Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+					dropPacket.sendData(game.socketClient);
+				}
+				keys.drop = false;
 			}
 
 		}
@@ -260,6 +263,11 @@ public class Player extends Entity { // inherits Entity class
 		SuperWeapon weapon = game.itemM.withinWeaponsRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 
 		if (weapon != null) {
+			if (playerWeap[playerWeapIndex] != null) {
+				SuperWeapon dropWeap = playerWeap[playerWeapIndex];
+				Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, weapon.worldX, weapon.worldY);
+				dropPacket.sendData(game.socketClient);
+			}
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id);
 			pickUpPacket.sendData(game.socketClient);
 			return;

@@ -324,6 +324,7 @@ public class StructuresManager {
 
 		for (int crateIndex = 0; crateIndex < crates.size(); crateIndex++) {
 			Crate crate = crates.get(crateIndex);
+			if(crate == null) return false;
 
 			int structX = crate.collisionBoundingBox.x;
 			int structY = crate.collisionBoundingBox.y;

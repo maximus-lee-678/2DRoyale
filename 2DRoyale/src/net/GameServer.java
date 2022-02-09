@@ -34,6 +34,7 @@ public class GameServer extends Thread {
 		this.seed = seed;
 		this.weaponIdCount = 0;
 		this.gameState = waitState;
+		this.countDownSeq = -1;
 		try {
 			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
@@ -107,13 +108,23 @@ public class GameServer extends Thread {
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			handleCrateOpen(crateOpenPacket);
 			break;
+		case 12:
+			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
+			handleDropWeapon(dropPacket);
+			break;
 		case 14:
+			//START GAME
 			handleStartGame();
 			break;
 		default:
 		case 0:
 			break;
 		}
+	}
+
+	private void handleDropWeapon(Pkt12DropWeapon dropPacket) {
+		connectedPlayers.get(playerIndex(dropPacket.getUsername())).dropWeapon(dropPacket.getPlayerWeapIndex());
+		dropPacket.sendData(this);
 	}
 
 	private void handleStartGame() {

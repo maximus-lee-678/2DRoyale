@@ -16,7 +16,7 @@ import net.Pkt14StartGame;
 public class KeyHandler implements KeyListener {
 
 	Game gp;
-	public boolean up, down, left, right, interact = false;
+	public boolean up, down, left, right, interact = false, drop = false;
 	String pattern = "^[a-zA-Z0-9]*$";
 	String ipPattern = "^[0-9\\.]*$";
 
@@ -140,7 +140,6 @@ public class KeyHandler implements KeyListener {
 
 			}
 			// when in "Type the server ip:" page
-
 			else if (gp.ui.titleScreenState == 5) {
 				if (code == KeyEvent.VK_W) {
 					gp.ui.commandNum--;
@@ -205,14 +204,15 @@ public class KeyHandler implements KeyListener {
 				right = true;
 			if (code == KeyEvent.VK_E) {
 				interact = false;
-//				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
-//				pickupWeapon.sendData(gp.socketClient);
 			}
 			if (code == KeyEvent.VK_F) {
 				if (gp.socketServer != null) {
 					Pkt14StartGame startGamePacket = new Pkt14StartGame();
 					startGamePacket.sendData(gp.socketClient);
 				}
+			}
+			if (code == KeyEvent.VK_Q) {
+				drop = false;
 			}
 			if (code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
@@ -252,6 +252,9 @@ public class KeyHandler implements KeyListener {
 			right = false;
 		if (code == KeyEvent.VK_E)
 			interact = true;
+		if (code == KeyEvent.VK_Q) 
+			drop = true;
+
 	}
 
 	public String removeLastChar(String str) {
