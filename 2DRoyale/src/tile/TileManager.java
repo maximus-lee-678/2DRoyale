@@ -23,7 +23,7 @@ public class TileManager {
 		tile = new Tile[20]; // Currently we just store 20 types of tiles
 		gasCounter = 0;
 		getTileImage(); // populate tile array
-		loadMap("/maps/picture.png"); // load map
+		loadMap("/maps/olympus.png"); // load map
 
 	}
 

@@ -15,7 +15,7 @@ import net.Pkt10PickupWeapon;
 public class KeyHandler implements KeyListener {
 
 	Game gp;
-	public boolean up, down, left, right, interact = false;
+	public boolean up, down, left, right, interact, map = false;
 	String pattern = "^[a-zA-Z0-9]*$";
 	String ipPattern = "^[0-9\\.]*$";
 
@@ -212,6 +212,9 @@ public class KeyHandler implements KeyListener {
 //				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
 //				pickupWeapon.sendData(gp.socketClient);
 			}
+			if (code == KeyEvent.VK_M)
+				map = !map;
+			
 			if(code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
 			}
@@ -244,7 +247,7 @@ public class KeyHandler implements KeyListener {
 			right = false;
 		if (code == KeyEvent.VK_E)
 			interact = true;
-	}
+		}
 
 	public String removeLastChar(String str) {
 		if (str != null && str.length() > 0) {
