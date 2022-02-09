@@ -21,7 +21,7 @@ public class Screen {
 	public final int maxScreenRow = 18;
 	public final int screenWidth;
 	public final int screenHeight;
-	private BufferedImage minimapBack, megamap;
+	private BufferedImage minimapBack, megamapLobby, megamapGame;
 
 	public Screen(Game game) {
 		this.game = game;
@@ -29,7 +29,8 @@ public class Screen {
 		this.screenHeight = game.tileSize * maxScreenRow;
 		try {
 			minimapBack = ImageIO.read(getClass().getResourceAsStream("/UI/minimap_back.png"));
-			megamap = ImageIO.read(getClass().getResourceAsStream("/maps/olympusMega.png"));
+			megamapLobby = ImageIO.read(getClass().getResourceAsStream("/maps/lobbyMega.png"));
+			megamapGame = ImageIO.read(getClass().getResourceAsStream("/maps/olympusMega.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +71,10 @@ public class Screen {
 		int playerMapY = (int)Math.round((double)game.player.worldY / game.worldHeight * megamapHeight);
 
 		// Draw Map
-		g2.drawImage(megamap, megamapRenderAtX, megamapRenderAtY, megamapLength, megamapHeight, null);
+		if(game.gameState == game.waitState)
+			g2.drawImage(megamapLobby, megamapRenderAtX, megamapRenderAtY, megamapLength, megamapHeight, null);
+		else
+			g2.drawImage(megamapGame, megamapRenderAtX, megamapRenderAtY, megamapLength, megamapHeight, null);
 		
 		// Draw player sprite (decent quality)
 				g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize/2),
@@ -81,10 +85,10 @@ public class Screen {
 	// Current still here for picture taking purposes
 	// Remove before final release
 	private void renderMegamapObsolete(Graphics2D g2) {
-		int megamapLength = 800;
-		int megamapHeight = 800;
-		int megamapRenderAtX = 200;
-		int megamapRenderAtY = 200;
+		int megamapLength = 600;
+		int megamapHeight = 600;
+		int megamapRenderAtX = 150;
+		int megamapRenderAtY = 150;
 		int megamapTileSizeX = megamapLength / game.maxWorldCol;
 		int megamapTileSizeY = megamapHeight / game.maxWorldRow;
 
@@ -114,20 +118,20 @@ public class Screen {
 		megamapX = 0;
 		megamapY = 0;
 		// Render buildings
-		for (int y = 0; y < game.maxWorldRow; y++) {
-			megamapX = 0;
-			for (int x = 0; x < game.maxWorldCol; x++) {
-				if (game.structM.buildingOccupiesTile[x][y] == 1)
-					g2.drawImage(game.tileM.tile[6].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY,
-							megamapTileSizeX, megamapTileSizeY, null);
-				megamapX += megamapTileSizeX;
-			}
-			megamapY += megamapTileSizeY;
-		}
+//		for (int y = 0; y < game.maxWorldRow; y++) {
+//			megamapX = 0;
+//			for (int x = 0; x < game.maxWorldCol; x++) {
+//				if (game.structM.buildingOccupiesTile[x][y] == 1)
+//					g2.drawImage(game.tileM.tile[6].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY,
+//							megamapTileSizeX, megamapTileSizeY, null);
+//				megamapX += megamapTileSizeX;
+//			}
+//			megamapY += megamapTileSizeY;
+//		}
 
 		// Draw player sprite (decent quality)
-		g2.drawImage(game.player.sprite, megamapRenderAtX + (playerTileX * megamapTileSizeX),
-				megamapRenderAtY + (playerTileY * megamapTileSizeY), megamapTileSizeX, megamapTileSizeY, null);
+//		g2.drawImage(game.player.sprite, megamapRenderAtX + (playerTileX * megamapTileSizeX),
+//				megamapRenderAtY + (playerTileY * megamapTileSizeY), megamapTileSizeX, megamapTileSizeY, null);
 
 	}
 

@@ -26,7 +26,7 @@ public class TileManager {
 
 		System.out.println(game.gameState);
 		if (game.gameState == game.waitState)
-			loadMap("/maps/picture.png"); // load map
+			loadMap("/maps/lobby.png"); // load map
 		if (game.gameState == game.playState)
 			loadMap("/maps/olympus.png"); // load map
 

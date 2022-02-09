@@ -157,7 +157,7 @@ public class GameServer extends Thread {
 			countDownPacket.sendData(this);
 			countDownSeq--;
 		}
-		if (gameState == playState && gameTicks % 1000 == 0) {
+		if (gameState == playState && gameTicks % 60 == 0) {	//gas speed
 			Pkt13Gas gasPacket = new Pkt13Gas();
 			gasPacket.sendData(this);
 		}
