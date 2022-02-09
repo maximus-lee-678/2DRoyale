@@ -21,7 +21,7 @@ public class Screen {
 	public final int maxScreenRow = 18;
 	public final int screenWidth;
 	public final int screenHeight;
-	private BufferedImage minimapBack;
+	private BufferedImage minimapBack, megamap;
 
 	public Screen(Game game) {
 		this.game = game;
@@ -29,6 +29,7 @@ public class Screen {
 		this.screenHeight = game.tileSize * maxScreenRow;
 		try {
 			minimapBack = ImageIO.read(getClass().getResourceAsStream("/UI/minimap_back.png"));
+			megamap = ImageIO.read(getClass().getResourceAsStream("/maps/olympusMega.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -47,19 +48,95 @@ public class Screen {
 			for (PlayerMP p : game.getPlayers())
 				p.render(g2);
 			renderGas(g2);
-			renderMinimap(g2);
+
+			if (game.keys.map)
+				renderMegamap(g2);
+			else
+				renderMinimap(g2);
 		}
 
 		game.ui.draw(g2);
 
 	}
 
+	private void renderMegamap(Graphics2D g2) {
+		int megamapLength = 600;
+		int megamapHeight = 600;
+		int megamapRenderAtX = game.player.screenX - megamapLength / 2;
+		int megamapRenderAtY = game.player.screenY - megamapHeight / 2;
+		int playerSize = 9;
+		
+		int playerMapX = (int)Math.round((double)game.player.worldX / game.worldWidth * megamapLength);
+		int playerMapY = (int)Math.round((double)game.player.worldY / game.worldHeight * megamapHeight);
+
+		// Draw Map
+		g2.drawImage(megamap, megamapRenderAtX, megamapRenderAtY, megamapLength, megamapHeight, null);
+		
+		// Draw player sprite (decent quality)
+				g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize/2),
+						megamapRenderAtY + playerMapY - (playerSize/2), playerSize, playerSize, null);
+	}
+
+	// NOTE: not in final release due to performance issues
+	// Current still here for picture taking purposes
+	// Remove before final release
+	private void renderMegamapObsolete(Graphics2D g2) {
+		int megamapLength = 800;
+		int megamapHeight = 800;
+		int megamapRenderAtX = 200;
+		int megamapRenderAtY = 200;
+		int megamapTileSizeX = megamapLength / game.maxWorldCol;
+		int megamapTileSizeY = megamapHeight / game.maxWorldRow;
+
+		int playerTileX = game.player.worldX / game.tileSize;
+		int playerTileY = game.player.worldY / game.tileSize;
+
+		int megamapX = 0;
+		int megamapY = 0;
+
+		// Render blocks
+		for (int y = 0; y < game.maxWorldRow; y++) {
+			megamapX = 0;
+			for (int x = 0; x < game.maxWorldCol; x++) {
+				int tileNum = game.tileM.mapTileNum[x][y][0];
+
+				if (game.tileM.mapTileNum[x][y][1] == 1)
+					g2.drawImage(game.tileM.tile[tileNum].image, megamapRenderAtX + megamapX,
+							megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
+				else
+					g2.drawImage(game.tileM.tile[tileNum].image, megamapRenderAtX + megamapX + megamapTileSizeX,
+							megamapRenderAtY + megamapY, -megamapTileSizeX, megamapTileSizeY, null);
+				megamapX += megamapTileSizeX;
+			}
+			megamapY += megamapTileSizeY;
+		}
+
+		megamapX = 0;
+		megamapY = 0;
+		// Render buildings
+		for (int y = 0; y < game.maxWorldRow; y++) {
+			megamapX = 0;
+			for (int x = 0; x < game.maxWorldCol; x++) {
+				if (game.structM.buildingOccupiesTile[x][y] == 1)
+					g2.drawImage(game.tileM.tile[6].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY,
+							megamapTileSizeX, megamapTileSizeY, null);
+				megamapX += megamapTileSizeX;
+			}
+			megamapY += megamapTileSizeY;
+		}
+
+		// Draw player sprite (decent quality)
+		g2.drawImage(game.player.sprite, megamapRenderAtX + (playerTileX * megamapTileSizeX),
+				megamapRenderAtY + (playerTileY * megamapTileSizeY), megamapTileSizeX, megamapTileSizeY, null);
+
+	}
+
 	private void renderMinimap(Graphics2D g2) {
 		int minimapRadius = 18;
 		int minimapTileSize = 4;
-		int minimapRenderAtX = 48;
-		int minimapRenderAtY = 48;
-		int minimapBorderSize = 1 * minimapTileSize;
+		int minimapRenderAtX = 70;
+		int minimapRenderAtY = 70;
+		int minimapBorderSize = (int) (minimapRadius * 1.25);
 		int minimapBackSize = (minimapRadius * 2 + 1) * minimapTileSize + (minimapBorderSize * 2);
 		int minimapBackRenderAtX = minimapRenderAtX - minimapBorderSize;
 		int minimapBackRenderAtY = minimapRenderAtY - minimapBorderSize;
@@ -121,6 +198,7 @@ public class Screen {
 
 		minimapX = 0;
 		minimapY = 0;
+
 		// Draw tiles
 		for (int y = yLowerBound; y < yUpperBound + 1; y++) {
 			minimapX = 0;
@@ -133,7 +211,7 @@ public class Screen {
 							minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize,
 							null);
 				else {
-					if (tileNum != 7)
+					if (game.tileM.mapTileNum[x][y][0] != 7)
 						g2.drawImage(game.tileM.tile[tileNum].image,
 								minimapRenderAtX + minimapX + minimapTileSize + (xOffset * minimapTileSize),
 								minimapRenderAtY + minimapY + (yOffset * minimapTileSize), -minimapTileSize,
@@ -145,32 +223,22 @@ public class Screen {
 			minimapY += minimapTileSize;
 		}
 
-		// WIP DONT TOUCH
-		
-//		Building[] building = game.structM.building;
-//		int[][] buildingOccupiesTile = new int[game.maxWorldRow][game.maxWorldCol];
-//
-//		for (int y = 0; y < game.maxWorldCol; y++) {
-//			for (int x = 0; x < game.maxWorldRow; x++) {
-//				buildingOccupiesTile[x][y] = 0;
-//			}
-//		}
-//
-//		for (int i = 0; i < game.numberOfBuildings; i++) {
-//			int buildingTopLeftX;
-//			int buildingTopLeftY;
-//			int buildingBottomRightX;
-//			int buildingBottomRightY;
-//
-//			buildingTopLeftX = building[i].boundingBox.x / game.tileSize;
-//			buildingTopLeftY = building[i].boundingBox.y / game.tileSize;
-//			buildingBottomRightX = (building[i].boundingBox.x + building[i].boundingBox.width) / game.tileSize;
-//			buildingBottomRightY = (building[i].boundingBox.y + building[i].boundingBox.height) / game.tileSize;
-//			
-//			for (int j = buildingTopLeftX ; j <= buildingBottomRightX ; j++) {
-//				
-//			}
-//		}
+		minimapX = 0;
+		minimapY = 0;
+
+		// Draw buildings
+		for (int y = yLowerBound; y < yUpperBound + 1; y++) {
+			minimapX = 0;
+			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
+				if (game.structM.buildingOccupiesTile[x][y] == 1)
+					g2.drawImage(game.tileM.tile[6].image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
+							minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize,
+							null);
+
+				minimapX += minimapTileSize;
+			}
+			minimapY += minimapTileSize;
+		}
 
 		// Draw player sprite (terrible quality)
 		g2.drawImage(game.player.sprite, minimapRenderAtX + (minimapRadius * minimapTileSize),
@@ -208,7 +276,7 @@ public class Screen {
 			}
 		}
 	}
-	
+
 	private void renderGas(Graphics2D g2) {
 		int worldCol = 0;
 		int worldRow = 0;

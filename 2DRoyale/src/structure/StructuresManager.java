@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -17,6 +18,7 @@ public class StructuresManager {
 	// Building Variables
 	public int buildingTileSize = 16;
 	public int buildingBlueprintCount = 7;
+	public int[][] buildingOccupiesTile;
 
 	// Crate Variables
 	public int crateTileSize = 32;
@@ -38,6 +40,7 @@ public class StructuresManager {
 		obstruction = new Tile[10];
 		building = new Building[game.numberOfBuildings];
 		crates = new ArrayList<Crate>();// new Crate[game.numberOfCrates];
+		buildingOccupiesTile = new int[game.maxWorldCol][game.maxWorldRow];
 		crateTileNum = new ArrayList<Integer>();
 
 		getTileImage(); // populate tile array
@@ -120,7 +123,8 @@ public class StructuresManager {
 		int placedBuildings = 0;
 		int failedBuildingAttempts = 0; // debug variable
 
-		mainLoop: while (placedBuildings < numberOfBuildings) {
+		mainLoop:
+		while (placedBuildings < numberOfBuildings) {
 			Building tryBuilding = new Building(
 					"/blueprint/building" + game.rand.nextInt(buildingBlueprintCount) + ".txt", buildingTileSize);
 
@@ -161,13 +165,37 @@ public class StructuresManager {
 
 			building[placedBuildings] = tryBuilding;
 			placedBuildings++;
-
+			
 			System.out.println("Generated " + placedBuildings + "/" + numberOfBuildings + " buildings...");
 		}
-		System.out.println("Building collisions: " + failedBuildingAttempts);		
-		
-	}
 
+		System.out.println("Building collisions: " + failedBuildingAttempts);
+		
+		// Fill buildings in tile array, for minimap rendering
+		for (int y = 0; y < game.maxWorldCol; y++) {
+			for (int x = 0; x < game.maxWorldRow; x++) {
+				buildingOccupiesTile[x][y] = 0;
+			}
+		}
+
+		for (int i = 0; i < game.numberOfBuildings; i++) {
+			int buildingTopLeftX;
+			int buildingTopLeftY;
+			int buildingBottomRightX;
+			int buildingBottomRightY;
+
+			buildingTopLeftX = building[i].boundingBox.x / game.tileSize;
+			buildingTopLeftY = building[i].boundingBox.y / game.tileSize;
+			buildingBottomRightX = (building[i].boundingBox.x + building[i].boundingBox.width) / game.tileSize;
+			buildingBottomRightY = (building[i].boundingBox.y + building[i].boundingBox.height) / game.tileSize;
+
+			for (int y = buildingTopLeftY; y <= buildingBottomRightY; y++) {
+				for (int x = buildingTopLeftX; x < buildingBottomRightX; x++) {
+					buildingOccupiesTile[x][y] = 1;
+				}
+			}
+		}
+	}
 	public void loadCrates(int numberOfCrates) {
 
 		int placedCrates = 0;
@@ -232,6 +260,7 @@ public class StructuresManager {
 		System.out.println("Crate collisions: " + failedCrateAttempts);
 	}
 
+
 	public Crate deleteCrate(int delCrateId) {
 		for (int i = 0; i < crates.size(); i++) {
 			Crate crate = crates.get(i);
@@ -245,7 +274,7 @@ public class StructuresManager {
 
 	public boolean hasCollidedBuilding(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY,
 			int entityBottomWorldY, String type) {
-		
+
 		int buildingIndex;
 		for (buildingIndex = 0; buildingIndex < building.length; buildingIndex++) {
 			int structX = building[buildingIndex].boundingBox.x;
@@ -277,6 +306,15 @@ public class StructuresManager {
 					entityTopRow = entityBottomRow;
 				if (entityBottomRow > checkLimitY)
 					entityBottomRow = entityTopRow;
+				
+				if (entityLeftCol < 0)
+					entityLeftCol = 0;
+				if (entityRightCol < 0)
+					entityRightCol = 0;
+				if (entityTopRow < 0)
+					entityTopRow = 0;
+				if (entityBottomRow < 0)
+					entityBottomRow = 0;
 
 				int tileNum1 = 0, tileNum2 = 0;
 				int[] rowNum;

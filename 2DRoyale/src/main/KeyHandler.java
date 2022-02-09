@@ -16,7 +16,7 @@ import net.Pkt14StartGame;
 public class KeyHandler implements KeyListener {
 
 	Game gp;
-	public boolean up, down, left, right, interact = false, drop = false;
+	public boolean up, down, left, right, interact = false, drop = false, map = false;
 	String pattern = "^[a-zA-Z0-9]*$";
 	String ipPattern = "^[0-9\\.]*$";
 
@@ -214,7 +214,10 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_Q) {
 				drop = false;
 			}
-			if (code == KeyEvent.VK_1) {
+			if (code == KeyEvent.VK_M)
+				map = !map;
+			
+			if(code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
 			}
 			if (code == KeyEvent.VK_2) {
