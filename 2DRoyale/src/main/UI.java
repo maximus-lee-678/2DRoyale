@@ -9,8 +9,12 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.imageio.ImageIO;
+
+import entity.Player;
+import item.SuperWeapon;
 
 public class UI {
 
@@ -28,6 +32,8 @@ public class UI {
 	public String temp = "";
 	public String ipAddress = "";
 	public BufferedImage healthImage;
+	public static int cursorX;
+	public static int cursorY;
 
 	public UI(Game game) {
 		this.game = game;
@@ -290,12 +296,15 @@ public class UI {
 		// slot
 		final int slotXstart = frameX + 24;
 		final int slotYstart = frameY + 20;
-		int slotX = slotXstart;
-		int slotY = slotYstart;
-
+		
+		//draw player's items in inventory
+		for (SuperWeapon weap : game.player.getWeapons())
+			if (weap != null)
+				weap.drawWeapon(g2);
+				
 		// cursor
-		int cursorX = slotXstart;
-		int cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
+		cursorX = slotXstart;
+		cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
 		int cursorWidth = game.tileSize;
 		int cursorHeight = game.tileSize;
 
@@ -305,7 +314,7 @@ public class UI {
 		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
 	}
-
+	
 	public void drawSubWindow(int x, int y, int width, int height) {
 		Color c = new Color(0, 0, 0, 100);
 		g2.setColor(c);
