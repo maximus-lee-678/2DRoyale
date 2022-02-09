@@ -14,6 +14,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import entity.Player;
+import entity.PlayerMP;
 import item.SuperWeapon;
 
 public class UI {
@@ -22,10 +23,7 @@ public class UI {
 	Graphics2D g2;
 	Font maruMonica;
 	public boolean messageOn = false;
-	public String message = "";
-	int messageCoutner = 0;
 	public boolean gameFinished = false;
-	public String currentDialogue = "";
 	public int commandNum = 0;
 	public int titleScreenState = 0;
 	public String name = "";
@@ -69,6 +67,7 @@ public class UI {
 			drawHP();
 			drawInventory();
 			drawKillsStat(69);
+			drawPlayerCount(game.getPlayers().size());
 			
 		}
 		// End state
@@ -289,16 +288,6 @@ public class UI {
 		g2.setColor(c);
 		g2.fillRect(game.tileSize * 2, game.tileSize * 16, (int) (game.player.health * 2), game.tileSize / 2);
 	}
-	
-	public void drawKillsStat(int kills) {
-		int x = game.screen.screenWidth - game.tileSize*4;
-		int y =  game.tileSize;
-		drawSubWindow(x, y, game.tileSize*2, game.tileSize);
-		String text = "Killed: " + kills;
-		g2.setColor(Color.white);
-		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
-		g2.drawString(text, x + 10, y + 30);
-	}
 
 	public void drawInventory() {
 
@@ -329,13 +318,32 @@ public class UI {
 		g2.setColor(Color.white);
 		g2.setStroke(new BasicStroke(3));
 		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
-
 	}
 	
 	public void drawSubWindow(int x, int y, int width, int height) {
 		Color c = new Color(0, 0, 0, 100);
 		g2.setColor(c);
 		g2.fillRoundRect(x, y, width, height, 10, 10);
+	}
+	
+	public void drawKillsStat(int kills) {
+		int x = game.screen.screenWidth - game.tileSize*4;
+		int y =  game.tileSize;
+		drawSubWindow(x, y, game.tileSize*2, game.tileSize);
+		String text = "Killed: " + kills;
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+		g2.drawString(text, x + 10, y + 30);
+	}
+	
+	public void drawPlayerCount(int playerCount){
+		int x = game.screen.screenWidth - game.tileSize*4;
+		int y =  game.tileSize*2;
+		drawSubWindow(x, y, game.tileSize*3, game.tileSize);
+		String text = "Remaining: " + playerCount;
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+		g2.drawString(text, x + 10, y + 30);
 	}
 	
 	public void drawEndGame(boolean win) {
