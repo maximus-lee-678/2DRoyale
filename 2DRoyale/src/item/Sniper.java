@@ -21,7 +21,7 @@ public class Sniper extends SuperWeapon{
 		this.speed = 10;
 		this.range = 30 * game.tileSize;
 		this.bulletSpread = 0; // in degrees
-		this.bulletSize = 30;
+		this.bulletSize = 16;
 		this.fireRate = 30;
 		this.damage = 50;
 

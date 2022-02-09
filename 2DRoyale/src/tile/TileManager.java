@@ -23,7 +23,12 @@ public class TileManager {
 		tile = new Tile[20]; // Currently we just store 20 types of tiles
 		gasCounter = 0;
 		getTileImage(); // populate tile array
-		loadMap("/maps/picture.png"); // load map
+
+		System.out.println(game.gameState);
+		if (game.gameState == game.waitState)
+			loadMap("/maps/picture.png"); // load map
+		if (game.gameState == game.playState)
+			loadMap("/maps/olympus.png"); // load map
 
 	}
 
@@ -80,6 +85,8 @@ public class TileManager {
 	}
 
 	public void loadMap(String filePath) {
+		
+		
 		try {
 			BufferedImage img = ImageIO.read(getClass().getResourceAsStream(filePath));
 
@@ -135,17 +142,17 @@ public class TileManager {
 		}
 	}
 
-	public void closeGas() {		
+	public void closeGas() {
 		for (int y = 0; y < maxWorldRow; y++) {
 			mapTileNum[gasCounter][y][2] = 1;
-			mapTileNum[maxWorldCol-gasCounter-1][y][2] = 1;
+			mapTileNum[maxWorldCol - gasCounter - 1][y][2] = 1;
 		}
 		for (int x = 0; x < maxWorldCol; x++) {
 			mapTileNum[x][gasCounter][2] = 1;
-			mapTileNum[x][maxWorldRow-gasCounter-1][2] = 1;
+			mapTileNum[x][maxWorldRow - gasCounter - 1][2] = 1;
 		}
 		gasCounter++;
-		if(gasCounter > maxWorldCol - 1|| gasCounter > maxWorldRow - 1)
+		if (gasCounter > maxWorldCol - 1 || gasCounter > maxWorldRow - 1)
 			gasCounter--;
 	}
 

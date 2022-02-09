@@ -164,7 +164,8 @@ public class StructuresManager {
 
 			System.out.println("Generated " + placedBuildings + "/" + numberOfBuildings + " buildings...");
 		}
-		System.out.println("Building collisions: " + failedBuildingAttempts);
+		System.out.println("Building collisions: " + failedBuildingAttempts);		
+		
 	}
 
 	public void loadCrates(int numberOfCrates) {

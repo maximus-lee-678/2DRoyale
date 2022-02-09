@@ -86,14 +86,17 @@ public class GameClient extends Thread {
 			Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(data);
 			game.randSeed = seedPacket.getServerSeed();
 			game.rand = new Random(game.randSeed);	
+			game.gameState = game.waitState;
 			game.loadDefaults();
-			game.gameState = game.playState;
+			game.player.generatePlayerXY();
 			break;
 		case 9:
 			// SERVER BULLET HIT
+			
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
+			if(game.gameState != game.playState) return;
 			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
 			game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
 			break;
@@ -107,6 +110,26 @@ public class GameClient extends Thread {
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
 			game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());
+			break;
+		case 13:
+			game.tileM.closeGas();
+			break;
+		case 14:
+			game.gameState = game.playState;			
+			game.loadDefaults();
+			game.player.generatePlayerXY();
+			game.player.setDefaultValues();
+			game.player.freeze = true;
+			break;
+		case 15:
+			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(data);
+			if(countDownPacket.getCountDown() == 0) {
+				System.out.println("GO");
+				game.player.freeze = false;
+			} else {
+				System.out.println("Game Starting in " + countDownPacket.getCountDown());
+			}
+			break;
 		default:
 		case 0:
 		case 8:

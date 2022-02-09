@@ -11,6 +11,7 @@ import net.GameClient;
 import net.GameServer;
 import net.Pkt01Login;
 import net.Pkt10PickupWeapon;
+import net.Pkt14StartGame;
 
 public class KeyHandler implements KeyListener {
 
@@ -24,7 +25,7 @@ public class KeyHandler implements KeyListener {
 	}
 
 	public void keyTyped(KeyEvent e) {
-	}; 
+	};
 
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
@@ -128,16 +129,18 @@ public class KeyHandler implements KeyListener {
 							e1.printStackTrace();
 						}
 						gp.socketServer.addConnection(clonePlayer, loginPacket);
-						gp.loadDefaults();
-						gp.gameState = gp.playState;
+						gp.gameState = gp.waitState;
+						gp.loadDefaults();			
+						loginPacket.sendData(gp.socketClient);
+						gp.player.generatePlayerXY();
+					} else {
+						loginPacket.sendData(gp.socketClient);
 					}
-
-					loginPacket.sendData(gp.socketClient);
 				}
 
 			}
 			// when in "Type the server ip:" page
-			
+
 			else if (gp.ui.titleScreenState == 5) {
 				if (code == KeyEvent.VK_W) {
 					gp.ui.commandNum--;
@@ -171,7 +174,7 @@ public class KeyHandler implements KeyListener {
 						gp.ui.titleScreenState = 4;
 						gp.socketClient = new GameClient(gp, gp.ui.ipAddress);
 						gp.socketClient.start();
-						
+
 					}
 				} else if (gp.ui.commandNum == 1) {
 					if (code == KeyEvent.VK_ENTER) {
@@ -180,24 +183,17 @@ public class KeyHandler implements KeyListener {
 							if (data.matches(ipPattern)) {
 								gp.ui.ipAddress = data;
 								gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
-							}									
-							else
+							} else
 								System.out.println("bad syntax");
-						}
-						catch(Exception x){
+						} catch (Exception x) {
 							System.out.println(x);
 						}
-						
 					}
 				}
-				
-				
-				
 			}
-
 		}
 
-		if (gp.gameState == gp.playState) {
+		if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
 			// true if user presses button
 			if (code == KeyEvent.VK_W)
 				up = true;
@@ -212,20 +208,25 @@ public class KeyHandler implements KeyListener {
 //				Pkt10PickupWeapon pickupWeapon = new Pkt10PickupWeapon(gp.player.getUsername());
 //				pickupWeapon.sendData(gp.socketClient);
 			}
-			if(code == KeyEvent.VK_1) {
+			if (code == KeyEvent.VK_F) {
+				if (gp.socketServer != null) {
+					Pkt14StartGame startGamePacket = new Pkt14StartGame();
+					startGamePacket.sendData(gp.socketClient);
+				}
+			}
+			if (code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
 			}
-			if(code == KeyEvent.VK_2) {
+			if (code == KeyEvent.VK_2) {
 				gp.player.playerWeapIndex = 1;
 			}
-			if(code == KeyEvent.VK_3) {
+			if (code == KeyEvent.VK_3) {
 				gp.player.playerWeapIndex = 2;
 			}
-			if(code == KeyEvent.VK_4) {
+			if (code == KeyEvent.VK_4) {
 				gp.player.playerWeapIndex = 3;
 			}
-			
-				
+
 		}
 		if (gp.gameState == gp.endState) {
 			if (code == KeyEvent.VK_ENTER) {
@@ -234,6 +235,7 @@ public class KeyHandler implements KeyListener {
 			}
 		}
 		
+
 	}
 
 	public void keyReleased(KeyEvent e) {

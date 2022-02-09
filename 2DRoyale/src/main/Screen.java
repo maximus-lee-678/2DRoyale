@@ -37,7 +37,7 @@ public class Screen {
 
 	public void render(Graphics2D g2) {
 
-		if (game.gameState == game.playState) {
+		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			renderWorld(g2);
 			renderBuildings(g2);
 			renderCrates(g2);

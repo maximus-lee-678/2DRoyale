@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 
 import entity.PlayerMP;
-import item.Projectile;
 import item.SuperWeapon;
 import main.Game;
 
@@ -22,13 +21,19 @@ public class GameServer extends Thread {
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
 
 	private int gameTicks = 0;
+	private int gameState;
+	public final int waitState = 1;
+	public final int playState = 2;
+	public final int endState = 3;
 
+	private int countDownSeq;
 	private int weaponIdCount;
 
 	public GameServer(Game game, long seed) {
 		this.game = game;
 		this.seed = seed;
 		this.weaponIdCount = 0;
+		this.gameState = waitState;
 		try {
 			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
@@ -57,6 +62,7 @@ public class GameServer extends Thread {
 		case 1:
 			// LOGIN
 			Pkt01Login loginPacket = new Pkt01Login(data);
+			if(gameState != waitState) return;
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
 			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
 			addConnection(player, loginPacket);
@@ -88,20 +94,34 @@ public class GameServer extends Thread {
 			handleShoot(shootPacket);
 			break;
 		case 8:
+			// SERVER TICK
 			update();
 			break;
 		case 10:
+			// WEAPON PICK UP
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
 			handlePickUpWeapon(pickUpPacket);
 			break;
 		case 11:
+			// OPEN CRATE
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			handleCrateOpen(crateOpenPacket);
+			break;
+		case 14:
+			handleStartGame();
+			break;
 		default:
 		case 0:
-		case 7:
 			break;
 		}
+	}
+
+	private void handleStartGame() {
+		if(gameState == playState) return;
+		gameState = playState;
+		Pkt14StartGame startGamePacket = new Pkt14StartGame();
+		startGamePacket.sendData(this);
+		countDownSeq = 5;
 	}
 
 	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
@@ -117,8 +137,19 @@ public class GameServer extends Thread {
 	}
 
 	private void update() {
-		if (game.gameState != game.playState)
+		if (gameState == endState)
 			return;
+		gameTicks++;
+		
+		if(countDownSeq >= 0 && gameTicks % 60 == 0) {
+			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(countDownSeq);
+			countDownPacket.sendData(this);
+			countDownSeq--;
+		}
+		if (gameState == playState && gameTicks % 1000 == 0) {
+			Pkt13Gas gasPacket = new Pkt13Gas();
+			gasPacket.sendData(this);
+		}
 		for (PlayerMP p : connectedPlayers) {
 			for (SuperWeapon weap : p.getWeapons()) {
 				if (weap != null) {
@@ -139,7 +170,6 @@ public class GameServer extends Thread {
 	private void handleMouseScroll(Pkt05MouseScroll mouseScrollPacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(mouseScrollPacket.getUsername()));
 		p.playerMouseScroll(mouseScrollPacket.getMouseScrollDir());
-
 		mouseScrollPacket.sendData(this);
 	}
 

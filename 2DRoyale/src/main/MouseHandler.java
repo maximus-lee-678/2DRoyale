@@ -21,7 +21,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (game.gameState == game.playState) {
+		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			this.x = e.getX();
 			this.y = e.getY();
 		}	
@@ -29,7 +29,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (game.gameState == game.playState) {
+		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			Pkt05MouseScroll mouseScrollPacket = new Pkt05MouseScroll(game.player.getUsername(), e.getWheelRotation());
 			mouseScrollPacket.sendData(game.socketClient);
 		}		
@@ -37,13 +37,13 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (game.gameState == game.playState)
+		if (game.gameState == game.waitState || game.gameState == game.playState)
 			mousePressed = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (game.gameState == game.playState)
+		if (game.gameState == game.waitState || game.gameState == game.playState)
 			mousePressed = false;
 	}
 
@@ -53,7 +53,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 	}
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (game.gameState == game.playState) {
+		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			this.x = e.getX();
 			this.y = e.getY();
 		}	

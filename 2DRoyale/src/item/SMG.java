@@ -21,8 +21,8 @@ public class SMG extends SuperWeapon  {
 		this.range = 10 * game.tileSize;
 		this.bulletSpread = 10; //in degrees
 		this.bulletSize = 8;
-		this.fireRate = 8;
-		this.damage = 5;
+		this.fireRate = 7;
+		this.damage = 8;
 
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/smghand.png"));

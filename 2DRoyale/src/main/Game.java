@@ -49,8 +49,8 @@ public class Game extends JPanel implements Runnable {
 	public int maxWorldRow;
 	public int worldWidth;
 	public int worldHeight;
-	public final int numberOfBuildings = 10;
-	public final int numberOfCrates = 25;
+	public int numberOfBuildings;
+	public int numberOfCrates;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;
@@ -69,10 +69,12 @@ public class Game extends JPanel implements Runnable {
 	public GameServer socketServer;
 
 	// Game State
+	public boolean loading = false;
 	public int gameState = 0;
 	public final int titleState = 0;
-	public final int playState = 1;
-	public final int endState = 2;
+	public final int waitState = 1;
+	public final int playState = 2;
+	public final int endState = 3;
 
 	public Game() {
 
@@ -131,34 +133,44 @@ public class Game extends JPanel implements Runnable {
 				frames++;
 				delta--;
 			}
-			
+
 			if (timer >= 1000000000) {
 				window.setTitle("Name: " + player.getUsername() + " FPS: " + frames);
 				timer = 0;
 				frames = 0;
 			}
 		}
-		
+
 	}
-	
+
 	public void loadDefaults() {
-		windowHandler = new WindowHandler(this);
-		
+		loading = true;
 		tileM = new TileManager(this);
 		loadMapDimensions();
 		itemM = new ItemManager(this);
 		structM = new StructuresManager(this);
+		loading = false;
 	}
-	
+
 	public void loadMapDimensions() {
 		maxWorldCol = tileM.maxWorldCol;
 		maxWorldRow = tileM.maxWorldRow;
 		worldWidth = tileSize * maxWorldCol;
 		worldHeight = tileSize * maxWorldRow;
+
+		if (gameState == playState) {
+			numberOfBuildings = 200;
+			numberOfCrates = 800;
+		} else if (gameState == waitState){
+			numberOfBuildings = 10;
+			numberOfCrates = 25;
+		}
+		
 	}
 
-	public void init() {		
+	public void init() {
 
+		windowHandler = new WindowHandler(this);
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -175,20 +187,14 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void update() {
-		if (gameState == titleState) {
-			// do nothing
-		}
-		if (gameState == playState) {
-			for (PlayerMP p : getPlayers()) 
+		if (gameState == playState || gameState == waitState) {
+			for (PlayerMP p : getPlayers())
 				p.update();
-							
-			if(socketServer != null) {
+
+			if (socketServer != null) {
 				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
 				serverTickPacket.sendData(socketClient);
 			}
-			
-//			if (++gameTicks % 10 == 0)
-//				tileM.closeGas();
 		
 		}
 		//when user dies, disconnect user and change to end state
@@ -199,17 +205,17 @@ public class Game extends JPanel implements Runnable {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
 		Graphics2D g2 = (Graphics2D) g;
-		screen.render(g2);
+		if (!loading)
+			screen.render(g2);
 		g2.dispose();
 
 	}
 
 	public static void main(String[] args) {
-		
+
 		new Game().startGameThread();
-		
+
 	}
 
 }
