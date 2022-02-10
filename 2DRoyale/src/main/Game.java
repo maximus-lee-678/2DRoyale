@@ -187,7 +187,7 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void update() {
-		if (gameState == playState || gameState == waitState) {
+		if (gameState == playState || gameState == waitState || gameState == endState) {
 			for (PlayerMP p : getPlayers())
 				p.update();
 

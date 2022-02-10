@@ -101,11 +101,9 @@ public class SuperWeapon extends Entity implements shootInterface, Cloneable {
 						deathPacket.sendData(socketServer);
 						p.playerState = socketServer.endState;
 					}
-
 				}
 			}
 		}
-
 	}
 
 	public void shoot() {

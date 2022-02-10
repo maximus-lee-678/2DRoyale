@@ -93,6 +93,8 @@ public class GameServer extends Thread {
 			break;
 		case 6:
 			// SHOOT
+			if (gameState != playState)
+				return;
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
 			handleShoot(shootPacket);
 			break;
@@ -102,21 +104,27 @@ public class GameServer extends Thread {
 			break;
 		case 10:
 			// WEAPON PICK UP
+			if (gameState != playState)
+				return;
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
 			handlePickUpWeapon(pickUpPacket);
 			break;
 		case 11:
 			// OPEN CRATE
+			if (gameState != playState)
+				return;
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			handleCrateOpen(crateOpenPacket);
 			break;
 		case 12:
 			// WEAPON DROP
+			if (gameState != playState)
+				return;
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
 			handleDropWeapon(dropPacket);
 			break;
 		case 14:
-			//START GAME
+			// START GAME
 			handleStartGame();
 			break;
 		case 17:
@@ -142,8 +150,10 @@ public class GameServer extends Thread {
 	}
 
 	private void handleStartGame() {
-		if(gameState == playState) return;
-		if(findPlayerInPlayState() != null) return;
+		if (gameState == playState)
+			return;
+		if (findPlayerInPlayState() != null)
+			return;
 		gameState = playState;
 		playerRemaining = connectedPlayers.size();
 		updateAllPlayerState(game.playState);
@@ -166,23 +176,23 @@ public class GameServer extends Thread {
 
 	private void update() {
 		gameTicks++;
-		
-		if(countDownSeq >= 0 && gameTicks % 60 == 0) {
+
+		if (countDownSeq >= 0 && gameTicks % 60 == 0) {
 			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(countDownSeq);
 			countDownPacket.sendData(this);
 			countDownSeq--;
 		}
-		if (gameState == playState && gameTicks % 60 == 0) {	//gas speed
-			handleCloseGas();			
+		if (gameState == playState && gameTicks % 60 == 0) { // gas speed
+			handleCloseGas();
 		}
-		//Check if no remaining players
-		if(gameState == playState && countDownSeq < 0 && playerRemaining == 1) {
+		// Check if no remaining players
+		if (gameState == playState && countDownSeq < 0 && playerRemaining == 1) {
 			String lastPlayer = findPlayerInPlayState();
 			Pkt18Winner winnerPacket = new Pkt18Winner(lastPlayer);
 			winnerPacket.sendData(this);
 			gameState = waitState;
 		}
-		//Check for bullet hit
+		// Check for bullet hit
 		for (PlayerMP p : connectedPlayers) {
 			for (SuperWeapon weap : p.getWeapons()) {
 				if (weap != null) {
@@ -199,7 +209,7 @@ public class GameServer extends Thread {
 				continue;
 			Pkt13Gas gasPacket = new Pkt13Gas();
 			sendData(gasPacket.getData(), p.ipAddress, p.port);
-		}		
+		}
 	}
 
 	private void handleShoot(Pkt06Shoot shootPacket) {
@@ -275,13 +285,13 @@ public class GameServer extends Thread {
 
 		for (SuperWeapon w : player.getWeapons()) {
 			if (w != null && w.id == weapId) {
-				break;
+				return index;
 			}
 			index++;
 		}
-		return index;
+		return -1;
 	}
-	
+
 	private void updateAllPlayerState(int state) {
 		for (PlayerMP p : connectedPlayers) {
 			p.playerState = state;

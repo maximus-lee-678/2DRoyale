@@ -37,6 +37,7 @@ public class UI {
 	public int kills = 0;
 	public int position;
 	public boolean win;
+	public int playerCount;
 
 	public UI(Game game) {
 		this.game = game;
