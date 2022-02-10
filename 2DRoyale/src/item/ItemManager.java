@@ -18,7 +18,6 @@ public class ItemManager {
 		this.worldWeapons = new ArrayList<SuperWeapon>();
 
 		loadWeapons();
-//		spawn();
 	}
 
 	private void loadWeapons() {
@@ -29,7 +28,6 @@ public class ItemManager {
 	}
 
 	public void spawnWeap(Crate crate, int weapType, int weapId) {
-
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
 			newWeap.id = weapId;
@@ -39,7 +37,6 @@ public class ItemManager {
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public void dropWeap(int weapType, int weapId, int worldX, int worldY) {

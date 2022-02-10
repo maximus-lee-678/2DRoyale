@@ -131,7 +131,8 @@ public class GameServer extends Thread {
 	}
 
 	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
-		connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
+		PlayerMP playerBTL = connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername()));
+		playerBTL.setPlayerDefault();
 		backToLobbyPacket.sendData(this);
 	}
 
@@ -179,6 +180,7 @@ public class GameServer extends Thread {
 			String lastPlayer = findPlayerInPlayState();
 			Pkt18Winner winnerPacket = new Pkt18Winner(lastPlayer);
 			winnerPacket.sendData(this);
+			gameState = waitState;
 		}
 		//Check for bullet hit
 		for (PlayerMP p : connectedPlayers) {
