@@ -32,7 +32,7 @@ public class UI {
 	public String name = "";
 	public String temp = "";
 	public String ipAddress = "";
-	public BufferedImage healthImage;
+	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 
 	public UI(Game game) {
 		this.game = game;
@@ -48,6 +48,18 @@ public class UI {
 
 		try {
 			healthImage = ImageIO.read(getClass().getResourceAsStream("/UI/HP.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			killCounterImage = ImageIO.read(getClass().getResourceAsStream("/UI/killcounter.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			remainingPlayersImage = ImageIO.read(getClass().getResourceAsStream("/UI/remainingplayers.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -333,21 +345,30 @@ public class UI {
 	public void drawKillsStat(int kills) {
 		int x = game.screen.screenWidth - game.tileSize*4;
 		int y =  game.tileSize;
-		drawSubWindow(x, y, game.tileSize*2, game.tileSize);
-		String text = "Killed: " + kills;
+		//make box
+		drawSubWindow(x, y, game.tileSize*3, game.tileSize);
+		//draw knife
+		g2.drawImage(killCounterImage, x + 8, y + 12, 25, 25, null);
+		//draw string
+		String text = ": " + kills;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
-		g2.drawString(text, x + 10, y + 30);
+		g2.drawString(text, x + 30, y + 30);
+		
 	}
 	
 	public void drawPlayerCount(int playerCount){
-		int x = game.screen.screenWidth - game.tileSize*4;
-		int y = game.tileSize*2;
-		drawSubWindow(x, y, game.tileSize*3, game.tileSize);
-		String text = "Remaining: " + playerCount;
+		
+		int x = game.screen.screenWidth - game.tileSize*4 + 85;
+		int y = game.tileSize + 14;
+		//draw player count image
+		g2.drawImage(remainingPlayersImage, x, y, 20, 20, null);
+		//draw string
+		String text = ": " + playerCount;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
-		g2.drawString(text, x + 10, y + 30);
+		g2.drawString(text, x + 22, y + 16);
+		
 	}
 	
 	public void addMessage(String text) {
