@@ -131,7 +131,7 @@ public class GameServer extends Thread {
 	}
 
 	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
-		connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState = waitState;
+		connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
 		backToLobbyPacket.sendData(this);
 	}
 
@@ -175,7 +175,7 @@ public class GameServer extends Thread {
 			handleCloseGas();			
 		}
 		//Check if no remaining players
-		if(gameState == playState && playerRemaining == 1) {
+		if(gameState == playState && countDownSeq < 0 && playerRemaining == 1) {
 			String lastPlayer = findPlayerInPlayState();
 			Pkt18Winner winnerPacket = new Pkt18Winner(lastPlayer);
 			winnerPacket.sendData(this);

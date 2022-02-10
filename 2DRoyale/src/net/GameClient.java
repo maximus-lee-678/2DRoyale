@@ -158,8 +158,13 @@ public class GameClient extends Thread {
 			// PLAYER BACK TO LOBBY
 			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
 			game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).playerState = game.waitState;
-			if(backToLobbyPacket.getUsername().equals(game.player.getUsername())) 
+			if(backToLobbyPacket.getUsername().equals(game.player.getUsername())) {
 				game.gameState = game.waitState;
+				game.loadDefaults();
+				game.player.generatePlayerXY();
+				game.player.setPlayerDefault();
+			}
+				
 			break;
 		case 18:
 			Pkt18Winner winnerPacket = new Pkt18Winner(data);

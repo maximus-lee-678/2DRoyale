@@ -74,6 +74,7 @@ public class Player extends Entity { // inherits Entity class
 	}
 
 	public void setPlayerDefault() {
+		this.playerState = game.waitState;
 		this.playerWeap = new SuperWeapon[4];
 		this.health = 100;
 	}
