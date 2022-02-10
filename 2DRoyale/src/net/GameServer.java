@@ -18,7 +18,7 @@ public class GameServer extends Thread {
 	private DatagramSocket socket;
 	private Game game;
 	private long seed;
-	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
+	public List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
 
 	private int gameTicks = 0;
 	private int gameState;
@@ -28,6 +28,7 @@ public class GameServer extends Thread {
 
 	private int countDownSeq;
 	private int weaponIdCount;
+	public int playerRemaining;
 
 	public GameServer(Game game, long seed) {
 		this.game = game;
@@ -35,6 +36,7 @@ public class GameServer extends Thread {
 		this.weaponIdCount = 0;
 		this.gameState = waitState;
 		this.countDownSeq = -1;
+		this.playerRemaining = 0;
 		try {
 			this.socket = new DatagramSocket(2207);
 		} catch (SocketException e) {
@@ -63,7 +65,7 @@ public class GameServer extends Thread {
 		case 1:
 			// LOGIN
 			Pkt01Login loginPacket = new Pkt01Login(data);
-			if(gameState != waitState) return;
+//			if(gameState != waitState) return;
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
 			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
 			addConnection(player, loginPacket);
@@ -109,6 +111,7 @@ public class GameServer extends Thread {
 			handleCrateOpen(crateOpenPacket);
 			break;
 		case 12:
+			// WEAPON DROP
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
 			handleDropWeapon(dropPacket);
 			break;
@@ -116,10 +119,20 @@ public class GameServer extends Thread {
 			//START GAME
 			handleStartGame();
 			break;
+		case 17:
+			// PLAYER BACK TO LOBBY
+			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
+			handleBackToLobby(backToLobbyPacket);
+			break;
 		default:
 		case 0:
 			break;
 		}
+	}
+
+	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
+		connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState = waitState;
+		backToLobbyPacket.sendData(this);
 	}
 
 	private void handleDropWeapon(Pkt12DropWeapon dropPacket) {
@@ -129,7 +142,10 @@ public class GameServer extends Thread {
 
 	private void handleStartGame() {
 		if(gameState == playState) return;
+		if(findPlayerInPlayState() != null) return;
 		gameState = playState;
+		playerRemaining = connectedPlayers.size();
+		updateAllPlayerState(game.playState);
 		Pkt14StartGame startGamePacket = new Pkt14StartGame();
 		startGamePacket.sendData(this);
 		countDownSeq = 5;
@@ -148,8 +164,6 @@ public class GameServer extends Thread {
 	}
 
 	private void update() {
-		if (gameState == endState)
-			return;
 		gameTicks++;
 		
 		if(countDownSeq >= 0 && gameTicks % 60 == 0) {
@@ -158,17 +172,32 @@ public class GameServer extends Thread {
 			countDownSeq--;
 		}
 		if (gameState == playState && gameTicks % 60 == 0) {	//gas speed
-			Pkt13Gas gasPacket = new Pkt13Gas();
-			gasPacket.sendData(this);
+			handleCloseGas();			
 		}
+		//Check if no remaining players
+		if(gameState == playState && playerRemaining == 1) {
+			String lastPlayer = findPlayerInPlayState();
+			Pkt18Winner winnerPacket = new Pkt18Winner(lastPlayer);
+			winnerPacket.sendData(this);
+		}
+		//Check for bullet hit
 		for (PlayerMP p : connectedPlayers) {
 			for (SuperWeapon weap : p.getWeapons()) {
 				if (weap != null) {
-					weap.checkPlayerHit(connectedPlayers);
+					weap.checkPlayerHit(this);
 					weap.update();
 				}
 			}
 		}
+	}
+
+	private void handleCloseGas() {
+		for (PlayerMP p : connectedPlayers) {
+			if (p.playerState != playState)
+				continue;
+			Pkt13Gas gasPacket = new Pkt13Gas();
+			sendData(gasPacket.getData(), p.ipAddress, p.port);
+		}		
 	}
 
 	private void handleShoot(Pkt06Shoot shootPacket) {
@@ -215,7 +244,7 @@ public class GameServer extends Thread {
 			} else {
 				sendData(loginPacket.getData(), p.ipAddress, p.port);
 
-				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex);
+				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex, p.playerState);
 				sendData(otherPlayersLoginPacket.getData(), player.ipAddress, player.port);
 			}
 		}
@@ -250,6 +279,21 @@ public class GameServer extends Thread {
 		}
 		return index;
 	}
+	
+	private void updateAllPlayerState(int state) {
+		for (PlayerMP p : connectedPlayers) {
+			p.playerState = state;
+		}
+	}
+
+	private String findPlayerInPlayState() {
+		for (PlayerMP p : connectedPlayers) {
+			if (p.playerState == playState) {
+				return p.getUsername();
+			}
+		}
+		return null;
+	}
 
 	private int lookupPacket(byte[] data) { // match player username to get index
 		String message = new String(data).trim().substring(0, 2);
@@ -259,7 +303,6 @@ public class GameServer extends Thread {
 		} catch (NumberFormatException e) {
 			packetType = 0;
 		}
-
 		return packetType;
 	}
 

@@ -8,6 +8,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import javax.swing.text.Position;
+
 import entity.PlayerMP;
 import item.SuperWeapon;
 import main.Game;
@@ -95,7 +97,7 @@ public class GameClient extends Thread {
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
 			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
-			if(game.gameState != game.playState) return;
+//			if(game.gameState != game.playState) return;
 			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
 			game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
 			break;
@@ -127,6 +129,7 @@ public class GameClient extends Thread {
 			game.player.generatePlayerXY();
 			game.player.setPlayerDefault();
 			game.player.freeze = true;
+			updateAllPlayerState(game.playState);
 			break;
 		case 15:
 			//COUNTDOWN SEQUENCE
@@ -138,10 +141,44 @@ public class GameClient extends Thread {
 				game.player.freeze = false;
 			}
 			break;
+		case 16:
+			// DEATH
+			Pkt16Death deathPacket = new Pkt16Death(data);
+			game.ui.position = deathPacket.getRemainingPlayers();
+			game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
+			if(deathPacket.getUsername().equals(game.player.getUsername())) {
+				game.ui.kills++;				
+			}				
+			if (deathPacket.getVictim().equals(game.player.getUsername())) {
+				game.gameState = game.endState;
+				game.ui.win = false;
+			} 			
+			break;
+		case 17:
+			// PLAYER BACK TO LOBBY
+			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
+			game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).playerState = game.waitState;
+			if(backToLobbyPacket.getUsername().equals(game.player.getUsername())) 
+				game.gameState = game.waitState;
+			break;
+		case 18:
+			Pkt18Winner winnerPacket = new Pkt18Winner(data);
+			if(winnerPacket.getUsername().equals(game.player.getUsername())) {
+				game.ui.position = 1;
+				game.ui.win = true;
+				game.gameState = game.endState;
+				game.player.playerState = game.endState;				
+			}			
 		default:
 		case 0:
 		case 8:
 			break;
+		}
+	}
+
+	private void updateAllPlayerState(int state) {
+		for (PlayerMP p : game.getPlayers()) {
+			p.playerState = state;
 		}
 	}
 

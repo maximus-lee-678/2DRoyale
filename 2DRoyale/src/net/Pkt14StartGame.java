@@ -9,4 +9,5 @@ public class Pkt14StartGame extends Packet{
 	public byte[] getData() {
 		return ("14").getBytes();
 	}
+	
 }

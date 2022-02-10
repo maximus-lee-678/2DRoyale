@@ -163,7 +163,7 @@ public class Game extends JPanel implements Runnable {
 			numberOfCrates = 800;
 		} else if (gameState == waitState){
 			numberOfBuildings = 10;
-			numberOfCrates = 25;
+			numberOfCrates = 0;
 		}
 		
 	}
@@ -198,9 +198,9 @@ public class Game extends JPanel implements Runnable {
 		
 		}
 		//when user dies, disconnect user and change to end state
-		if (player.getPlayerHP() == 0) {
-			gameState = endState;
-		}
+//		if (player.getPlayerHP() == 0) {
+//			gameState = endState;
+//		}
 	}
 
 	public void paintComponent(Graphics g) {

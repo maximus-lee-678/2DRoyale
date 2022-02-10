@@ -30,6 +30,7 @@ public class Player extends Entity { // inherits Entity class
 	private Game game;
 	private KeyHandler keys;
 	private MouseHandler mouse;
+	public int playerState;
 
 	public final int screenX;
 	public final int screenY;
@@ -44,22 +45,25 @@ public class Player extends Entity { // inherits Entity class
 	private BufferedImage playerHand;
 
 	public SuperWeapon[] playerWeap;
-	public int playerWeapIndex = 0;
+	public int playerWeapIndex;
 	public double health;
+
 
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
 		this.keys = keys;
 		this.mouse = mouse;
 		this.username = username;
-		this.isLocal = isLocal;
+		this.isLocal = isLocal;	
+		this.playerState = game.waitState;
 
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
 
 		this.entityArea = new Rectangle(6, 6, 12, 12);
 
-		this.speed = 4;
+		this.playerWeapIndex = 0;
+		this.speed = 20;
 		this.mouseX = 0;
 		this.mouseY = 0;
 

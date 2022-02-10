@@ -33,6 +33,10 @@ public class UI {
 	public String temp = "";
 	public String ipAddress = "";
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
+	
+	public int kills = 0;
+	public int position;
+	public boolean win;
 
 	public UI(Game game) {
 		this.game = game;
@@ -48,17 +52,7 @@ public class UI {
 
 		try {
 			healthImage = ImageIO.read(getClass().getResourceAsStream("/UI/HP.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
 			killCounterImage = ImageIO.read(getClass().getResourceAsStream("/UI/killcounter.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
 			remainingPlayersImage = ImageIO.read(getClass().getResourceAsStream("/UI/remainingplayers.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,7 +75,7 @@ public class UI {
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			drawHP();
 			drawInventory();
-			drawKillsStat(69);
+			drawKillsStat(this.kills);
 			drawPlayerCount(game.getPlayers().size());
 			drawMessage();
 			
@@ -89,7 +83,7 @@ public class UI {
 		// End state
 		if (game.gameState == game.endState) {
 			//true if player wins, false if player loses
-			drawEndGame(false);
+			drawEndGame(win);
 		}
 		
 
@@ -424,23 +418,29 @@ public class UI {
 		}
 		
 		//get kills from player
-		int kills = 69;
-		text = "Number of Kills: " + kills;
+		text = "Number of Kills: " + this.kills;
 		x = getXforCenteredText(text);
 		y += game.tileSize * 3;
 		g2.drawString(text, x, y);
 		
 		//get position of player from the length of array
-		int position = 69;
-		text = "Position: #" + position;
+		text = "Position: #" + this.position;
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);
 		
-		text = "Back to Main Menu";
+		text = "Back to Lobby";
 		x = getXforCenteredText(text);
 		y += game.tileSize * 3;
 		g2.drawString(text, x, y);
-		g2.drawString(">", x - game.tileSize, y);
+		if (commandNum == 0) 
+			g2.drawString(">", x - game.tileSize, y);
+		
+		text = "Back to Main Menu";
+		x = getXforCenteredText(text);
+		y += game.tileSize;
+		g2.drawString(text, x, y);
+		if (commandNum == 1) 
+			g2.drawString(">", x - game.tileSize, y);
 	}
 }

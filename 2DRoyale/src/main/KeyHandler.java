@@ -10,8 +10,10 @@ import item.Rifle;
 import net.GameClient;
 import net.GameServer;
 import net.Pkt01Login;
+import net.Pkt02Disconnect;
 import net.Pkt10PickupWeapon;
 import net.Pkt14StartGame;
+import net.Pkt17BackToLobby;
 
 public class KeyHandler implements KeyListener {
 
@@ -120,7 +122,7 @@ public class KeyHandler implements KeyListener {
 				if (gp.ui.name != "" && code == KeyEvent.VK_ENTER) {
 					gp.player.setUsername(gp.ui.name.trim());
 					gp.getPlayers().add(gp.player);
-					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex);
+					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex, gp.waitState);
 					if (gp.socketServer != null) {
 						PlayerMP clonePlayer = null;
 						try {
@@ -232,9 +234,28 @@ public class KeyHandler implements KeyListener {
 
 		}
 		if (gp.gameState == gp.endState) {
+			if (code == KeyEvent.VK_W) {
+				gp.ui.commandNum--;
+				if (gp.ui.commandNum < 0) {
+					gp.ui.commandNum = 1;
+				}
+			}
+			if (code == KeyEvent.VK_S) {
+				gp.ui.commandNum++;
+				if (gp.ui.commandNum > 1) {
+					gp.ui.commandNum = 0;
+				}
+			}
 			if (code == KeyEvent.VK_ENTER) {
-				gp.gameState = gp.titleState;
-				System.out.println("dsdasd");
+
+				if (gp.ui.commandNum == 0) {
+					Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(gp.player.getUsername());
+					backToLobbyPacket.sendData(gp.socketClient);
+				} else if (gp.ui.commandNum == 1) {
+					gp.gameState = gp.titleState;
+					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
+					disconnectPacket.sendData(gp.socketClient);
+				}
 			}
 		}
 		

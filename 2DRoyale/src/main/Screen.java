@@ -44,10 +44,14 @@ public class Screen {
 			renderBuildings(g2);
 			renderCrates(g2);
 			renderItems(g2);
-			for (PlayerMP p : game.getPlayers())
-				p.renderBullets(g2);
-			for (PlayerMP p : game.getPlayers())
-				p.render(g2);
+			for (PlayerMP p : game.getPlayers()) 
+				if (p.playerState == game.gameState)
+					p.renderBullets(g2);			
+				
+			for (PlayerMP p : game.getPlayers()) 
+				if (p.playerState == game.gameState)
+					p.render(g2);
+							
 			renderGas(g2);
 
 			if (game.keys.map)
