@@ -253,6 +253,8 @@ public class KeyHandler implements KeyListener {
 					backToLobbyPacket.sendData(gp.socketClient);
 				} else if (gp.ui.commandNum == 1) {
 					gp.gameState = gp.titleState;
+					gp.ui.titleScreenState = 0;
+					gp.ui.commandNum = 0;
 					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
 					disconnectPacket.sendData(gp.socketClient);
 				}
