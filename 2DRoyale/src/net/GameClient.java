@@ -145,8 +145,10 @@ public class GameClient extends Thread {
 		case 15:
 			// COUNTDOWN SEQUENCE
 			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(data);
-			if (countDownPacket.getCountDown() > 0)
+			game.ui.countdown = countDownPacket.getCountDown();
+			if (countDownPacket.getCountDown() > 0) {
 				System.out.println("Game Starting in " + countDownPacket.getCountDown());
+			}
 			else {
 				System.out.println("GO");
 				game.player.freeze = false;

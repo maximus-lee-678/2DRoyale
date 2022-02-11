@@ -10,12 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.imageio.ImageIO;
-
-import entity.Player;
-import entity.PlayerMP;
 import item.SuperWeapon;
 
 public class UI {
@@ -33,6 +28,8 @@ public class UI {
 	public String temp = "";
 	public String ipAddress = "";
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
+	public int countDownSeq = 0;
+	public int countdown;
 	
 	public int kills = 0;
 	public int position;
@@ -79,6 +76,7 @@ public class UI {
 			drawKillsStat(this.kills);
 			drawPlayerCount(game.getPlayers().size());
 			drawMessage();
+			drawCountdown();
 			
 		}
 		// End state
@@ -364,6 +362,20 @@ public class UI {
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
 		g2.drawString(text, x + 22, y + 16);
 		
+	}
+	
+	public void drawCountdown() {
+		if (game.gameState == game.playState && countdown > 0) {
+			String text = "Game Starting in " + countdown;
+			int x = getXforCenteredText(text);
+			int y = game.tileSize * 3;
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 26F));
+			g2.setColor(Color.black);
+			g2.drawString(text, x + 2, y + 2);
+			g2.setColor(Color.white);
+			g2.drawString(text, x, y);
+			
+		}
 	}
 	
 	public void addMessage(String text) {
