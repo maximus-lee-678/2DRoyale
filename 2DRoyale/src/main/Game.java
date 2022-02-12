@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -51,6 +52,7 @@ public class Game extends JPanel implements Runnable {
 	public int worldHeight;
 	public int numberOfBuildings;
 	public int numberOfCrates;
+	public int numberOfObstructions;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;
@@ -159,11 +161,13 @@ public class Game extends JPanel implements Runnable {
 		worldHeight = tileSize * maxWorldRow;
 
 		if (gameState == playState) {
-			numberOfBuildings = 200;
-			numberOfCrates = 800;
+			numberOfBuildings = 50;
+			numberOfCrates = 100;
+			numberOfObstructions = 100;
 		} else if (gameState == waitState){
 			numberOfBuildings = 10;
 			numberOfCrates = 0;
+			numberOfObstructions = 15;
 		}
 		
 	}
@@ -202,9 +206,20 @@ public class Game extends JPanel implements Runnable {
 //			gameState = endState;
 //		}
 	}
-
+	
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DEFAULT);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		
+		super.paintComponent(g);		
+		
 		Graphics2D g2 = (Graphics2D) g;
 		if (!loading)
 			screen.render(g2);
@@ -213,7 +228,9 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public static void main(String[] args) {
-
+		// activate opengl
+        System.setProperty("sun.java2d.opengl", "True");
+        
 		new Game().startGameThread();
 
 	}

@@ -32,6 +32,7 @@ public class Player extends Entity { // inherits Entity class
 	private MouseHandler mouse;
 	public int playerState;
 
+	public final int playerOffset = 12;
 	public final int screenX;
 	public final int screenY;
 	public double mouseX;
@@ -48,13 +49,12 @@ public class Player extends Entity { // inherits Entity class
 	public int playerWeapIndex;
 	public double health;
 
-
 	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
 		this.game = game;
 		this.keys = keys;
 		this.mouse = mouse;
 		this.username = username;
-		this.isLocal = isLocal;	
+		this.isLocal = isLocal;
 		this.playerState = game.waitState;
 
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
@@ -63,7 +63,7 @@ public class Player extends Entity { // inherits Entity class
 		this.entityArea = new Rectangle(6, 6, 12, 12);
 
 		this.playerWeapIndex = 0;
-		this.speed = 20;
+		this.speed = 4;
 		this.mouseX = 0;
 		this.mouseY = 0;
 
@@ -84,44 +84,57 @@ public class Player extends Entity { // inherits Entity class
 
 		mainLoop: while (true) {
 
-			int randomX = (int) (Math.random() * (game.worldWidth - entityArea.width));
-			int randomY = (int) (Math.random() * (game.worldHeight - entityArea.height));
+			int randomX = playerOffset + (int) (Math.random() * (game.worldWidth - entityArea.width - (playerOffset * 2)));
+			int randomY = playerOffset + (int) (Math.random() * (game.worldHeight - entityArea.height - (playerOffset * 2)));
+
+			Rectangle separationHitbox = new Rectangle(randomX - playerOffset, randomY - playerOffset, entityArea.width + playerOffset * 2, entityArea.height + playerOffset * 2);
 
 			// Spawn player on solid blocks
-			int randomTopLeftTileX = randomX / game.tileSize;
-			int randomTopLeftTileY = randomY / game.tileSize;
-			int randomTopRightTileX = (randomX + entityArea.width) / game.tileSize;
-			int randomTopRightTileY = randomY / game.tileSize;
+			int randomTopLeftTileX = separationHitbox.x / game.tileSize;
+			int randomTopLeftTileY = separationHitbox.y / game.tileSize;
+			int randomTopRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
+			int randomTopRightTileY = separationHitbox.y / game.tileSize;
 			int randomBottomLeftTileX = randomX / game.tileSize;
-			int randomBottomLeftTileY = (randomY + entityArea.height) / game.tileSize;
-			int randomBottomRightTileX = (randomX + entityArea.width) / game.tileSize;
-			int randomBottomRightTileY = (randomY + entityArea.height) / game.tileSize;
-			
-			if(game.tileM.tile[game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY][0]].collisionPlayer
+			int randomBottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
+			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+
+			if (game.tileM.tile[game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY][0]].collisionPlayer
 					|| game.tileM.tile[game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY][0]].collisionPlayer
 					|| game.tileM.tile[game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY][0]].collisionPlayer
 					|| game.tileM.tile[game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY][0]].collisionPlayer) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
-			
+
 			// Prevent player from spawning in buildings
-			for (int i = 0; i < game.structM.building.length; i++) {
-				if (randomX < game.structM.building[i].boundingBox.x + game.structM.building[i].boundingBox.width
-						&& randomX + entityArea.width > game.structM.building[i].boundingBox.x
-						&& randomY < game.structM.building[i].boundingBox.y + game.structM.building[i].boundingBox.height
-						&& randomY + entityArea.height > game.structM.building[i].boundingBox.y) {
+			for (int i = 0; i < game.structM.buildings.length; i++) {
+				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x
+						&& separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
 			}
-			
+
 			// Prevent player from spawning in crates
 			for (int i = 0; i < game.structM.crates.size(); i++) {
-				if (randomX < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width
-						&& randomX + entityArea.width > game.structM.crates.get(i).collisionBoundingBox.x
-						&& randomY < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height
-						&& randomY + entityArea.height > game.structM.crates.get(i).collisionBoundingBox.y) {
+				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x
+						&& separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
+					failedPlayerAttempts++;
+					continue mainLoop;
+				}
+			}
+
+			// Prevent player from spawning in obstructions
+			for (int i = 0; i < game.structM.obstructions.length; i++) {
+				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x
+						&& separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -201,7 +214,8 @@ public class Player extends Entity { // inherits Entity class
 			if (keys.drop == true) {
 				if (playerWeap[playerWeapIndex] != null) {
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
-					Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+					Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id,
+							this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
 					dropPacket.sendData(game.socketClient);
 				}
 				keys.drop = false;
@@ -257,16 +271,16 @@ public class Player extends Entity { // inherits Entity class
 		int entityTopWorldY = worldY + entityArea.y + ya;
 		int entityBottomWorldY = worldY + entityArea.y + entityArea.height + ya;
 
-		if (game.tileM.hasCollidedWorld(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY,
-				entityBottomWorldY, "Entity"))
+		if (game.tileM.hasCollidedWorld(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 
-		if (game.structM.hasCollidedBuilding(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY,
-				entityBottomWorldY, "Entity"))
+		if (game.structM.hasCollidedBuilding(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 
-		if (game.structM.hasCollidedCrate(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY,
-				entityBottomWorldY, "Entity"))
+		if (game.structM.hasCollidedCrate(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
+			return true;
+
+		if (game.structM.hasCollidedObstruction(xa, ya, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Entity"))
 			return true;
 
 		return false;
@@ -278,8 +292,7 @@ public class Player extends Entity { // inherits Entity class
 		int entityTopWorldY = worldY + entityArea.y;
 		int entityBottomWorldY = worldY + entityArea.y + entityArea.height;
 
-		SuperWeapon weapon = game.itemM.withinWeaponsRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY,
-				entityBottomWorldY);
+		SuperWeapon weapon = game.itemM.withinWeaponsRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 
 		if (weapon != null) {
 			if (playerWeap[playerWeapIndex] != null) {
@@ -292,8 +305,7 @@ public class Player extends Entity { // inherits Entity class
 			return;
 		}
 
-		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY,
-				entityBottomWorldY);
+		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 		if (crateIndex != -1) {
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(username, crateIndex);
 			crateOpenPacket.sendData(game.socketClient);

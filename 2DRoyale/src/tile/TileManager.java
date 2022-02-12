@@ -1,8 +1,12 @@
 package tile;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
@@ -15,7 +19,7 @@ public class TileManager {
 	public Tile gasTile;
 	public int maxWorldCol, maxWorldRow;
 	public int mapTileNum[][][];
-	private int gasCounter;
+	public int gasCounter;
 
 	public TileManager(Game game) {
 
@@ -32,51 +36,86 @@ public class TileManager {
 
 	}
 
+	private BufferedImage toCompatibleImage(BufferedImage image) {
+		// obtain the current system graphical settings
+		GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+
+		/*
+		 * if image is already compatible and optimized for current system settings,
+		 * simply return it
+		 */
+		if (image.getColorModel().equals(gfxConfig.getColorModel()))
+			return image;
+
+		// image is not optimized, so create a new image that is
+		BufferedImage newImage = gfxConfig.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
+
+		// get the graphics context of the new image to draw the old image on
+		Graphics2D g2d = newImage.createGraphics();
+
+		// actually draw the image and dispose of context no longer needed
+		g2d.drawImage(image, 0, 0, null);
+		g2d.dispose();
+
+		// return the new optimized image
+		return newImage;
+	}
+
 	private void getTileImage() {
 
 		try {
 
 			tile[0] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass1.png"));
+			tile[0].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/grass1.png")));
 
 			tile[1] = new Tile();
-			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass2.png"));
+			tile[1].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/grass2.png")));
 
 			tile[2] = new Tile();
-			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass3.png"));
+			tile[2].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/grass3.png")));
 
 			tile[3] = new Tile();
-			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grasstall.png"));
+			tile[3].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/grasstall.png")));
 
 			tile[4] = new Tile();
-			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth1.png"));
+			tile[4].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/earth1.png")));
 
 			tile[5] = new Tile();
-			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/earth2.png"));
+			tile[5].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/earth2.png")));
 
 			tile[6] = new Tile();
-			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
-			tile[6].collisionPlayer = true;
-			tile[6].collisionProjectile = true;
+			tile[6].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/coldstone.png")));
 
 			tile[7] = new Tile();
-			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/tiles/water.png"));
-			tile[7].collisionPlayer = true;
-			tile[7].collisionProjectile = false;
+			tile[7].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/ice.png")));
 
 			tile[8] = new Tile();
-			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
-			tile[8].collisionPlayer = true;
-			tile[8].collisionProjectile = true;
+			tile[8].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/slush.png")));
 
 			tile[9] = new Tile();
-			tile[9].image = ImageIO.read(getClass().getResourceAsStream("/tiles/sand.png"));
+			tile[9].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/snow.png")));
 
 			tile[10] = new Tile();
-			tile[10].image = ImageIO.read(getClass().getResourceAsStream("/tiles/missing.png"));
+			tile[10].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/ash.png")));
+
+			tile[11] = new Tile();
+			tile[11].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/sand.png")));
+
+			tile[12] = new Tile();
+			tile[12].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/water.png")));
+			tile[12].collisionPlayer = true;
+			tile[12].collisionProjectile = false;
+
+			tile[13] = new Tile();
+			tile[13].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/magma.png")));
+			tile[13].collisionPlayer = true;
+			tile[13].collisionProjectile = false;
+
+			tile[14] = new Tile();
+			tile[14].image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/misc/missing.png")));
 
 			gasTile = new Tile();
-			gasTile.image = ImageIO.read(getClass().getResourceAsStream("/tiles/gas.png"));
+			gasTile.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream("/world_textures/misc/gas.png")));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -85,15 +124,19 @@ public class TileManager {
 	}
 
 	public void loadMap(String filePath) {
-		
-		
+
 		try {
 			BufferedImage img = ImageIO.read(getClass().getResourceAsStream(filePath));
 
 			maxWorldCol = img.getWidth();
 			maxWorldRow = img.getHeight();
-			mapTileNum = new int[maxWorldCol][maxWorldRow][3]; // create 2d array of the dimension of the world
-			// (units: tileSize)
+			mapTileNum = new int[maxWorldCol][maxWorldRow][4]; // create 2d array of the dimension of the world
+			// [0] = tileID, [1] = isFlipped, [2] = isGassed, [3] = biome
+			Hashtable<String, String> biomeDictionary = new Hashtable<String, String>();
+			biomeDictionary.put("Forest", "0");
+			biomeDictionary.put("Snow", "1");
+			biomeDictionary.put("Wasteland", "2");
+			biomeDictionary.put("undefined", "999");
 
 			for (int y = 0; y < maxWorldRow; y++) {
 				for (int x = 0; x < maxWorldCol; x++) {
@@ -118,21 +161,42 @@ public class TileManager {
 							mapTileNum[x][y][0] = 2;
 						else
 							mapTileNum[x][y][0] = 3;
-					} else if (red == 0 && green == 0 && blue == 0) { // wall
-						mapTileNum[x][y][0] = 6;
-					} else if (red == 0 && green == 162 && blue == 232) { // woter
-						mapTileNum[x][y][0] = 7;
+
+						mapTileNum[x][y][2] = Integer.parseInt(biomeDictionary.get("Forest"));
 					} else if (red == 185 && green == 122 && blue == 87) { // earth
 						if (roll < 0.50)
 							mapTileNum[x][y][0] = 4;
 						else
 							mapTileNum[x][y][0] = 5;
-					} else if (red == 181 && green == 230 && blue == 29) { // tree
+
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Forest"));
+					} else if (red == 63 && green == 72 && blue == 204) { // coldstone
+						mapTileNum[x][y][0] = 6;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Snow"));
+					} else if (red == 140 && green == 255 && blue == 251) { // ice
+						mapTileNum[x][y][0] = 7;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Snow"));
+					} else if (red == 88 && green == 88 && blue == 88) { // slush
 						mapTileNum[x][y][0] = 8;
-					} else if (red == 239 && green == 228 && blue == 176) { // sand
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Snow"));
+					} else if (red == 255 && green == 255 && blue == 255) { // snow
 						mapTileNum[x][y][0] = 9;
-					} else { // missing texture
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Snow"));
+					} else if (red == 195 && green == 195 && blue == 195) { // ash
 						mapTileNum[x][y][0] = 10;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Wasteland"));
+					} else if (red == 239 && green == 228 && blue == 176) { // sand
+						mapTileNum[x][y][0] = 11;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("Forest"));
+					} else if (red == 0 && green == 162 && blue == 232) { // water
+						mapTileNum[x][y][0] = 12;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("undefined"));
+					} else if (red == 255 && green == 127 && blue == 39) { // magma
+						mapTileNum[x][y][0] = 13;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("undefined"));
+					} else { // missing texture
+						mapTileNum[x][y][0] = 14;
+						mapTileNum[x][y][3] = Integer.parseInt(biomeDictionary.get("undefined"));
 					}
 				}
 			}

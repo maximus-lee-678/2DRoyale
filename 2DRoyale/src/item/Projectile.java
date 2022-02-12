@@ -54,6 +54,11 @@ public class Projectile {
 			return true;		
 		if (weap.game.structM.hasCollidedCrate(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
+		
+		if (weap.game.structM.hasCollidedObstruction((int)xVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+			return true;		
+		if (weap.game.structM.hasCollidedObstruction(0, (int)yVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+			return true;
 
 		return false;
 	}
