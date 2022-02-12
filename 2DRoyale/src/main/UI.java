@@ -31,7 +31,6 @@ public class UI {
 	public int countDownSeq = 0;
 	public int countdown;
 	public boolean option;
-	public int optionScreen;
 	public int hostStarted;
 	
 	public int kills = 0;

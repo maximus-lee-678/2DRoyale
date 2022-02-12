@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -348,12 +349,14 @@ public class Player extends Entity { // inherits Entity class
 			y = worldY - game.player.worldY + game.player.screenY;
 			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
 			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
+			
 		} else {
 			x = screenX;
 			y = screenY;
 			handX = game.screen.screenWidth / 2 - holding.getWidth() / 2;
 			handY = game.screen.screenHeight / 2 - holding.getHeight() / 2;
 		}
+		
 
 		AffineTransform t = new AffineTransform();
 		t.setToTranslation(handX, handY);
@@ -362,7 +365,11 @@ public class Player extends Entity { // inherits Entity class
 
 		g2.drawImage(holding, t, null); // Draw hand (weapons)
 		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
-
+		
+		g2.setColor(new Color(255,0,30));
+		g2.fillRect(x - game.tileSize/4, y - 15, (int) ((this.health))/2, 10);
+		g2.setColor(Color.white);
+		g2.drawString(this.getUsername(), x, y + 40);
 	}
 
 	public void renderBullets(Graphics2D g2) {
