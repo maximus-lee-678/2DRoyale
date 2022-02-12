@@ -105,8 +105,7 @@ public class SuperWeapon extends Entity implements shootInterface, Cloneable {
 						}
 						p.playerState = socketServer.endState;
 						Pkt16Death deathPacket = new Pkt16Death(player.getUsername(), p.getUsername(), socketServer.playerRemaining--);
-						deathPacket.sendData(socketServer);
-						
+						deathPacket.sendData(socketServer);						
 					}
 				}
 			}

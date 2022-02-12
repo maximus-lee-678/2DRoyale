@@ -267,5 +267,23 @@ public class TileManager {
 
 		return false;
 	}
+	
+	public boolean withinGas(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
+		
+		int topLeftTileX = entityLeftWorldX / game.tileSize;
+		int topLeftTileY = entityTopWorldY / game.tileSize;
+		int topRightTileX = entityRightWorldX / game.tileSize;
+		int topRightTileY = entityTopWorldY / game.tileSize;
+		int bottomLeftTileX = entityLeftWorldX / game.tileSize;
+		int bottomLeftTileY = entityBottomWorldY / game.tileSize;
+		int bottomRightTileX = entityRightWorldX / game.tileSize;
+		int bottomRightTileY = entityBottomWorldY / game.tileSize;
+
+		if (mapTileNum[topLeftTileX][topLeftTileY][2] == 1 || mapTileNum[topRightTileX][topRightTileY][2] == 1
+				|| mapTileNum[bottomLeftTileX][bottomLeftTileY][2] == 1 || mapTileNum[bottomRightTileX][bottomRightTileY][2] == 1) {
+			return true;
+		}
+		return false;
+	}
 
 }

@@ -4,7 +4,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -551,20 +550,5 @@ public class StructuresManager {
 
 	}
 
-	public boolean withinGas(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
-		int topLeftTileX = entityLeftWorldX / game.tileSize;
-		int topLeftTileY = entityTopWorldY / game.tileSize;
-		int topRightTileX = entityRightWorldX / game.tileSize;
-		int topRightTileY = entityTopWorldY / game.tileSize;
-		int bottomLeftTileX = entityLeftWorldX / game.tileSize;
-		int bottomLeftTileY = entityBottomWorldY / game.tileSize;
-		int bottomRightTileX = entityRightWorldX / game.tileSize;
-		int bottomRightTileY = entityBottomWorldY / game.tileSize;
-
-		if (game.tileM.mapTileNum[topLeftTileX][topLeftTileY][2] == 1 || game.tileM.mapTileNum[topRightTileX][topRightTileY][2] == 1
-				|| game.tileM.mapTileNum[bottomLeftTileX][bottomLeftTileY][2] == 1 || game.tileM.mapTileNum[bottomRightTileX][bottomRightTileY][2] == 1) {
-			return true;
-		}
-		return false;
-	}
+	
 }

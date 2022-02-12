@@ -66,7 +66,7 @@ public class GameServer extends Thread {
 			// LOGIN
 			Pkt01Login loginPacket = new Pkt01Login(data);
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
-			if(addConnection(player, loginPacket)) 
+			if (addConnection(player, loginPacket))
 				System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
 			break;
 		case 2:
@@ -131,9 +131,32 @@ public class GameServer extends Thread {
 			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
 			handleBackToLobby(backToLobbyPacket);
 			break;
+		case 20:
+			// GAS DAMAGE
+			Pkt20GasDamage gasDmgPacket = new Pkt20GasDamage(data);
+			handleGasDamage(gasDmgPacket);
+			break;
 		default:
 		case 0:
 			break;
+		}
+	}
+
+	private void handleGasDamage(Pkt20GasDamage gasDmgPacket) {
+		PlayerMP gasVictim = connectedPlayers.get(playerIndex(gasDmgPacket.getUsername()));
+		if(gasVictim.playerState != playState) return;
+		gasVictim.updatePlayerHP(-1);
+		gasDmgPacket.sendData(this);
+		if (gasVictim.health == 0) {
+			if (gasVictim.playerWeap[gasVictim.playerWeapIndex] != null) {
+				SuperWeapon dropWeap = gasVictim.playerWeap[gasVictim.playerWeapIndex];
+				Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.playerWeapIndex, dropWeap.typeId, dropWeap.id, gasVictim.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, gasVictim.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+				dropPacket.sendData(game.socketClient);
+			}
+			gasVictim.playerState = endState;
+			Pkt16Death deathPacket = new Pkt16Death("Gas", gasVictim.getUsername(), playerRemaining--);
+			deathPacket.sendData(this);
+			
 		}
 	}
 
@@ -191,7 +214,7 @@ public class GameServer extends Thread {
 			countDownPacket.sendData(this);
 			countDownSeq--;
 		}
-		if (gameState == playState && gameTicks % 60 == 0) { // gas speed
+		if (gameState == playState && gameTicks % 120 == 0) { // gas speed
 			handleCloseGas();
 		}
 		// Check if no remaining players
@@ -245,9 +268,9 @@ public class GameServer extends Thread {
 		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
-	
+
 	private void shutDownServer(PlayerMP isHost) {
-		for(int i = 1; i < connectedPlayers.size(); i++) {
+		for (int i = 1; i < connectedPlayers.size(); i++) {
 			PlayerMP kickPlayer = connectedPlayers.get(1);
 			Pkt19ServerKick playersKickPacket = new Pkt19ServerKick(false);
 			sendData(playersKickPacket.getData(), kickPlayer.ipAddress, kickPlayer.port);
@@ -260,15 +283,15 @@ public class GameServer extends Thread {
 
 	private void removeConnection(Pkt02Disconnect disconnectPacket) {
 		PlayerMP isHost = connectedPlayers.get(0);
-		//Check if host disconnects
-		if(isHost.getUsername().equals(disconnectPacket.getUsername())) {
+		// Check if host disconnects
+		if (isHost.getUsername().equals(disconnectPacket.getUsername())) {
 			shutDownServer(isHost);
 			return;
 		}
 		if (connectedPlayers.get(playerIndex(disconnectPacket.getUsername())).playerState == playState)
 			playerRemaining--;
 		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
-		disconnectPacket.sendData(this);		
+		disconnectPacket.sendData(this);
 	}
 
 	public boolean addConnection(PlayerMP player, Pkt01Login loginPacket) {
@@ -279,7 +302,7 @@ public class GameServer extends Thread {
 				if (p.ipAddress == null && p.port == -1) {
 					p.ipAddress = player.ipAddress;
 					p.port = player.port;
-				} else 
+				} else
 					return false;
 				isConnected = true;
 			} else {

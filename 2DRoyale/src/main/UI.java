@@ -447,23 +447,18 @@ public class UI {
 	
 	//host message to start game
 	public void drawWaitMessage() {
-		if(game.socketServer != null) {
-			String text = "You are the host! Press F to start game!";
-			int x = getXforCenteredText(text);
-			int y = game.tileSize;
-			g2.setColor(Color.black);
-			g2.drawString(text, x + 2, y + 2);
-			g2.setColor(Color.white);
-			g2.drawString(text, x, y);
-		} else {
-			String text = "Waiting for host to start game!";
-			int x = getXforCenteredText(text);
-			int y = game.tileSize;
-			g2.setColor(Color.black);
-			g2.drawString(text, x + 2, y + 2);
-			g2.setColor(Color.white);
-			g2.drawString(text, x, y);
-		}
+		String text;
+		if(game.socketServer != null) 
+			text = "You are the host! Press F to start game!";
+		else 
+			text = "Waiting for host to start game!";
+
+		int x = getXforCenteredText(text);
+		int y = game.tileSize;
+		g2.setColor(Color.black);
+		g2.drawString(text, x + 2, y + 2);
+		g2.setColor(Color.white);
+		g2.drawString(text, x, y);
 	}	
 	
 	// for scrolling killing feed
@@ -526,7 +521,7 @@ public class UI {
 		g2.drawString(text, x, y);
 		
 		//get position of player from the length of array
-		text = "Position: #" + this.playingPlayerCount + 1;
+		text = "Position: #" + (this.playingPlayerCount + 1);
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);

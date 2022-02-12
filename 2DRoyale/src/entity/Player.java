@@ -24,6 +24,7 @@ import net.Pkt04MouseMove;
 import net.Pkt10PickupWeapon;
 import net.Pkt11CrateOpen;
 import net.Pkt12DropWeapon;
+import net.Pkt20GasDamage;
 import structure.Crate;
 
 public class Player extends Entity { // inherits Entity class
@@ -242,6 +243,11 @@ public class Player extends Entity { // inherits Entity class
 		for (SuperWeapon weap : getWeapons())
 			if (weap != null)
 				weap.update();
+		
+		if(game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize)){
+			Pkt20GasDamage gasDamage = new Pkt20GasDamage(this.getUsername());
+			gasDamage.sendData(game.socketClient);
+		}
 
 	}
 

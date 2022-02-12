@@ -164,12 +164,12 @@ public class Game extends JPanel implements Runnable {
 			numberOfBuildings = 50;
 			numberOfCrates = 100;
 			numberOfObstructions = 100;
-		} else if (gameState == waitState){
+		} else if (gameState == waitState) {
 			numberOfBuildings = 10;
 			numberOfCrates = 0;
 			numberOfObstructions = 15;
 		}
-		
+
 	}
 
 	public void init() {
@@ -189,25 +189,25 @@ public class Game extends JPanel implements Runnable {
 	public synchronized List<PlayerMP> getPlayers() {
 		return playerList;
 	}
-	
+
 	public void clearPlayers() {
 		playerList = new ArrayList<PlayerMP>();
 	}
 
 	public void update() {
-		
-		if (gameState == playState || gameState == waitState || gameState == endState) {
-			for (PlayerMP p : getPlayers())
-				p.update();
+		if (!loading)
+			if (gameState == playState || gameState == waitState || gameState == endState) {
+				for (PlayerMP p : getPlayers())
+					p.update();
 
-			if (socketServer != null) {
-				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
-				serverTickPacket.sendData(socketClient);
+				if (socketServer != null) {
+					Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
+					serverTickPacket.sendData(socketClient);
+				}
+				ui.update();
 			}
-			ui.update();
-		}
 	}
-	
+
 	public void paintComponent(Graphics g) {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
@@ -218,9 +218,9 @@ public class Game extends JPanel implements Runnable {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		
-		super.paintComponent(g);		
-		
+
+		super.paintComponent(g);
+
 		Graphics2D g2 = (Graphics2D) g;
 		if (!loading)
 			screen.render(g2);
@@ -230,8 +230,8 @@ public class Game extends JPanel implements Runnable {
 
 	public static void main(String[] args) {
 		// activate opengl
-        System.setProperty("sun.java2d.opengl", "True");
-        
+		System.setProperty("sun.java2d.opengl", "True");
+
 		new Game().startGameThread();
 
 	}

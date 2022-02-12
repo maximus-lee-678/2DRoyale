@@ -202,12 +202,20 @@ public class GameClient extends Thread {
 			Pkt19ServerKick kickPacket = new Pkt19ServerKick(data);
 			if(kickPacket.getIsHost()) 
 				game.socketServer = null;		
-			System.out.println("server close!");
+			System.out.println("Server Closed!");
 			game.gameState = game.titleState;
 			game.player.playerState = game.titleState;
 			game.ui.titleScreenState = 0;
 			game.ui.commandNum = 0;
 			game.clearPlayers();
+			break;
+		case 20:
+			// GAS DAMAGE
+			if (game.gameState != game.playState)
+				return;
+			Pkt20GasDamage gasDmgPacket = new Pkt20GasDamage(data);
+			game.getPlayers().get(playerIndex(gasDmgPacket.getUsername())).updatePlayerHP(-1);
+			
 		default:
 		case 0:
 		case 8:
