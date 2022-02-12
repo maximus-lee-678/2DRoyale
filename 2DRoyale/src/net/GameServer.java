@@ -46,7 +46,7 @@ public class GameServer extends Thread {
 	}
 
 	public void run() {
-		while (true) { // listen for new packets
+		while (!socket.isClosed()) { // listen for new packets
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -65,10 +65,9 @@ public class GameServer extends Thread {
 		case 1:
 			// LOGIN
 			Pkt01Login loginPacket = new Pkt01Login(data);
-//			if(gameState != waitState) return;
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
-			System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
-			addConnection(player, loginPacket);
+			if(addConnection(player, loginPacket)) 
+				System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
 			break;
 		case 2:
 			// DISCONNECT
@@ -140,8 +139,12 @@ public class GameServer extends Thread {
 
 	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
 		PlayerMP playerBTL = connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername()));
+		if (connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState == playState)
+			playerRemaining--;
 		playerBTL.setPlayerDefault();
 		backToLobbyPacket.sendData(this);
+		Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(this.seed);
+		sendData(seedPacket.getData(), playerBTL.ipAddress, playerBTL.port);
 	}
 
 	private void handleDropWeapon(Pkt12DropWeapon dropPacket) {
@@ -155,11 +158,17 @@ public class GameServer extends Thread {
 		if (findPlayerInPlayState() != null)
 			return;
 		gameState = playState;
-		playerRemaining = connectedPlayers.size();
-		updateAllPlayerState(game.playState);
-		Pkt14StartGame startGamePacket = new Pkt14StartGame();
-		startGamePacket.sendData(this);
+		playerRemaining = 0;
 		countDownSeq = 5;
+		for (PlayerMP p : connectedPlayers) {
+			if (p.playerState == endState)
+				continue;
+			playerRemaining++;
+			p.playerState = game.playState;
+			Pkt14StartGame startGamePacket = new Pkt14StartGame(p.getUsername());
+			startGamePacket.sendData(this);
+		}
+		this.seed = System.currentTimeMillis();
 	}
 
 	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
@@ -190,6 +199,7 @@ public class GameServer extends Thread {
 			String lastPlayer = findPlayerInPlayState();
 			Pkt18Winner winnerPacket = new Pkt18Winner(lastPlayer);
 			winnerPacket.sendData(this);
+			connectedPlayers.get(playerIndex(lastPlayer)).playerState = endState;
 			gameState = waitState;
 		}
 		// Check for bullet hit
@@ -215,7 +225,6 @@ public class GameServer extends Thread {
 	private void handleShoot(Pkt06Shoot shootPacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
 		p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
-
 		shootPacket.sendData(this);
 	}
 
@@ -236,22 +245,42 @@ public class GameServer extends Thread {
 		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
-
-	private void removeConnection(Pkt02Disconnect disconnectPacket) {
-		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
-		disconnectPacket.sendData(this);
+	
+	private void shutDownServer(PlayerMP isHost) {
+		for(int i = 1; i < connectedPlayers.size(); i++) {
+			PlayerMP kickPlayer = connectedPlayers.get(1);
+			Pkt19ServerKick playersKickPacket = new Pkt19ServerKick(false);
+			sendData(playersKickPacket.getData(), kickPlayer.ipAddress, kickPlayer.port);
+		}
+		Pkt19ServerKick hostKickPacket = new Pkt19ServerKick(true);
+		sendData(hostKickPacket.getData(), isHost.ipAddress, isHost.port);
+		socket.close();
+		return;
 	}
 
-	public void addConnection(PlayerMP player, Pkt01Login loginPacket) {
+	private void removeConnection(Pkt02Disconnect disconnectPacket) {
+		PlayerMP isHost = connectedPlayers.get(0);
+		//Check if host disconnects
+		if(isHost.getUsername().equals(disconnectPacket.getUsername())) {
+			shutDownServer(isHost);
+			return;
+		}
+		if (connectedPlayers.get(playerIndex(disconnectPacket.getUsername())).playerState == playState)
+			playerRemaining--;
+		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
+		disconnectPacket.sendData(this);		
+	}
+
+	public boolean addConnection(PlayerMP player, Pkt01Login loginPacket) {
 		boolean isConnected = false;
+
 		for (PlayerMP p : connectedPlayers) {
 			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
-				if (p.ipAddress == null) {
+				if (p.ipAddress == null && p.port == -1) {
 					p.ipAddress = player.ipAddress;
-				}
-				if (p.port == -1) {
 					p.port = player.port;
-				}
+				} else 
+					return false;
 				isConnected = true;
 			} else {
 				sendData(loginPacket.getData(), p.ipAddress, p.port);
@@ -263,10 +292,12 @@ public class GameServer extends Thread {
 		if (!isConnected) {
 			connectedPlayers.add(player);
 			if (!player.isLocal) {
+				sendData(loginPacket.getData(), player.ipAddress, player.port);
 				Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(this.seed);
 				sendData(seedPacket.getData(), player.ipAddress, player.port);
 			}
 		}
+		return true;
 	}
 
 	private int playerIndex(String username) {
@@ -290,12 +321,6 @@ public class GameServer extends Thread {
 			index++;
 		}
 		return -1;
-	}
-
-	private void updateAllPlayerState(int state) {
-		for (PlayerMP p : connectedPlayers) {
-			p.playerState = state;
-		}
 	}
 
 	private String findPlayerInPlayState() {

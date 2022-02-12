@@ -116,7 +116,7 @@ public class Player extends Entity { // inherits Entity class
 					continue mainLoop;
 				}
 			}
-			
+		
 			// Prevent player from spawning in crates
 			for (int i = 0; i < game.structM.crates.size(); i++) {
 				if (randomX < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width

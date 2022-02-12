@@ -14,5 +14,5 @@ public class Entity{
 	public BufferedImage sprite;
 
 	public Rectangle entityArea;
-	
+
 }

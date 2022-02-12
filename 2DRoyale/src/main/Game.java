@@ -185,8 +185,13 @@ public class Game extends JPanel implements Runnable {
 	public synchronized List<PlayerMP> getPlayers() {
 		return playerList;
 	}
+	
+	public void clearPlayers() {
+		playerList = new ArrayList<PlayerMP>();
+	}
 
 	public void update() {
+		
 		if (gameState == playState || gameState == waitState || gameState == endState) {
 			for (PlayerMP p : getPlayers())
 				p.update();
@@ -195,12 +200,8 @@ public class Game extends JPanel implements Runnable {
 				Pkt08ServerTick serverTickPacket = new Pkt08ServerTick();
 				serverTickPacket.sendData(socketClient);
 			}
-		
+			ui.update();
 		}
-		//when user dies, disconnect user and change to end state
-//		if (player.getPlayerHP() == 0) {
-//			gameState = endState;
-//		}
 	}
 
 	public void paintComponent(Graphics g) {

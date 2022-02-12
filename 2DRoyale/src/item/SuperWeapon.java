@@ -11,6 +11,7 @@ import entity.PlayerMP;
 import main.Game;
 import net.GameServer;
 import net.Pkt09ServerBulletHit;
+import net.Pkt12DropWeapon;
 import net.Pkt16Death;
 
 public class SuperWeapon extends Entity implements shootInterface, Cloneable {
@@ -97,9 +98,15 @@ public class SuperWeapon extends Entity implements shootInterface, Cloneable {
 
 					p.updatePlayerHP(-this.damage);
 					if (p.health == 0) {
+						if (p.playerWeap[p.playerWeapIndex] != null) {
+							SuperWeapon dropWeap = p.playerWeap[p.playerWeapIndex];
+							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.playerWeapIndex, dropWeap.typeId, dropWeap.id, p.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+							dropPacket.sendData(game.socketClient);
+						}
+						p.playerState = socketServer.endState;
 						Pkt16Death deathPacket = new Pkt16Death(player.getUsername(), p.getUsername(), socketServer.playerRemaining--);
 						deathPacket.sendData(socketServer);
-						p.playerState = socketServer.endState;
+						
 					}
 				}
 			}

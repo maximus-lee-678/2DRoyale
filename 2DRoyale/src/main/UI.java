@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+
+import entity.PlayerMP;
 import item.SuperWeapon;
 
 public class UI {
@@ -31,12 +33,12 @@ public class UI {
 	public int countDownSeq = 0;
 	public int countdown;
 	public boolean option;
-	public int hostStarted;
+	public int optionScreen;
 	
 	public int kills = 0;
-	public int position;
 	public boolean win;
-	public int playerCount;
+	public int waitingPlayerCount;
+	public int playingPlayerCount;
 
 	public UI(Game game) {
 		this.game = game;
@@ -59,6 +61,16 @@ public class UI {
 		}
 
 	}
+	
+	public void update() {
+		playingPlayerCount = waitingPlayerCount = 0;
+		for(PlayerMP p: game.getPlayers()) {
+			if(p.playerState == game.playState)
+				playingPlayerCount++;
+			if(p.playerState == game.waitState)
+				waitingPlayerCount++;
+		}				
+	}
 
 	public void draw(Graphics2D g2) {
 
@@ -72,21 +84,23 @@ public class UI {
 			drawTitleScreen();
 		}
 		// Play State
+		int playerCount;
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
+			if(playingPlayerCount > 1) {				
+				playerCount = playingPlayerCount;
+			} else {
+				playerCount = waitingPlayerCount;
+			}
 			drawHP();
 			drawInventory();
 			drawKillsStat(this.kills);
-			drawPlayerCount(game.getPlayers().size());
+			drawPlayerCount(playerCount);
 			drawMessage();
 			drawCountdown();
 			drawOption(option);
 			//only viewable by host
-			if(game.socketServer != null) {
-				drawHostMessage();
-			}
-			else if(game.socketServer == null) {
-				drawClientMessage();
-			}
+			if (game.gameState == game.waitState)
+				drawWaitMessage();
 			
 		}
 		// End state
@@ -432,8 +446,8 @@ public class UI {
 	}
 	
 	//host message to start game
-	public void drawHostMessage() {
-		if (hostStarted == 0) {
+	public void drawWaitMessage() {
+		if(game.socketServer != null) {
 			String text = "You are the host! Press F to start game!";
 			int x = getXforCenteredText(text);
 			int y = game.tileSize;
@@ -441,12 +455,8 @@ public class UI {
 			g2.drawString(text, x + 2, y + 2);
 			g2.setColor(Color.white);
 			g2.drawString(text, x, y);
-		}
-	}
-	
-	public void drawClientMessage() {
-		if (game.gameState == game.waitState) {
-			String text = "Waiting for host to start game..";
+		} else {
+			String text = "Waiting for host to start game!";
 			int x = getXforCenteredText(text);
 			int y = game.tileSize;
 			g2.setColor(Color.black);
@@ -454,11 +464,7 @@ public class UI {
 			g2.setColor(Color.white);
 			g2.drawString(text, x, y);
 		}
-		else {
-			System.out.println("hi");
-		}
-	}
-	
+	}	
 	
 	// for scrolling killing feed
 	public void addMessage(String text) {
@@ -520,7 +526,7 @@ public class UI {
 		g2.drawString(text, x, y);
 		
 		//get position of player from the length of array
-		text = "Position: #" + this.position;
+		text = "Position: #" + this.playingPlayerCount + 1;
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);

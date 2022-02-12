@@ -13,7 +13,7 @@ public class WindowHandler implements WindowListener{
 		this.game = game;
 		this.game.window.addWindowListener(this);
 	}
-	
+
 	@Override
 	public void windowClosing(WindowEvent e) {
 		if(game.gameState == game.waitState || game.gameState == game.playState) {

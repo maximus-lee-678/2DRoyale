@@ -53,7 +53,11 @@ public class GameClient extends Thread {
 			Pkt01Login loginPacket = new Pkt01Login(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has joined the game...");
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
-			game.getPlayers().add(player); // add new player to playerList
+			player.playerState = loginPacket.getPlayerState();
+			if(loginPacket.getUsername().equals(game.player.getUsername()))
+				game.getPlayers().add(0,game.player);
+			else
+				game.getPlayers().add(player); // add new player to playerList
 			break;
 		case 2:
 			// DISCONNECT
@@ -92,6 +96,7 @@ public class GameClient extends Thread {
 			game.randSeed = seedPacket.getServerSeed();
 			game.rand = new Random(game.randSeed);
 			game.gameState = game.waitState;
+			game.player.playerState = game.waitState;
 			game.loadDefaults();
 			game.player.generatePlayerXY();
 			break;
@@ -135,20 +140,25 @@ public class GameClient extends Thread {
 			break;
 		case 14:
 			// GAME START
-			game.gameState = game.playState;
-			game.loadDefaults();
-			game.player.generatePlayerXY();
-			game.player.setPlayerDefault();
-			game.player.freeze = true;
-			updateAllPlayerState(game.playState);
+			Pkt14StartGame startGamePacket = new Pkt14StartGame(data);
+			if(startGamePacket.getUsername().equals(game.player.getUsername())) {
+				game.gameState = game.playState;
+				game.loadDefaults();
+				game.player.generatePlayerXY();
+				game.player.setPlayerDefault();
+				game.player.freeze = true;
+				game.player.playerState = game.playState;
+			} else {
+				game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;
+			}
+			
 			break;
 		case 15:
 			// COUNTDOWN SEQUENCE
 			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(data);
 			game.ui.countdown = countDownPacket.getCountDown();
-			if (countDownPacket.getCountDown() > 0) {
+			if (countDownPacket.getCountDown() > 0)
 				System.out.println("Game Starting in " + countDownPacket.getCountDown());
-			}
 			else {
 				System.out.println("GO");
 				game.player.freeze = false;
@@ -157,7 +167,8 @@ public class GameClient extends Thread {
 		case 16:
 			// DEATH
 			Pkt16Death deathPacket = new Pkt16Death(data);
-			game.ui.position = deathPacket.getRemainingPlayers();
+			game.ui.playingPlayerCount = deathPacket.getRemainingPlayers();
+			game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
 			game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
 			if (deathPacket.getUsername().equals(game.player.getUsername())) {
 				game.ui.kills++;
@@ -170,25 +181,33 @@ public class GameClient extends Thread {
 		case 17:
 			// PLAYER BACK TO LOBBY
 			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
-			game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).playerState = game.waitState;
+			game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
 			if (backToLobbyPacket.getUsername().equals(game.player.getUsername())) {
-				game.gameState = game.waitState;
-				game.rand = new Random(game.randSeed);
-				game.loadDefaults();
-				game.player.generatePlayerXY();
-				game.player.setPlayerDefault();
 				game.ui.kills = 0;
 			}
 			break;
 		case 18:
 			// WINNER + GAME END
 			Pkt18Winner winnerPacket = new Pkt18Winner(data);
+			game.ui.addMessage(winnerPacket.getUsername() + " won!");
 			if (winnerPacket.getUsername().equals(game.player.getUsername())) {
-				game.ui.position = 1;
+				game.ui.playingPlayerCount = 1;
 				game.ui.win = true;
 				game.gameState = game.endState;
 				game.player.playerState = game.endState;
 			}
+			break;
+		case 19:
+			// SERVER SHUTDOWN
+			Pkt19ServerKick kickPacket = new Pkt19ServerKick(data);
+			if(kickPacket.getIsHost()) 
+				game.socketServer = null;		
+			System.out.println("server close!");
+			game.gameState = game.titleState;
+			game.player.playerState = game.titleState;
+			game.ui.titleScreenState = 0;
+			game.ui.commandNum = 0;
+			game.clearPlayers();
 		default:
 		case 0:
 		case 8:

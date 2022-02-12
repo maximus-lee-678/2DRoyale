@@ -6,12 +6,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import entity.PlayerMP;
-import item.Rifle;
 import net.GameClient;
 import net.GameServer;
 import net.Pkt01Login;
 import net.Pkt02Disconnect;
-import net.Pkt10PickupWeapon;
 import net.Pkt14StartGame;
 import net.Pkt17BackToLobby;
 
@@ -120,18 +118,20 @@ public class KeyHandler implements KeyListener {
 					gp.ui.name = maxLength(gp.ui.name, 15);
 				}
 				if (gp.ui.name != "" && code == KeyEvent.VK_ENTER) {
+					System.out.println("wtf");
 					gp.player.setUsername(gp.ui.name.trim());
-					gp.getPlayers().add(gp.player);
 					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex, gp.waitState);
 					if (gp.socketServer != null) {
+						gp.getPlayers().add(gp.player);
 						PlayerMP clonePlayer = null;
 						try {
 							clonePlayer = (PlayerMP) gp.player.clone();
 						} catch (CloneNotSupportedException e1) {
 							e1.printStackTrace();
-						}
+						}						
 						gp.socketServer.addConnection(clonePlayer, loginPacket);
 						gp.gameState = gp.waitState;
+						gp.player.playerState = gp.waitState;
 						gp.loadDefaults();			
 						loginPacket.sendData(gp.socketClient);
 						gp.player.generatePlayerXY();
@@ -216,8 +216,10 @@ public class KeyHandler implements KeyListener {
 					gp.ui.option = false;
 				} else if (gp.ui.commandNum == 2) {
 					gp.gameState = gp.titleState;
+					gp.player.playerState = gp.titleState;
+					gp.clearPlayers();
 					gp.ui.titleScreenState = 0;
-					gp.ui.commandNum = 0;
+					gp.ui.commandNum = 0;					
 					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
 					disconnectPacket.sendData(gp.socketClient);
 				} else if(gp.ui.commandNum == 3) {
@@ -238,14 +240,12 @@ public class KeyHandler implements KeyListener {
 				down = true;
 			if (code == KeyEvent.VK_D)
 				right = true;
-			if (code == KeyEvent.VK_E) {
+			if (code == KeyEvent.VK_E)
 				interact = false;
-			}
 			if (code == KeyEvent.VK_F) {
 				if (gp.socketServer != null) {
-					Pkt14StartGame startGamePacket = new Pkt14StartGame();
+					Pkt14StartGame startGamePacket = new Pkt14StartGame(gp.player.getUsername());
 					startGamePacket.sendData(gp.socketClient);
-					gp.ui.hostStarted = 1;
 				}
 				
 			}
@@ -320,6 +320,7 @@ public class KeyHandler implements KeyListener {
 			interact = true;
 		if (code == KeyEvent.VK_Q) 
 			drop = true;
+			
 
 	}
 
