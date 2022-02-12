@@ -193,8 +193,42 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 		}
-
-		if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
+		if ((gp.gameState == gp.waitState || gp.gameState == gp.playState) && gp.ui.option == true) {
+			if (code == KeyEvent.VK_W) {
+				gp.ui.commandNum--;
+				if (gp.ui.commandNum < 0) {
+					gp.ui.commandNum = 3;
+				}
+			}
+			if (code == KeyEvent.VK_S) {
+				gp.ui.commandNum++;
+				if (gp.ui.commandNum > 3) {
+					gp.ui.commandNum = 0;
+				}
+			}
+			if(code == KeyEvent.VK_ENTER) {
+				if(gp.ui.commandNum == 0) {
+					gp.ui.option = false;
+				}
+				else if (gp.ui.commandNum == 1) {
+					Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(gp.player.getUsername());
+					backToLobbyPacket.sendData(gp.socketClient);
+					gp.ui.option = false;
+				} else if (gp.ui.commandNum == 2) {
+					gp.gameState = gp.titleState;
+					gp.ui.titleScreenState = 0;
+					gp.ui.commandNum = 0;
+					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
+					disconnectPacket.sendData(gp.socketClient);
+				} else if(gp.ui.commandNum == 3) {
+					System.exit(0);
+				}
+			}
+			if (code == KeyEvent.VK_ESCAPE) {
+				gp.ui.option = false;
+			}
+		}
+		else if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
 			// true if user presses button
 			if (code == KeyEvent.VK_W)
 				up = true;
@@ -211,8 +245,14 @@ public class KeyHandler implements KeyListener {
 				if (gp.socketServer != null) {
 					Pkt14StartGame startGamePacket = new Pkt14StartGame();
 					startGamePacket.sendData(gp.socketClient);
+					gp.ui.hostStarted = 1;
 				}
 			}
+			if (code == KeyEvent.VK_ESCAPE) {
+				gp.ui.option = true;
+				gp.ui.commandNum = 0;;
+			}
+				
 			if (code == KeyEvent.VK_Q) {
 				drop = false;
 			}
@@ -247,7 +287,6 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 			if (code == KeyEvent.VK_ENTER) {
-
 				if (gp.ui.commandNum == 0) {
 					Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(gp.player.getUsername());
 					backToLobbyPacket.sendData(gp.socketClient);

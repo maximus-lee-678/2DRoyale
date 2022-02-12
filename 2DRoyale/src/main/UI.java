@@ -30,6 +30,9 @@ public class UI {
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 	public int countDownSeq = 0;
 	public int countdown;
+	public boolean option;
+	public int optionScreen;
+	public int hostStarted;
 	
 	public int kills = 0;
 	public int position;
@@ -77,6 +80,11 @@ public class UI {
 			drawPlayerCount(game.getPlayers().size());
 			drawMessage();
 			drawCountdown();
+			drawOption(option);
+			//only viewable by host
+			if(game.socketServer != null) {
+				drawHostMessage();
+			}
 			
 		}
 		// End state
@@ -282,7 +290,8 @@ public class UI {
 		}
 
 	}
-
+	
+	//function to align text in middle
 	public int getXforCenteredText(String text) {
 		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
 		int x = game.screen.screenWidth / 2 - length / 2;
@@ -295,7 +304,7 @@ public class UI {
 		// display health bar
 		Color c = new Color(255, 50, 50);
 		g2.setColor(c);
-		g2.fillRect(game.tileSize * 2, game.tileSize * 16, (int) (game.player.health * 2), game.tileSize / 2);
+		g2.fillRect(game.tileSize * 2, game.tileSize * 10, (int) (game.player.health * 2), game.tileSize / 2);
 	}
 
 	public void drawInventory() {
@@ -329,12 +338,14 @@ public class UI {
 		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 	}
 	
+	//draw sub translucent window
 	public void drawSubWindow(int x, int y, int width, int height) {
 		Color c = new Color(0, 0, 0, 100);
 		g2.setColor(c);
 		g2.fillRoundRect(x, y, width, height, 10, 10);
 	}
 	
+	//draw kill count
 	public void drawKillsStat(int kills) {
 		int x = game.screen.screenWidth - game.tileSize*4;
 		int y =  game.tileSize;
@@ -350,6 +361,7 @@ public class UI {
 		
 	}
 	
+	//draw player count
 	public void drawPlayerCount(int playerCount){
 		
 		int x = game.screen.screenWidth - game.tileSize*4 + 85;
@@ -364,6 +376,7 @@ public class UI {
 		
 	}
 	
+	//countdown timer interface
 	public void drawCountdown() {
 		if (game.gameState == game.playState && countdown > 0) {
 			String text = "Game Starting in " + countdown;
@@ -378,13 +391,64 @@ public class UI {
 		}
 	}
 	
+	//display option screen when esc is pressed
+	public void drawOption(boolean option) {
+		if (option) {
+			int x = game.tileSize*6;
+			int y =  game.tileSize*2;
+			//make box
+			drawSubWindow(x, y, game.screen.screenWidth - x*2, game.screen.screenHeight - y*6);
+			String text = "Back To Game";
+			x = getXforCenteredText(text);
+			y += game.tileSize + 30;
+			g2.setColor(Color.white);
+			g2.drawString(text, x, y);
+			if (commandNum == 0) 
+				g2.drawString(">", x - game.tileSize, y);
+			
+			text = "Back to Lobby";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			if (commandNum == 1) 
+				g2.drawString(">", x - game.tileSize, y);
+			
+			text = "Back to Main Menu";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			if (commandNum == 2) 
+				g2.drawString(">", x - game.tileSize, y);
+			
+			text = "Quit Game";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			if (commandNum == 3) 
+				g2.drawString(">", x - game.tileSize, y);
+		}
+	}
+	
+	//host message to start game
+	public void drawHostMessage() {
+		if (hostStarted == 0) {
+			String text = "You are the host! Press F to start game!";
+			int x = getXforCenteredText(text);
+			int y = game.tileSize;
+			g2.setColor(Color.black);
+			g2.drawString(text, x + 2, y + 2);
+			g2.setColor(Color.white);
+			g2.drawString(text, x, y);
+		}
+	}
+	
+	// for scrolling killing feed
 	public void addMessage(String text) {
 		message.add(text);
 		messageCounter.add(0);
 		// add this line to the killed function -> game.iu.addMessage("blank killed blank")
 		
 	}
-	
 	public void drawMessage() {
 		int messageX = game.screen.screenWidth - game.tileSize*4;
 		int messageY = game.tileSize*4;
@@ -410,6 +474,7 @@ public class UI {
 		}
 	}
 	
+	//end game screen
 	public void drawEndGame(boolean win) {
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(42F));
