@@ -247,6 +247,7 @@ public class KeyHandler implements KeyListener {
 					startGamePacket.sendData(gp.socketClient);
 					gp.ui.hostStarted = 1;
 				}
+				
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
 				gp.ui.option = true;

@@ -84,6 +84,9 @@ public class UI {
 			if(game.socketServer != null) {
 				drawHostMessage();
 			}
+			else if(game.socketServer == null) {
+				drawClientMessage();
+			}
 			
 		}
 		// End state
@@ -301,7 +304,7 @@ public class UI {
 		// display health logo
 		g2.drawImage(healthImage, game.tileSize, game.tileSize * 16, 25, 25, null);
 		// display health bar
-		Color c = new Color(255, 50, 50);
+		Color c = new Color(255, 0, 30);
 		g2.setColor(c);
 		g2.fillRect(game.tileSize * 2, game.tileSize * 10, (int) (game.player.health * 2), game.tileSize / 2);
 	}
@@ -440,6 +443,22 @@ public class UI {
 			g2.drawString(text, x, y);
 		}
 	}
+	
+	public void drawClientMessage() {
+		if (game.gameState == game.waitState) {
+			String text = "Waiting for host to start game..";
+			int x = getXforCenteredText(text);
+			int y = game.tileSize;
+			g2.setColor(Color.black);
+			g2.drawString(text, x + 2, y + 2);
+			g2.setColor(Color.white);
+			g2.drawString(text, x, y);
+		}
+		else {
+			System.out.println("hi");
+		}
+	}
+	
 	
 	// for scrolling killing feed
 	public void addMessage(String text) {

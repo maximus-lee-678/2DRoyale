@@ -366,7 +366,7 @@ public class Player extends Entity { // inherits Entity class
 		g2.drawImage(holding, t, null); // Draw hand (weapons)
 		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
 		
-		g2.setColor(new Color(255,50,50));
+		g2.setColor(new Color(255,0,30));
 		g2.fillRect(x - game.tileSize/4, y - 15, (int) ((this.health))/2, 10);
 		g2.setColor(Color.white);
 		g2.drawString(this.getUsername(), x, y + 40);
