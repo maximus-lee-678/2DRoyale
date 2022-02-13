@@ -200,7 +200,7 @@ public class UI {
 			g2.drawString(">", x - game.tileSize, y);
 		} else if (titleScreenState == 2) {
 			g2.setColor(Color.white);
-			g2.setFont(g2.getFont().deriveFont(42F));
+			g2.setFont(g2.getFont().deriveFont(32F));
 
 			String text = "Players Control";
 			int x = getXforCenteredText(text);
@@ -212,7 +212,17 @@ public class UI {
 			y += game.tileSize * 2;
 			g2.drawString(text, x, y);
 
-			text = "- Use E to pick and drop weapons";
+			text = "- Use E to pick weapons and open crates";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			
+			text = "- Use Q to drop weapon";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			
+			text = "- Use scroll to change weapons";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
