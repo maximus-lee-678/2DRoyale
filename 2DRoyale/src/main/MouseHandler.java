@@ -29,10 +29,8 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState) {
-			Pkt05MouseScroll mouseScrollPacket = new Pkt05MouseScroll(game.player.getUsername(), e.getWheelRotation());
-			mouseScrollPacket.sendData(game.socketClient);
-		}		
+		if (game.gameState == game.waitState || game.gameState == game.playState) 
+			new Pkt05MouseScroll(game.player.getUsername(), e.getWheelRotation()).sendData(game.socketClient);		
 	}
 
 	@Override

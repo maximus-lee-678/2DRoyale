@@ -21,18 +21,23 @@ public class Projectile {
 	}
 	
 	public void update(){
+		// Move projectile forward
 		worldX += xVel;
 		worldY += yVel;
-		
-		travelDistance += Math.abs(xVel) +  Math.abs(yVel);		
+		//Update distance travel
+		double aSqr = Math.abs(xVel) * Math.abs(xVel);
+		double bSqr = Math.abs(yVel) * Math.abs(yVel);
+		travelDistance += Math.sqrt(aSqr+bSqr);		
 	}
 
-	public boolean checkTime() {
+	public boolean checkDistance() {
+		// Check if projectile reached maximum range
 		if(travelDistance > weap.range)
 			return true;
 		return false;
 	}
 	
+	// Check projectile collision
 	public boolean hasCollided() {
 		
 		int entityLeftWorldX = (int) (worldX + xVel);

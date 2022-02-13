@@ -3,6 +3,7 @@ package item;
 import java.util.ArrayList;
 import java.util.List;
 
+import entity.Player;
 import main.Game;
 import structure.Crate;
 
@@ -20,13 +21,15 @@ public class ItemManager {
 		loadWeapons();
 	}
 
+	// Init all weapons to weaponsArr
 	private void loadWeapons() {
-		weaponsArr[0] = new Rifle(null, game);
-		weaponsArr[1] = new SMG(null, game);
-		weaponsArr[2] = new Shotgun(null, game);
-		weaponsArr[3] = new Sniper(null, game);
+		weaponsArr[0] = new Rifle(game, null);
+		weaponsArr[1] = new SMG(game, null);
+		weaponsArr[2] = new Shotgun(game, null);
+		weaponsArr[3] = new Sniper(game, null);
 	}
 
+	// Create new weapon to be placed in the world (at the crates position)
 	public void spawnWeap(Crate crate, int weapType, int weapId) {
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
@@ -39,6 +42,7 @@ public class ItemManager {
 		}
 	}
 
+	// Drop weapon to be placed in the world (at the player position)
 	public void dropWeap(int weapType, int weapId, int worldX, int worldY) {
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
@@ -51,6 +55,7 @@ public class ItemManager {
 		}
 	}
 
+	// When weapon is picked up, remove from the world
 	public void deleteWorldWeapon(int weapId) {
 		for (SuperWeapon w : worldWeapons) {
 			if (w.id == weapId) {
@@ -60,8 +65,8 @@ public class ItemManager {
 		}
 	}
 
+	// Check if weapon within range of player
 	public SuperWeapon withinWeaponsRange(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
-
 		for (int i = 0; i < worldWeapons.size(); i++) {
 			SuperWeapon weap = worldWeapons.get(i);
 
@@ -70,13 +75,10 @@ public class ItemManager {
 			int weapWidth = weap.entityArea.width;
 			int weapHeight = weap.entityArea.height;
 
-			if (entityLeftWorldX < weapX + weapWidth && entityRightWorldX > weapX && entityTopWorldY < weapY + weapHeight && entityBottomWorldY > weapY) {
+			if (entityLeftWorldX < weapX + weapWidth && entityRightWorldX > weapX && entityTopWorldY < weapY + weapHeight && entityBottomWorldY > weapY)
 				return weap;
-			}
 		}
-
 		return null;
-
 	}
 
 }

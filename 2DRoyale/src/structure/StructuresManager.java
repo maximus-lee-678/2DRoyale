@@ -169,7 +169,8 @@ public class StructuresManager {
 			int topRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
 			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
-			for (int x = topLeftTileX; x <= topRightTileX; x++) { // spawn buildings on pathable floor
+			// Spawn buildings on pathable floor
+			for (int x = topLeftTileX; x <= topRightTileX; x++) { 
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
 					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
 						failedBuildingAttempts++;

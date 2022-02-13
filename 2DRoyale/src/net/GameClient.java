@@ -32,7 +32,8 @@ public class GameClient extends Thread {
 	}
 
 	public void run() {
-		while (true) { // listen for new packets
+		// Listening for new packets
+		while (true) { 
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -40,7 +41,8 @@ public class GameClient extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			readPacket(packet.getData(), packet.getAddress(), packet.getPort()); // call readPacket() to handle packet
+			// Handle packet
+			readPacket(packet.getData(), packet.getAddress(), packet.getPort());
 		}
 	}
 
@@ -53,11 +55,7 @@ public class GameClient extends Thread {
 			Pkt01Login loginPacket = new Pkt01Login(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has joined the game...");
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
-			player.playerState = loginPacket.getPlayerState();
-			if(loginPacket.getUsername().equals(game.player.getUsername()))
-				game.getPlayers().add(0,game.player);
-			else
-				game.getPlayers().add(player); // add new player to playerList
+			handleLogin(loginPacket, player);
 			break;
 		case 2:
 			// DISCONNECT
@@ -82,57 +80,38 @@ public class GameClient extends Thread {
 			break;
 		case 6:
 			// SHOOTING
-			if (game.gameState != game.playState)
-				return;
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
-			if (game.player.getUsername() == shootPacket.getUsername())
-				return;
-			PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
-			p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			if (game.gameState == game.playState) 
+				handleShooting(shootPacket);
 			break;
 		case 7:
 			// SERVER SEED
 			Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(data);
-			game.randSeed = seedPacket.getServerSeed();
-			game.rand = new Random(game.randSeed);
-			game.gameState = game.waitState;
-			game.player.playerState = game.waitState;
-			game.loadDefaults();
-			game.player.generatePlayerXY();
+			handleSeed(seedPacket);
 			break;
 		case 9:
 			// SERVER BULLET HIT
-			if (game.gameState != game.playState)
-				return;
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
-			PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
-			p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
-			double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
-			game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
+			if (game.gameState == game.playState)
+				handleBulletHit(serverHitPacket);
 			break;
 		case 10:
 			// PICK UP WEAPON
-			if (game.gameState != game.playState)
-				return;
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
-			game.getPlayers().get(playerIndex(pickUpPacket.getUsername())).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
-			game.itemM.deleteWorldWeapon(pickUpPacket.getWeapId());
+			if (game.gameState == game.playState)
+				handleWeapPickUp(pickUpPacket);
 			break;
 		case 11:
 			// OPEN CRATE
-			if (game.gameState != game.playState)
-				return;
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
-			Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
-			game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());
+			if (game.gameState == game.playState)
+				handleCrateOpen(crateOpenPacket);
 			break;
 		case 12:
 			// DROP WEAPON
-			if (game.gameState != game.playState)
-				return;
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
-			game.getPlayers().get(playerIndex(dropPacket.getUsername())).dropWeapon(dropPacket.getPlayerWeapIndex());
-			game.itemM.dropWeap(dropPacket.getWeapType(), dropPacket.getWeapId(), dropPacket.getWorldX(), dropPacket.getWorldY());
+			if (game.gameState == game.playState)
+				handleWeapDrop(dropPacket);			
 			break;
 		case 13:
 			// CLOSE GAS
@@ -141,94 +120,163 @@ public class GameClient extends Thread {
 		case 14:
 			// GAME START
 			Pkt14StartGame startGamePacket = new Pkt14StartGame(data);
-			if(startGamePacket.getUsername().equals(game.player.getUsername())) {
-				game.gameState = game.playState;
-				game.loadDefaults();
-				game.player.generatePlayerXY();
-				game.player.setPlayerDefault();
-				game.player.freeze = true;
-				game.player.playerState = game.playState;
-			} else {
-				game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;
-			}
-			
+			handleGameStart(startGamePacket);
 			break;
 		case 15:
 			// COUNTDOWN SEQUENCE
 			Pkt15CountdownSeq countDownPacket = new Pkt15CountdownSeq(data);
-			game.ui.countdown = countDownPacket.getCountDown();
-			if (countDownPacket.getCountDown() > 0)
-				System.out.println("Game Starting in " + countDownPacket.getCountDown());
-			else {
-				System.out.println("GO");
-				game.player.freeze = false;
-			}
+			handleCountDown(countDownPacket);
 			break;
 		case 16:
 			// DEATH
 			Pkt16Death deathPacket = new Pkt16Death(data);
-			game.ui.playingPlayerCount = deathPacket.getRemainingPlayers();
-			game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
-			game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
-			if (deathPacket.getUsername().equals(game.player.getUsername())) {
-				game.ui.kills++;
-			}
-			if (deathPacket.getVictim().equals(game.player.getUsername())) {
-				game.gameState = game.endState;
-				game.ui.win = false;
-			}
+			handleDeath(deathPacket);
 			break;
 		case 17:
 			// PLAYER BACK TO LOBBY
 			Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(data);
-			game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
-			if (backToLobbyPacket.getUsername().equals(game.player.getUsername())) {
-				game.ui.kills = 0;
-			}
+			handleBackToLobby(backToLobbyPacket);
 			break;
 		case 18:
 			// WINNER + GAME END
 			Pkt18Winner winnerPacket = new Pkt18Winner(data);
-			game.ui.addMessage(winnerPacket.getUsername() + " won!");
-			if (winnerPacket.getUsername().equals(game.player.getUsername())) {
-				game.ui.playingPlayerCount = 1;
-				game.ui.win = true;
-				game.gameState = game.endState;
-				game.player.playerState = game.endState;
-			}
+			handleWinning(winnerPacket);
 			break;
 		case 19:
 			// SERVER SHUTDOWN
 			Pkt19ServerKick kickPacket = new Pkt19ServerKick(data);
-			if(kickPacket.getIsHost()) 
-				game.socketServer = null;		
 			System.out.println("Server Closed!");
-			game.gameState = game.titleState;
-			game.player.playerState = game.titleState;
-			game.ui.titleScreenState = 0;
-			game.ui.commandNum = 0;
-			game.clearPlayers();
+			handleServerShutdown(kickPacket);			
 			break;
 		case 20:
 			// GAS DAMAGE
-			if (game.gameState != game.playState)
-				return;
 			Pkt20GasDamage gasDmgPacket = new Pkt20GasDamage(data);
-			game.getPlayers().get(playerIndex(gasDmgPacket.getUsername())).updatePlayerHP(-1);
-			
+			if (game.gameState == game.playState)
+				game.getPlayers().get(playerIndex(gasDmgPacket.getUsername())).updatePlayerHP(-1);
+			break;
 		default:
 		case 0:
-		case 8:
 			break;
 		}
 	}
 
-	private void updateAllPlayerState(int state) {
-		for (PlayerMP p : game.getPlayers()) {
-			p.playerState = state;
+	private void handleServerShutdown(Pkt19ServerKick kickPacket) {
+		// If player is host delete server
+		if(kickPacket.getIsHost()) 
+			game.socketServer = null;
+		// Move to title screen and clear player array
+		game.gameState = game.titleState;
+		game.player.playerState = game.titleState;
+		game.ui.titleScreenState = 0;
+		game.ui.commandNum = 0;
+		game.clearPlayers();
+	}
+
+	private void handleWinning(Pkt18Winner winnerPacket) {
+		game.ui.addMessage(winnerPacket.getUsername() + " won!");
+		// If player is winner, end the game
+		if (winnerPacket.getUsername().equals(game.player.getUsername())) {
+			game.ui.playingPlayerCount = 1;
+			game.ui.win = true;
+			game.gameState = game.endState;
+			game.player.playerState = game.endState;
 		}
 	}
 
+	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
+		// Update players that went back to lobby
+		game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
+		// If player is you, clear the number of kills
+		if (backToLobbyPacket.getUsername().equals(game.player.getUsername())) 
+			game.ui.kills = 0;
+	}
+
+	private void handleDeath(Pkt16Death deathPacket) {
+		game.ui.playingPlayerCount = deathPacket.getRemainingPlayers();
+		game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
+		game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
+		// If player is the shooter, increment kills
+		if (deathPacket.getUsername().equals(game.player.getUsername()))
+			game.ui.kills++;
+		// If player is victim, end game
+		if (deathPacket.getVictim().equals(game.player.getUsername())) {
+			game.gameState = game.endState;
+			game.ui.win = false;
+		}
+	}
+
+	private void handleCountDown(Pkt15CountdownSeq countDownPacket) {
+		game.ui.countdown = countDownPacket.getCountDown();
+		// Show countdown on screen when game starts
+		if (countDownPacket.getCountDown() > 0)
+			System.out.println("Game Starting in " + countDownPacket.getCountDown());
+		else {
+			System.out.println("GO");
+			game.player.freeze = false;
+		}
+	}
+
+	private void handleGameStart(Pkt14StartGame startGamePacket) {
+		// Check who entered the new game, if it's player, refresh the map to the new one
+		if(startGamePacket.getUsername().equals(game.player.getUsername())) {
+			game.gameState = game.playState;
+			game.loadDefaults();
+			game.player.generatePlayerXY();
+			game.player.setPlayerDefault();
+			game.player.freeze = true;
+			game.player.playerState = game.playState;
+		} else 
+			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;		
+	}
+
+	private void handleWeapDrop(Pkt12DropWeapon dropPacket) {
+		game.getPlayers().get(playerIndex(dropPacket.getUsername())).dropWeapon(dropPacket.getPlayerWeapIndex());
+		game.itemM.dropWeap(dropPacket.getWeapType(), dropPacket.getWeapId(), dropPacket.getWorldX(), dropPacket.getWorldY());
+	}
+
+	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
+		Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
+		game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());		
+	}
+
+	private void handleWeapPickUp(Pkt10PickupWeapon pickUpPacket) {
+		game.getPlayers().get(playerIndex(pickUpPacket.getUsername())).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
+		game.itemM.deleteWorldWeapon(pickUpPacket.getWeapId());
+	}
+
+	private void handleBulletHit(Pkt09ServerBulletHit serverHitPacket) {
+		PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
+		p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
+		double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
+		// Apply damage to victim
+		game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
+	}
+
+	private void handleSeed(Pkt07ServerSeed seedPacket) {
+		// After joining server, server will send the seed for player to generate the world
+		game.randSeed = seedPacket.getServerSeed();
+		game.rand = new Random(game.randSeed);
+		game.gameState = game.waitState;
+		game.player.playerState = game.waitState;
+		game.loadDefaults();
+		game.player.generatePlayerXY();
+	}
+
+	private void handleShooting(Pkt06Shoot shootPacket) {
+		if (game.player.getUsername() == shootPacket.getUsername())
+			return;
+		PlayerMP p = game.getPlayers().get(playerIndex(shootPacket.getUsername()));
+		p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+	}
+
+	private void handleLogin(Pkt01Login loginPacket, PlayerMP player) {
+		player.playerState = loginPacket.getPlayerState();
+		if(loginPacket.getUsername().equals(game.player.getUsername()))
+			game.getPlayers().add(0,game.player);
+		else
+			game.getPlayers().add(player); // add new player to playerList
+	}
+	
 	private int weapIndex(PlayerMP player, int weapId) {
 		int index = 0;
 

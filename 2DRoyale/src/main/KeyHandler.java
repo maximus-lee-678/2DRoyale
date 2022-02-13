@@ -211,8 +211,7 @@ public class KeyHandler implements KeyListener {
 					gp.ui.option = false;
 				}
 				else if (gp.ui.commandNum == 1) {
-					Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(gp.player.getUsername());
-					backToLobbyPacket.sendData(gp.socketClient);
+					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
 					gp.ui.option = false;
 				} else if (gp.ui.commandNum == 2) {
 					gp.gameState = gp.titleState;
@@ -220,8 +219,7 @@ public class KeyHandler implements KeyListener {
 					gp.clearPlayers();
 					gp.ui.titleScreenState = 0;
 					gp.ui.commandNum = 0;					
-					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
-					disconnectPacket.sendData(gp.socketClient);
+					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
 				} else if(gp.ui.commandNum == 3) {
 					System.exit(0);
 				}
@@ -243,10 +241,9 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_E)
 				interact = false;
 			if (code == KeyEvent.VK_F) {
-				if (gp.socketServer != null) {
-					Pkt14StartGame startGamePacket = new Pkt14StartGame(gp.player.getUsername());
-					startGamePacket.sendData(gp.socketClient);
-				}
+				if (gp.socketServer != null) 
+					new Pkt14StartGame(gp.player.getUsername()).sendData(gp.socketClient);
+				
 				
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
@@ -289,14 +286,12 @@ public class KeyHandler implements KeyListener {
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				if (gp.ui.commandNum == 0) {
-					Pkt17BackToLobby backToLobbyPacket = new Pkt17BackToLobby(gp.player.getUsername());
-					backToLobbyPacket.sendData(gp.socketClient);
+					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
 				} else if (gp.ui.commandNum == 1) {
 					gp.gameState = gp.titleState;
 					gp.ui.titleScreenState = 0;
 					gp.ui.commandNum = 0;
-					Pkt02Disconnect disconnectPacket = new Pkt02Disconnect(gp.player.getUsername());
-					disconnectPacket.sendData(gp.socketClient);
+					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
 				}
 			}
 		}

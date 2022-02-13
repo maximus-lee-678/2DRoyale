@@ -32,9 +32,9 @@ public class Player extends Entity { // inherits Entity class
 	private Game game;
 	private KeyHandler keys;
 	private MouseHandler mouse;
-	public int playerState;
 
-	public final int playerOffset = 12;
+	public int playerState;
+	public final int playerOffset;
 	public final int screenX;
 	public final int screenY;
 	public double mouseX;
@@ -47,7 +47,7 @@ public class Player extends Entity { // inherits Entity class
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
 
-	public SuperWeapon[] playerWeap;
+	protected SuperWeapon[] playerWeap;
 	public int playerWeapIndex;
 	public double health;
 
@@ -55,32 +55,45 @@ public class Player extends Entity { // inherits Entity class
 		this.game = game;
 		this.keys = keys;
 		this.mouse = mouse;
-		this.username = username;
-		this.isLocal = isLocal;
-		this.playerState = game.waitState;
 
+		this.playerState = game.waitState;
+		this.playerOffset = 12;
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
-
-		this.entityArea = new Rectangle(6, 6, 12, 12);
-
-		this.playerWeapIndex = 0;
-		this.speed = 4;
 		this.mouseX = 0;
 		this.mouseY = 0;
 
+		this.username = username;
+		this.isLocal = isLocal;
 		this.freeze = false;
+
+		this.playerWeapIndex = 0;
+
+		this.speed = 5;
+		this.entityArea = new Rectangle(6, 6, 12, 12);
 
 		setPlayerDefault();
 		getPlayerImage();
 	}
 
+	// Init images
+	private void getPlayerImage() {
+		try {
+			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/player.png"));
+			this.playerHand = ImageIO.read(getClass().getResourceAsStream("/player/hand.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Refresh player to a new state
 	public void setPlayerDefault() {
 		this.playerState = game.waitState;
 		this.playerWeap = new SuperWeapon[4];
 		this.health = 100;
 	}
 
+	// Generate player (also prevents player from spawning in structures/solid tile)
 	public void generatePlayerXY() {
 		int failedPlayerAttempts = 0;
 
@@ -91,7 +104,7 @@ public class Player extends Entity { // inherits Entity class
 
 			Rectangle separationHitbox = new Rectangle(randomX - playerOffset, randomY - playerOffset, entityArea.width + playerOffset * 2, entityArea.height + playerOffset * 2);
 
-			// Spawn player on solid blocks
+			// Prevent player from spawning in unpassable tiles (eg. walls, water)
 			int randomTopLeftTileX = separationHitbox.x / game.tileSize;
 			int randomTopLeftTileY = separationHitbox.y / game.tileSize;
 			int randomTopRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
@@ -101,31 +114,22 @@ public class Player extends Entity { // inherits Entity class
 			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
 			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
-			if (game.tileM.tile[game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY][0]].collisionPlayer
-					|| game.tileM.tile[game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY][0]].collisionPlayer
-					|| game.tileM.tile[game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY][0]].collisionPlayer
-					|| game.tileM.tile[game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY][0]].collisionPlayer) {
+			if (game.tileM.tile[game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY][0]].collisionPlayer) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
 
 			// Prevent player from spawning in buildings
 			for (int i = 0; i < game.structM.buildings.length; i++) {
-				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x
-						&& separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x && separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
 			}
-			
+
 			// Prevent player from spawning in crates
 			for (int i = 0; i < game.structM.crates.size(); i++) {
-				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x
-						&& separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
+				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x && separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -133,34 +137,24 @@ public class Player extends Entity { // inherits Entity class
 
 			// Prevent player from spawning in obstructions
 			for (int i = 0; i < game.structM.obstructions.length; i++) {
-				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x
-						&& separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x && separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
 			}
 
+			// Commit random values
 			worldX = randomX;
 			worldY = randomY;
 			break;
 		}
 
 		System.out.println("Player collisions: " + failedPlayerAttempts);
-		Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
-		movePacket.sendData(game.socketClient);
+		// Tell server of the new player position
+		new Pkt03Move(this.username, this.worldX, this.worldY).sendData(game.socketClient);
 	}
 
-	private void getPlayerImage() {
-		try {
-			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/player.png"));
-			this.playerHand = ImageIO.read(getClass().getResourceAsStream("/player/hand.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	// Add a weapon to user inventory
 	public void addWeapon(int playerWeapIndex, int weapType, int weapId) {
 		try {
 			SuperWeapon newWeap;
@@ -174,26 +168,20 @@ public class Player extends Entity { // inherits Entity class
 		}
 	}
 
+	// Remove weapon from user inventory
 	public void dropWeapon(int playerWeapIndex) {
 		playerWeap[playerWeapIndex] = null;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
 	public void update() {
 
+		// Check keyboard inputs
 		if (keys != null) {
 			if ((keys.up == true || keys.down == true || keys.left == true || keys.right == true) && !freeze) {
 				int xa = 0;
 				int ya = 0;
 
+				// Read keyboard inputs
 				if (keys.up == true)
 					ya -= 1;
 				if (keys.down == true)
@@ -203,61 +191,60 @@ public class Player extends Entity { // inherits Entity class
 				if (keys.right == true)
 					xa += 1;
 
+				// Move player
 				for (int i = 0; i < speed; i++)
 					move(xa, ya);
 
-				Pkt03Move movePacket = new Pkt03Move(this.username, this.worldX, this.worldY);
-				movePacket.sendData(game.socketClient);
+				// Update new position to server
+				new Pkt03Move(this.username, this.worldX, this.worldY).sendData(game.socketClient);
 			}
 			if (keys.interact == true) {
+				// Handle "F" key input to check if there's any within range events
 				withinRange();
 				keys.interact = false;
 			}
 			if (keys.drop == true) {
+				// Handle "Q" key input to drop player weapon
 				if (playerWeap[playerWeapIndex] != null) {
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
-					Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id,
-							this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
-					dropPacket.sendData(game.socketClient);
+					// Update weapon drop to server
+					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
 				}
 				keys.drop = false;
 			}
 
 		}
-
+		// Check mouse inputs
 		if (mouse != null) {
+			// Check mouse movement
 			if (mouseX != mouse.x || mouseY != mouse.y) {
 				this.mouseX = mouse.x;
 				this.mouseY = mouse.y;
 
 				updateMouseDirection(mouse.x, mouse.y);
-				Pkt04MouseMove mouseMovePacket = new Pkt04MouseMove(this.username, this.mouseX, this.mouseY);
-				mouseMovePacket.sendData(game.socketClient);
+				// Update mouse direction to server
+				new Pkt04MouseMove(this.username, this.mouseX, this.mouseY).sendData(game.socketClient);
 			}
+			// Check mouse clicks
 			if (mouse.mousePressed)
+				// Handle shoot event
 				if (playerWeapIndex >= 0)
 					if (getWeapons()[playerWeapIndex] != null)
 						getWeapons()[playerWeapIndex].shoot();
 		}
 
+		// Update bullets in each weapon
 		for (SuperWeapon weap : getWeapons())
 			if (weap != null)
 				weap.update();
-		
-		if(game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize)){
-			Pkt20GasDamage gasDamage = new Pkt20GasDamage(this.getUsername());
-			gasDamage.sendData(game.socketClient);
-		}
+
+		// Check if user is in gas
+		if (game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize))
+			new Pkt20GasDamage(this.getUsername()).sendData(game.socketClient);
 
 	}
 
-	public void playerMouseScroll(int direction) {
-		if (direction < 0 && playerWeapIndex > 0)
-			playerWeapIndex--;
-		else if (direction > 0 && playerWeapIndex < playerWeap.length - 1)
-			playerWeapIndex++;
-	}
-
+	// Move event
 	private void move(int xa, int ya) {
 		if (xa != 0 && ya != 0) {
 			move(xa, 0);
@@ -293,46 +280,31 @@ public class Player extends Entity { // inherits Entity class
 		return false;
 	}
 
+	// Handle within range events
 	private void withinRange() {
 		int entityLeftWorldX = worldX + entityArea.x;
 		int entityRightWorldX = worldX + entityArea.x + entityArea.width;
 		int entityTopWorldY = worldY + entityArea.y;
 		int entityBottomWorldY = worldY + entityArea.y + entityArea.height;
 
+		// Check if weapons are in range to pick up
 		SuperWeapon weapon = game.itemM.withinWeaponsRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
-
 		if (weapon != null) {
+			// If player is holding a weapon, swap with the one the player is picking up
 			if (playerWeap[playerWeapIndex] != null) {
 				SuperWeapon dropWeap = playerWeap[playerWeapIndex];
-				Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, weapon.worldX, weapon.worldY);
-				dropPacket.sendData(game.socketClient);
+				new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, weapon.worldX, weapon.worldY).sendData(game.socketClient);
 			}
-			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id);
-			pickUpPacket.sendData(game.socketClient);
+			new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id).sendData(game.socketClient);
 			return;
 		}
 
+		// Check if crates are in range to open
 		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 		if (crateIndex != -1) {
-			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(username, crateIndex);
-			crateOpenPacket.sendData(game.socketClient);
+			new Pkt11CrateOpen(username, crateIndex).sendData(game.socketClient);
 			return;
 		}
-	}
-
-	public void updatePlayerHP(double health) {
-		this.health += health;
-		if (this.health < 0)
-			this.health = 0;
-	}
-
-	public double getPlayerHP() {
-		return this.health;
-	}
-
-	public void updatePlayerXY(int worldX, int worldY) {
-		this.worldX = worldX;
-		this.worldY = worldY;
 	}
 
 	public void updateMouseDirection(double x, double y) {
@@ -344,15 +316,18 @@ public class Player extends Entity { // inherits Entity class
 	public synchronized SuperWeapon[] getWeapons() {
 		return playerWeap;
 	}
-
+	
+	////////// RENDER FUNCTIONS //////////
 	public void render(Graphics2D g2) {
 
 		BufferedImage holding;
 		int handOffset;
 
 		SuperWeapon sp = getWeapons()[playerWeapIndex];
+		// If player holding weap, render weap. If player holding nothing, render his
+		// hand
 		if (sp != null) {
-			holding = sp.sprite; // This will be replaced by the img of the weapon the player is holding
+			holding = sp.sprite;
 			handOffset = sp.imgOffset;
 		} else {
 			holding = playerHand;
@@ -362,20 +337,21 @@ public class Player extends Entity { // inherits Entity class
 		int x, y;
 		int handX, handY;
 
+		// If player is himself, render him in the middle of the screen, else render
+		// other players relative to the main player
 		if (!isLocal) {
 			x = worldX - game.player.worldX + game.player.screenX;
 			y = worldY - game.player.worldY + game.player.screenY;
 			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
 			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
-			
 		} else {
 			x = screenX;
 			y = screenY;
 			handX = game.screen.screenWidth / 2 - holding.getWidth() / 2;
 			handY = game.screen.screenHeight / 2 - holding.getHeight() / 2;
 		}
-		
 
+		// Rotate weapon/hand to mouse
 		AffineTransform t = new AffineTransform();
 		t.setToTranslation(handX, handY);
 		t.rotate(imageAngleRad, holding.getWidth() / 2, holding.getHeight() / 2);
@@ -383,9 +359,9 @@ public class Player extends Entity { // inherits Entity class
 
 		g2.drawImage(holding, t, null); // Draw hand (weapons)
 		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
-		
-		g2.setColor(new Color(255,0,30));
-		g2.fillRect(x - game.tileSize/4, y - 15, (int) ((this.health))/2, 10);
+
+		g2.setColor(new Color(255, 0, 30));
+		g2.fillRect(x - game.tileSize / 4, y - 15, (int) ((this.health)) / 2, 10);
 		g2.setColor(Color.white);
 		g2.drawString(this.getUsername(), x, y + 40);
 	}
@@ -394,6 +370,38 @@ public class Player extends Entity { // inherits Entity class
 		for (SuperWeapon weap : getWeapons())
 			if (weap != null)
 				weap.render(g2);
+	}
+
+	////////// SERVER AND CLIENT FUNCTIONS //////////
+	public void playerMouseScroll(int direction) {
+		if (direction < 0 && playerWeapIndex > 0)
+			playerWeapIndex--;
+		else if (direction > 0 && playerWeapIndex < playerWeap.length - 1)
+			playerWeapIndex++;
+	}
+
+	public void updatePlayerHP(double health) {
+		this.health += health;
+		if (this.health < 0)
+			this.health = 0;
+	}
+
+	public void updatePlayerXY(int worldX, int worldY) {
+		this.worldX = worldX;
+		this.worldY = worldY;
+	}
+
+	////////// GETTERS AND SETTERS //////////
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public double getPlayerHP() {
+		return this.health;
 	}
 
 }

@@ -8,7 +8,7 @@ import main.Game;
 import main.KeyHandler;
 import main.MouseHandler;
 
-public class PlayerMP extends Player implements Cloneable {		//inherits Player class
+public class PlayerMP extends Player implements Cloneable {	
 
 	public InetAddress ipAddress;
 	public int port;

@@ -12,19 +12,17 @@ import net.Pkt06Shoot;
 
 public class Sniper extends SuperWeapon{
 
-	public Sniper(Player player, Game game) {
-		super(player, game);
-
+	public Sniper(Game game, Player player) {
+		super(game, player);
 		this.name = "Sniper";
-		this.typeId = 3;
-		this.imgOffset = -3;
-		this.speed = 10;
+		this.typeId = 3;		
+		this.damage = 50;	
 		this.range = 30 * game.tileSize;
-		this.bulletSpread = 0; // in degrees
+		this.speed = 10;
+		this.fireRate = 30;		
 		this.bulletSize = 16;
-		this.fireRate = 30;
-		this.damage = 50;
-
+		
+		this.imgOffset = -3;
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream("/player/sniperhand.png"));
 			this.entityImg = ImageIO.read(getClass().getResourceAsStream("/weap/sniper.png"));
@@ -49,16 +47,13 @@ public class Sniper extends SuperWeapon{
 
 		fireRateTick++;
 		if(fireRateTick == fireRate) {
+			// Spawn bullet at the player's location
 			int worldX = game.player.worldX + game.playerSize / 2 - bulletSize / 2;
 			int worldY = game.player.worldY + game.playerSize / 2 - bulletSize / 2;
 			double angle = Math.atan2(game.player.mouseX - game.player.screenX, game.player.mouseY - game.player.screenY);
 			
-			Random rand = new Random();
-			int spreadRad = rand.nextInt(bulletSpread*2+1)-bulletSpread;
-			angle += Math.toRadians(spreadRad);
-			
-			Pkt06Shoot shootPacket = new Pkt06Shoot(game.player.getUsername(), this.id, angle, worldX, worldY);
-			shootPacket.sendData(game.socketClient);
+			// Update server on this shoot event
+			new Pkt06Shoot(game.player.getUsername(), this.id, angle, worldX, worldY).sendData(game.socketClient);
 			
 			fireRateTick = 0;
 		}	
