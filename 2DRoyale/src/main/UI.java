@@ -35,6 +35,7 @@ public class UI {
 	public int countdown;
 	public boolean option;
 	public int optionScreen;
+	public boolean endingSound;
 	
 	public int kills = 0;
 	public boolean win;
@@ -87,6 +88,7 @@ public class UI {
 		// Play State
 		int playerCount;
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
+			endingSound = false;
 			if(playingPlayerCount > 1) {				
 				playerCount = playingPlayerCount;
 			} else {
@@ -99,12 +101,13 @@ public class UI {
 			drawMessage();
 			drawCountdown();
 			drawOption(option);
-			//only viewable by host
+			//start game message
 			if (game.gameState == game.waitState)
 				drawWaitMessage();
 			
 		}
 		// End state
+		
 		if (game.gameState == game.endState) {
 			//true if player wins, false if player loses
 			drawEndGame(win);
@@ -395,7 +398,6 @@ public class UI {
 	
 	//countdown timer interface
 	public void drawCountdown() {
-		
 		if (game.gameState == game.playState && countdown > 0) {
 			if(tempcounter != countdown) {
 				tempcounter = countdown;
@@ -429,25 +431,18 @@ public class UI {
 			if (commandNum == 0) 
 				g2.drawString(">", x - game.tileSize, y);
 			
-			text = "Back to Lobby";
+			text = "Back to Main Menu";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
 			if (commandNum == 1) 
 				g2.drawString(">", x - game.tileSize, y);
 			
-			text = "Back to Main Menu";
-			x = getXforCenteredText(text);
-			y += game.tileSize;
-			g2.drawString(text, x, y);
-			if (commandNum == 2) 
-				g2.drawString(">", x - game.tileSize, y);
-			
 			text = "Quit Game";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
-			if (commandNum == 3) 
+			if (commandNum == 2) 
 				g2.drawString(">", x - game.tileSize, y);
 		}
 	}
@@ -513,12 +508,21 @@ public class UI {
 			x = getXforCenteredText(text);
 			y = game.tileSize * 3;
 			g2.drawString(text, x, y);
+			if (endingSound == false) {
+				game.playSE(10);
+				endingSound = true;
+			}
+			
 		}
 		else {
 			text = "You Died!";
 			x = getXforCenteredText(text);
 			y = game.tileSize * 3;
 			g2.drawString(text, x, y);
+			if (endingSound == false) {
+				game.playSE(11);
+				endingSound = true;
+			}
 		}
 		
 		//get kills from player

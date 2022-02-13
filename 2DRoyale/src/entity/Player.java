@@ -209,6 +209,7 @@ public class Player extends Entity { // inherits Entity class
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 					// Update weapon drop to server
 					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
+					game.playSE(9);
 				}
 				keys.drop = false;
 			}
@@ -294,8 +295,10 @@ public class Player extends Entity { // inherits Entity class
 			if (playerWeap[playerWeapIndex] != null) {
 				SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 				new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, weapon.worldX, weapon.worldY).sendData(game.socketClient);
+				game.playSE(9);
 			}
 			new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id).sendData(game.socketClient);
+			game.playSE(8);
 			return;
 		}
 
@@ -303,6 +306,7 @@ public class Player extends Entity { // inherits Entity class
 		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 		if (crateIndex != -1) {
 			new Pkt11CrateOpen(username, crateIndex).sendData(game.socketClient);
+			game.playSE(7);
 			return;
 		}
 	}

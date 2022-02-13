@@ -199,36 +199,38 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 		}
+		//when in option screen
 		if ((gp.gameState == gp.waitState || gp.gameState == gp.playState) && gp.ui.option == true) {
 			if (code == KeyEvent.VK_W) {
 				gp.playSE(0);
 				gp.ui.commandNum--;
 				if (gp.ui.commandNum < 0) {
-					gp.ui.commandNum = 3;
+					gp.ui.commandNum = 2;
 				}
 			}
 			if (code == KeyEvent.VK_S) {
 				gp.playSE(0);
 				gp.ui.commandNum++;
-				if (gp.ui.commandNum > 3) {
+				if (gp.ui.commandNum > 2) {
 					gp.ui.commandNum = 0;
 				}
 			}
 			if(code == KeyEvent.VK_ENTER) {
+				//back to game
 				if(gp.ui.commandNum == 0) {
 					gp.ui.option = false;
 				}
+				//back to main menu
 				else if (gp.ui.commandNum == 1) {
-					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
-					gp.ui.option = false;
-				} else if (gp.ui.commandNum == 2) {
 					gp.gameState = gp.titleState;
 					gp.player.playerState = gp.titleState;
 					gp.clearPlayers();
 					gp.ui.titleScreenState = 0;
 					gp.ui.commandNum = 0;					
 					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
-				} else if(gp.ui.commandNum == 3) {
+				} 
+				//exit game
+				else if(gp.ui.commandNum == 2) {
 					System.exit(0);
 				}
 			}

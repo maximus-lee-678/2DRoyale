@@ -101,7 +101,7 @@ public class Game extends JPanel implements Runnable {
 		window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(false);
-		window.setTitle("IDK");
+		window.setTitle("2D Royale");
 
 		window.add(this, BorderLayout.CENTER);
 		window.pack();
