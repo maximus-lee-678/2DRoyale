@@ -58,8 +58,9 @@ public class Shotgun extends SuperWeapon {
 				// Update server on this shoot event
 				new Pkt06Shoot(game.player.getUsername(), this.id, angle + spreadRad, worldX, worldY).sendData(game.socketClient);
 			}
-
+			
 			fireRateTick = 0;
+			game.playSE(3);
 		}
 
 	}

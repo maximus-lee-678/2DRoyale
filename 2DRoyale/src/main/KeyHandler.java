@@ -33,12 +33,14 @@ public class KeyHandler implements KeyListener {
 		if (gp.gameState == gp.titleState) {
 			if (gp.ui.titleScreenState == 0) {
 				if (code == KeyEvent.VK_W) {
+					gp.playSE(0);
 					gp.ui.commandNum--;
 					if (gp.ui.commandNum < 0) {
 						gp.ui.commandNum = 3;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
+					gp.playSE(0);
 					gp.ui.commandNum++;
 					if (gp.ui.commandNum > 3) {
 						gp.ui.commandNum = 0;
@@ -78,12 +80,14 @@ public class KeyHandler implements KeyListener {
 			// when in "do you want to host the server" page
 			else if (gp.ui.titleScreenState == 3) {
 				if (code == KeyEvent.VK_W) {
+					gp.playSE(0);
 					gp.ui.commandNum--;
 					if (gp.ui.commandNum < 0) {
 						gp.ui.commandNum = 2;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
+					gp.playSE(0);
 					gp.ui.commandNum++;
 					if (gp.ui.commandNum > 2) {
 						gp.ui.commandNum = 0;
@@ -144,12 +148,14 @@ public class KeyHandler implements KeyListener {
 			// when in "Type the server ip:" page
 			else if (gp.ui.titleScreenState == 5) {
 				if (code == KeyEvent.VK_W) {
+					gp.playSE(0);
 					gp.ui.commandNum--;
 					if (gp.ui.commandNum < 0) {
 						gp.ui.commandNum = 1;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
+					gp.playSE(0);
 					gp.ui.commandNum++;
 					if (gp.ui.commandNum > 1) {
 						gp.ui.commandNum = 0;
@@ -195,12 +201,14 @@ public class KeyHandler implements KeyListener {
 		}
 		if ((gp.gameState == gp.waitState || gp.gameState == gp.playState) && gp.ui.option == true) {
 			if (code == KeyEvent.VK_W) {
+				gp.playSE(0);
 				gp.ui.commandNum--;
 				if (gp.ui.commandNum < 0) {
 					gp.ui.commandNum = 3;
 				}
 			}
 			if (code == KeyEvent.VK_S) {
+				gp.playSE(0);
 				gp.ui.commandNum++;
 				if (gp.ui.commandNum > 3) {
 					gp.ui.commandNum = 0;
@@ -225,6 +233,7 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
+				gp.playSE(0);
 				gp.ui.option = false;
 			}
 		}
@@ -247,6 +256,7 @@ public class KeyHandler implements KeyListener {
 				
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
+				gp.playSE(0);
 				gp.ui.option = true;
 				gp.ui.commandNum = 0;;
 			}
@@ -254,8 +264,11 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_Q) {
 				drop = false;
 			}
-			if (code == KeyEvent.VK_M)
+			if (code == KeyEvent.VK_M) {
 				map = !map;
+				gp.playSE(5);
+			}
+				
 			
 			if(code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
@@ -273,12 +286,14 @@ public class KeyHandler implements KeyListener {
 		}
 		if (gp.gameState == gp.endState) {
 			if (code == KeyEvent.VK_W) {
+				gp.playSE(0);
 				gp.ui.commandNum--;
 				if (gp.ui.commandNum < 0) {
 					gp.ui.commandNum = 1;
 				}
 			}
 			if (code == KeyEvent.VK_S) {
+				gp.playSE(0);
 				gp.ui.commandNum++;
 				if (gp.ui.commandNum > 1) {
 					gp.ui.commandNum = 0;

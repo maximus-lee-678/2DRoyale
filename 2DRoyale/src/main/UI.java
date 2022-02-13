@@ -31,6 +31,7 @@ public class UI {
 	public String ipAddress = "";
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 	public int countDownSeq = 0;
+	int tempcounter = 6;
 	public int countdown;
 	public boolean option;
 	public int optionScreen;
@@ -394,7 +395,13 @@ public class UI {
 	
 	//countdown timer interface
 	public void drawCountdown() {
+		
 		if (game.gameState == game.playState && countdown > 0) {
+			if(tempcounter != countdown) {
+				tempcounter = countdown;
+				game.playSE(6);
+			}
+			
 			String text = "Game Starting in " + countdown;
 			int x = getXforCenteredText(text);
 			int y = game.tileSize * 3;

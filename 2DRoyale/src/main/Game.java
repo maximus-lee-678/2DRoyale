@@ -62,6 +62,7 @@ public class Game extends JPanel implements Runnable {
 	private List<PlayerMP> playerList;
 	public UI ui;
 	public PlayerMP player;
+	Sound sound = new Sound();
 
 	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler(this);
@@ -224,6 +225,20 @@ public class Game extends JPanel implements Runnable {
 			screen.render(g2);
 		g2.dispose();
 
+	}
+	
+	//sound methods
+	public void playMusic(int i) {
+		sound.setFile(i);
+		sound.play();
+		sound.loop();
+	}
+	public void stopMusic() {
+		sound.stop();
+	}
+	public void playSE(int i) {
+		sound.setFile(i);
+		sound.play();
 	}
 
 	public static void main(String[] args) {

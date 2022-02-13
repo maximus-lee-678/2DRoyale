@@ -19,6 +19,12 @@ public class Sound {
 		soundURL[3] = getClass().getResource("/sound/shotgun.wav");
 		soundURL[4] = getClass().getResource("/sound/sniper.wav");
 		soundURL[5] = getClass().getResource("/sound/map.wav");
+		soundURL[6] = getClass().getResource("/sound/countdown.wav");
+		soundURL[7] = getClass().getResource("/sound/crateopen.wav");
+		soundURL[8] = getClass().getResource("/sound/pickup.wav");
+		soundURL[9] = getClass().getResource("/sound/drop.wav");
+		soundURL[10] = getClass().getResource("/sound/win.wav");
+		soundURL[11] = getClass().getResource("/sound/lose.wav");
 	}
 	
 	public void setFile(int i) {
