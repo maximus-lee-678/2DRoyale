@@ -302,8 +302,10 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 			if (code == KeyEvent.VK_ENTER) {
+				//back to lobby
 				if (gp.ui.commandNum == 0) {
 					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
+				//back to main menu
 				} else if (gp.ui.commandNum == 1) {
 					gp.gameState = gp.titleState;
 					gp.ui.titleScreenState = 0;
