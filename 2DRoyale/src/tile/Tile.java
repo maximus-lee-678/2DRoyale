@@ -14,7 +14,9 @@ public class Tile {
 	public boolean collisionProjectile = false;
 	public String biome;
 
-	// no biomes, no collision
+	/**
+	 * No biomes, no collision constructor.
+	 */
 	public Tile(String folder, String fileName) {
 		try {
 			this.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream(String.format("/world_textures/%s/%s", folder, fileName))));
@@ -23,7 +25,9 @@ public class Tile {
 		}
 	}
 
-	// with biomes, no collision
+	/**
+	 * With biomes, no collision constructor.
+	 */
 	public Tile(String folder, String fileName, String biome) {
 		try {
 			this.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream(String.format("/world_textures/%s/%s", folder, fileName))));
@@ -34,7 +38,9 @@ public class Tile {
 		this.biome = biome;
 	}
 
-	// no biomes, with collision
+	/**
+	 * No biomes, with collision constructor.
+	 */
 	public Tile(String folder, String fileName, boolean collisionPlayer, boolean collisionProjectile) {
 		try {
 			this.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream(String.format("/world_textures/%s/%s", folder, fileName))));
@@ -46,7 +52,9 @@ public class Tile {
 		this.collisionProjectile = collisionProjectile;
 	}
 
-	// with biomes, with collision
+	/**
+	 * With biomes, with collision constructor.
+	 */
 	public Tile(String folder, String fileName, String biome, boolean collisionPlayer, boolean collisionProjectile) {
 		try {
 			this.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream(String.format("/world_textures/%s/%s", folder, fileName))));
@@ -59,14 +67,15 @@ public class Tile {
 		this.collisionProjectile = collisionProjectile;
 	}
 
+	/**
+	 * Image optimisation function.
+	 */
 	private BufferedImage toCompatibleImage(BufferedImage image) {
 		// obtain the current system graphical settings
 		GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 
-		/*
-		 * if image is already compatible and optimized for current system settings,
-		 * simply return it
-		 */
+		// if image is already compatible and optimized for current system settings,
+		// simply return it
 		if (image.getColorModel().equals(gfxConfig.getColorModel()))
 			return image;
 
@@ -79,7 +88,7 @@ public class Tile {
 		// actually draw the image and dispose of context no longer needed
 		g2d.drawImage(image, 0, 0, null);
 		g2d.dispose();
-		
+
 		// return the new optimized image
 		return newImage;
 	}

@@ -36,6 +36,9 @@ public class TileManager {
 
 	}
 
+	/**
+	 * Loads tile textures into memory.
+	 */
 	private void getTileImage() {
 		tile[0] = new Tile("tiles", "grass1.png", "Forest");
 		tile[1] = new Tile("tiles", "grass2.png", "Forest");
@@ -60,6 +63,9 @@ public class TileManager {
 		gasTile = new Tile("misc", "gas.png");
 	}
 
+	/**
+	 * Called by loadMap() to map RGB values read from the map schematic to actual tiles in tile[].
+	 */
 	public int mapRGBValues(int red, int green, int blue) {
 
 		double roll = game.rand.nextDouble();
@@ -101,6 +107,9 @@ public class TileManager {
 		}
 	}
 
+	/**
+	 * Loads building textures into memory.
+	 */
 	public void loadMap(String filePath) {
 
 		try {
@@ -117,7 +126,7 @@ public class TileManager {
 					int pixel = img.getRGB(x, y);
 					// Creating a Color object from pixel value
 					Color color = new Color(pixel, true);
-					// Retrieving the R G B values
+					// Retrieving the RGB values
 					int red = color.getRed();
 					int green = color.getGreen();
 					int blue = color.getBlue();
@@ -131,22 +140,30 @@ public class TileManager {
 		}
 	}
 
+	/**
+	 * Updates gas status of tiles in mapTileNum.
+	 */
 	public void closeGas() {
+		// Close x axis
 		for (int y = 0; y < maxWorldRow; y++) {
 			mapTileNum[gasCounter][y].setIsGassed(true);
 			mapTileNum[maxWorldCol - gasCounter - 1][y].setIsGassed(true);
-			;
 		}
+		
+		// Close y axis
 		for (int x = 0; x < maxWorldCol; x++) {
 			mapTileNum[x][gasCounter].setIsGassed(true);
 			mapTileNum[x][maxWorldRow - gasCounter - 1].setIsGassed(true);
-			;
 		}
+		
 		gasCounter++;
 		if (gasCounter > maxWorldCol - 1 || gasCounter > maxWorldRow - 1)
 			gasCounter--;
 	}
 
+	/**
+	 * Checks for collision with floor tiles.
+	 */
 	public boolean hasCollidedWorld(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
 
 		int entityLeftCol = entityLeftWorldX / game.tileSize;
@@ -181,17 +198,26 @@ public class TileManager {
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
 		}
 
-		if (type == "Entity") {
-			if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
-				return true;
-		} else if (type == "Projectile") {
-			if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
-				return true;
+		// BANDAID FIX FIX BY FINAL PRODUCTION
+		try {
+			if (type == "Entity") {
+				if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
+					return true;
+			} else if (type == "Projectile") {
+				if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
+					return true;
+			}
+		}catch (NullPointerException e){
+			return false;
 		}
+		
 
 		return false;
 	}
 
+	/**
+	 * Checks whether the player is currently in a gassed tile.
+	 */
 	public boolean withinGas(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
 
 		int topLeftTileX = entityLeftWorldX / game.tileSize;
