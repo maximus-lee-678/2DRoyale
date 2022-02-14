@@ -142,12 +142,11 @@ public class Screen {
 		for (int y = 0; y < game.maxWorldRow; y++) {
 			megamapX = 0;
 			for (int x = 0; x < game.maxWorldCol; x++) {
-				int tileNum = game.tileM.mapTileNum[x][y][0];
 
-				if (game.tileM.mapTileNum[x][y][1] == 1)
-					g2.drawImage(game.tileM.tile[tileNum].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
+				if (game.tileM.mapTileNum[x][y].isFlipped)
+					g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
 				else
-					g2.drawImage(game.tileM.tile[tileNum].image, megamapRenderAtX + megamapX + megamapTileSizeX, megamapRenderAtY + megamapY, -megamapTileSizeX, megamapTileSizeY,
+					g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, megamapRenderAtX + megamapX + megamapTileSizeX, megamapRenderAtY + megamapY, -megamapTileSizeX, megamapTileSizeY,
 							null);
 				megamapX += megamapTileSizeX;
 			}
@@ -174,7 +173,7 @@ public class Screen {
 			megamapX = 0;
 			for (int x = 0; x < game.maxWorldCol; x++) {
 
-				if (game.tileM.mapTileNum[x][y][2] == 1)
+				if (game.tileM.mapTileNum[x][y].isGassed)
 					g2.drawImage(game.tileM.gasTile.image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
 
 				megamapX += megamapTileSizeX;
@@ -243,25 +242,25 @@ public class Screen {
 
 		// Draw void fill
 
-//		TexturePaint outOfBounds = new TexturePaint(game.tileM.tile[7].image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
-//		g2.setPaint(outOfBounds);
-//		g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
-//		
-//		if(game.gameState == game.playState) {
-//			TexturePaint farts = new TexturePaint(game.tileM.gasTile.image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
-//			g2.setPaint(farts);
-//			g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
-//		}
-
-		for (int y = 0; y < minimapRadius * 2 + 1; y++) {
-			minimapX = 0;
-			for (int x = 0; x < minimapRadius * 2 + 1; x++) {
-				g2.drawImage(game.tileM.tile[13].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
-
-				minimapX += minimapTileSize;
-			}
-			minimapY += minimapTileSize;
+		TexturePaint outOfBounds = new TexturePaint(game.tileM.tile[13].image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
+		g2.setPaint(outOfBounds);
+		g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
+		
+		if(game.gameState == game.playState) {
+			TexturePaint farts = new TexturePaint(game.tileM.gasTile.image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
+			g2.setPaint(farts);
+			g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
 		}
+
+//		for (int y = 0; y < minimapRadius * 2 + 1; y++) {
+//			minimapX = 0;
+//			for (int x = 0; x < minimapRadius * 2 + 1; x++) {
+//				g2.drawImage(game.tileM.tile[13].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
+//
+//				minimapX += minimapTileSize;
+//			}
+//			minimapY += minimapTileSize;
+//		}
 
 		minimapX = 0;
 		minimapY = 0;
@@ -270,9 +269,8 @@ public class Screen {
 		for (int y = yLowerBound; y < yUpperBound + 1; y++) {
 			minimapX = 0;
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
-				int tileNum = game.tileM.mapTileNum[x][y][0];
 
-				g2.drawImage(game.tileM.tile[tileNum].image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize), minimapRenderAtY + minimapY + (yOffset * minimapTileSize),
+				g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize), minimapRenderAtY + minimapY + (yOffset * minimapTileSize),
 						minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;
@@ -304,7 +302,7 @@ public class Screen {
 			minimapX = 0;
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
 
-				if (game.tileM.mapTileNum[x][y][2] == 1)
+				if (game.tileM.mapTileNum[x][y].isGassed())
 					g2.drawImage(game.tileM.gasTile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize), minimapRenderAtY + minimapY + (yOffset * minimapTileSize),
 							minimapTileSize, minimapTileSize, null);
 
@@ -324,7 +322,6 @@ public class Screen {
 
 		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
 
-			int tileNum = game.tileM.mapTileNum[worldCol][worldRow][0];
 			int worldX = worldCol * game.tileSize;
 			int worldY = worldRow * game.tileSize;
 			int gameX = worldX - game.player.worldX + game.player.screenX;
@@ -332,10 +329,10 @@ public class Screen {
 
 			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
 					&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
-					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
+				if (game.tileM.mapTileNum[worldCol][worldRow].isGassed())
+					g2.drawImage(game.tileM.mapTileNum[worldCol][worldRow].tile.image, gameX, gameY, game.tileSize, game.tileSize, null);
 				else
-					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize, game.tileSize, null);
+					g2.drawImage(game.tileM.mapTileNum[worldCol][worldRow].tile.image, gameX + game.tileSize, gameY, -game.tileSize, game.tileSize, null);
 			}
 
 			worldCol++;
@@ -360,7 +357,7 @@ public class Screen {
 
 			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
 					&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-				if (game.tileM.mapTileNum[worldCol][worldRow][2] == 1)
+				if (game.tileM.mapTileNum[worldCol][worldRow].isGassed())
 					g2.drawImage(game.tileM.gasTile.image, gameX, gameY, game.tileSize, game.tileSize, null);
 			}
 

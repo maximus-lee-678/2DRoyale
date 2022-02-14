@@ -17,8 +17,8 @@ public class TileManager {
 	private Game game;
 	public Tile[] tile;
 	public Tile gasTile;
+	public MapTiles[][] mapTileNum;
 	public int maxWorldCol, maxWorldRow;
-	public int mapTileNum[][][];
 	public int gasCounter;
 
 	public TileManager(Game game) {
@@ -34,31 +34,6 @@ public class TileManager {
 		if (game.gameState == game.playState)
 			loadMap("/maps/olympus.png"); // load map
 
-	}
-
-	private BufferedImage toCompatibleImage(BufferedImage image) {
-		// obtain the current system graphical settings
-		GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-
-		/*
-		 * if image is already compatible and optimized for current system settings,
-		 * simply return it
-		 */
-		if (image.getColorModel().equals(gfxConfig.getColorModel()))
-			return image;
-
-		// image is not optimized, so create a new image that is
-		BufferedImage newImage = gfxConfig.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
-
-		// get the graphics context of the new image to draw the old image on
-		Graphics2D g2d = newImage.createGraphics();
-
-		// actually draw the image and dispose of context no longer needed
-		g2d.drawImage(image, 0, 0, null);
-		g2d.dispose();
-
-		// return the new optimized image
-		return newImage;
 	}
 
 	private void getTileImage() {
@@ -85,6 +60,47 @@ public class TileManager {
 		gasTile = new Tile("misc", "gas.png");
 	}
 
+	public int mapRGBValues(int red, int green, int blue) {
+
+		double roll = game.rand.nextDouble();
+
+		if (red == 34 && green == 177 && blue == 76) { // grass
+			if (roll < (double) 1 / 2)
+				return 0;
+			else if (roll < (double) 2 / 3)
+				return 1;
+			else if (roll < (double) 5 / 6)
+				return 2;
+			else
+				return 3;
+		} else if (red == 185 && green == 122 && blue == 87) { // earth
+			if (roll < 0.50)
+				return 4;
+			else
+				return 5;
+		} else if (red == 63 && green == 72 && blue == 204) { // coldstone
+			return 6;
+		} else if (red == 140 && green == 255 && blue == 251) { // ice
+			return 7;
+		} else if (red == 88 && green == 88 && blue == 88) { // slush
+			return 8;
+		} else if (red == 255 && green == 255 && blue == 255) { // snow
+			return 9;
+		} else if (red == 195 && green == 195 && blue == 195) { // ash
+			return 10;
+		} else if (red == 0 && green == 0 && blue == 0) { // volcanic
+			return 11;
+		} else if (red == 239 && green == 228 && blue == 176) { // sand
+			return 12;
+		} else if (red == 0 && green == 162 && blue == 232) { // water
+			return 13;
+		} else if (red == 255 && green == 127 && blue == 39) { // magma
+			return 14;
+		} else { // missing texture
+			return 15;
+		}
+	}
+
 	public void loadMap(String filePath) {
 
 		try {
@@ -92,8 +108,8 @@ public class TileManager {
 
 			maxWorldCol = img.getWidth();
 			maxWorldRow = img.getHeight();
-			mapTileNum = new int[maxWorldCol][maxWorldRow][3]; // create 2d array of the dimension of the world
-			// [0] = tileID, [1] = isFlipped, [2] = isGassed
+
+			mapTileNum = new MapTiles[maxWorldCol][maxWorldRow];
 
 			for (int y = 0; y < maxWorldRow; y++) {
 				for (int x = 0; x < maxWorldCol; x++) {
@@ -106,44 +122,7 @@ public class TileManager {
 					int green = color.getGreen();
 					int blue = color.getBlue();
 
-					double roll = game.rand.nextDouble();
-
-					mapTileNum[x][y][1] = game.rand.nextInt(2);
-					if (red == 34 && green == 177 && blue == 76) { // grass
-						if (roll < (double) 1 / 2)
-							mapTileNum[x][y][0] = 0;
-						else if (roll < (double) 2 / 3)
-							mapTileNum[x][y][0] = 1;
-						else if (roll < (double) 5 / 6)
-							mapTileNum[x][y][0] = 2;
-						else
-							mapTileNum[x][y][0] = 3;
-					} else if (red == 185 && green == 122 && blue == 87) { // earth
-						if (roll < 0.50)
-							mapTileNum[x][y][0] = 4;
-						else
-							mapTileNum[x][y][0] = 5;
-					} else if (red == 63 && green == 72 && blue == 204) { // coldstone
-						mapTileNum[x][y][0] = 6;
-					} else if (red == 140 && green == 255 && blue == 251) { // ice
-						mapTileNum[x][y][0] = 7;
-					} else if (red == 88 && green == 88 && blue == 88) { // slush
-						mapTileNum[x][y][0] = 8;
-					} else if (red == 255 && green == 255 && blue == 255) { // snow
-						mapTileNum[x][y][0] = 9;
-					} else if (red == 195 && green == 195 && blue == 195) { // ash
-						mapTileNum[x][y][0] = 10;
-					} else if (red == 0 && green == 0 && blue == 0) { // volcanic
-						mapTileNum[x][y][0] = 11;
-					} else if (red == 239 && green == 228 && blue == 176) { // sand
-						mapTileNum[x][y][0] = 12;
-					} else if (red == 0 && green == 162 && blue == 232) { // water
-						mapTileNum[x][y][0] = 13;
-					} else if (red == 255 && green == 127 && blue == 39) { // magma
-						mapTileNum[x][y][0] = 14;
-					} else { // missing texture
-						mapTileNum[x][y][0] = 15;
-					}
+					mapTileNum[x][y] = new MapTiles(tile[mapRGBValues(red, green, blue)], game.rand.nextBoolean());
 				}
 			}
 
@@ -154,12 +133,14 @@ public class TileManager {
 
 	public void closeGas() {
 		for (int y = 0; y < maxWorldRow; y++) {
-			mapTileNum[gasCounter][y][2] = 1;
-			mapTileNum[maxWorldCol - gasCounter - 1][y][2] = 1;
+			mapTileNum[gasCounter][y].setIsGassed(true);
+			mapTileNum[maxWorldCol - gasCounter - 1][y].setIsGassed(true);
+			;
 		}
 		for (int x = 0; x < maxWorldCol; x++) {
-			mapTileNum[x][gasCounter][2] = 1;
-			mapTileNum[x][maxWorldRow - gasCounter - 1][2] = 1;
+			mapTileNum[x][gasCounter].setIsGassed(true);
+			mapTileNum[x][maxWorldRow - gasCounter - 1].setIsGassed(true);
+			;
 		}
 		gasCounter++;
 		if (gasCounter > maxWorldCol - 1 || gasCounter > maxWorldRow - 1)
@@ -181,33 +162,30 @@ public class TileManager {
 		if (entityLeftWorldX < 0 || entityRightWorldX < 0 || entityTopWorldY < 0 || entityBottomWorldY < 0)
 			return true;
 
-		int tileNum1 = 0, tileNum2 = 0;
+		Tile tileNum1 = null, tileNum2 = null;
 
 		if (ya < 0) { // UP
-			entityTopRow = entityTopWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow].tile;
 		}
 		if (ya > 0) { // DOWN
-			entityBottomRow = entityBottomWorldY / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow].tile;
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
 		}
 		if (xa < 0) { // LEFT
-			entityLeftCol = entityLeftWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow][0];
+			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow].tile;
 		}
 		if (xa > 0) { // RIGHT
-			entityRightCol = entityRightWorldX / game.tileSize;
-			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow][0];
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow][0];
+			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
 		}
+
 		if (type == "Entity") {
-			if (game.tileM.tile[tileNum1].collisionPlayer || game.tileM.tile[tileNum2].collisionPlayer)
+			if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
 				return true;
 		} else if (type == "Projectile") {
-			if (game.tileM.tile[tileNum1].collisionProjectile || game.tileM.tile[tileNum2].collisionProjectile)
+			if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
 				return true;
 		}
 
@@ -225,8 +203,8 @@ public class TileManager {
 		int bottomRightTileX = entityRightWorldX / game.tileSize;
 		int bottomRightTileY = entityBottomWorldY / game.tileSize;
 
-		if (mapTileNum[topLeftTileX][topLeftTileY][2] == 1 || mapTileNum[topRightTileX][topRightTileY][2] == 1 || mapTileNum[bottomLeftTileX][bottomLeftTileY][2] == 1
-				|| mapTileNum[bottomRightTileX][bottomRightTileY][2] == 1) {
+		if (mapTileNum[topLeftTileX][topLeftTileY].isGassed() || mapTileNum[topRightTileX][topRightTileY].isGassed() || mapTileNum[bottomLeftTileX][bottomLeftTileY].isGassed()
+				|| mapTileNum[bottomRightTileX][bottomRightTileY].isGassed()) {
 			return true;
 		}
 		return false;

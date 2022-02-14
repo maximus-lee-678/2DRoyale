@@ -108,7 +108,7 @@ public class StructuresManager {
 			// Spawn buildings on pathable floor
 			for (int x = topLeftTileX; x <= topRightTileX; x++) {
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
+					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
 						failedBuildingAttempts++;
 						continue mainLoop;
 					}
@@ -182,7 +182,7 @@ public class StructuresManager {
 
 			for (int x = topLeftTileX; x <= topRightTileX; x++) { // spawn crates on pathable floor
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
+					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
 						failedCrateAttempts++;
 						continue mainLoop;
 					}
@@ -244,7 +244,7 @@ public class StructuresManager {
 
 			for (int x = topLeftTileX; x <= topRightTileX; x++) { // prevent crates from spawning on obstructions
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
+					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
 						failedObstructionsAttempts++;
 						continue mainLoop;
 					}
@@ -306,7 +306,7 @@ public class StructuresManager {
 
 			}
 
-			switch (game.tileM.tile[game.tileM.mapTileNum[biomeTileX][biomeTileY][0]].biome) {
+			switch (game.tileM.mapTileNum[biomeTileX][biomeTileY].tile.biome) {
 			case "Forest":
 				tryObstruction.imageID = game.rand.nextInt(1, 2 + 1);
 				break;

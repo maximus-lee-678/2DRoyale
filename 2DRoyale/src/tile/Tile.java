@@ -79,7 +79,7 @@ public class Tile {
 		// actually draw the image and dispose of context no longer needed
 		g2d.drawImage(image, 0, 0, null);
 		g2d.dispose();
-
+		
 		// return the new optimized image
 		return newImage;
 	}

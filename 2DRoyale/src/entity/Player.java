@@ -114,14 +114,20 @@ public class Player extends Entity { // inherits Entity class
 			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
 			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
-			if (game.tileM.tile[game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY][0]].collisionPlayer || game.tileM.tile[game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY][0]].collisionPlayer) {
+			if (game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
+					|| game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
+					|| game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
+					|| game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
 
 			// Prevent player from spawning in buildings
 			for (int i = 0; i < game.structM.buildings.length; i++) {
-				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x && separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x
+						&& separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -129,7 +135,10 @@ public class Player extends Entity { // inherits Entity class
 
 			// Prevent player from spawning in crates
 			for (int i = 0; i < game.structM.crates.size(); i++) {
-				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x && separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
+				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x
+						&& separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -137,7 +146,10 @@ public class Player extends Entity { // inherits Entity class
 
 			// Prevent player from spawning in obstructions
 			for (int i = 0; i < game.structM.obstructions.length; i++) {
-				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width && separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x && separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height && separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x
+						&& separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -191,13 +203,16 @@ public class Player extends Entity { // inherits Entity class
 				if (keys.right == true)
 					xa += 1;
 
-				// Move player
-				for (int i = 0; i < speed; i++)
-					move(xa, ya);
+				if (!(xa == 0 && ya == 0)) {
+					// Move player
+					for (int i = 0; i < speed; i++)
+						move(xa, ya);
 
-				// Update new position to server
-				new Pkt03Move(this.username, this.worldX, this.worldY).sendData(game.socketClient);
+					// Update new position to server
+					new Pkt03Move(this.username, this.worldX, this.worldY).sendData(game.socketClient);
+				}
 			}
+
 			if (keys.interact == true) {
 				// Handle "F" key input to check if there's any within range events
 				withinRange();
@@ -208,7 +223,8 @@ public class Player extends Entity { // inherits Entity class
 				if (playerWeap[playerWeapIndex] != null) {
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 					// Update weapon drop to server
-					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
+					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2,
+							this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
 					game.playSE(9);
 				}
 				keys.drop = false;
@@ -320,7 +336,7 @@ public class Player extends Entity { // inherits Entity class
 	public synchronized SuperWeapon[] getWeapons() {
 		return playerWeap;
 	}
-	
+
 	////////// RENDER FUNCTIONS //////////
 	public void render(Graphics2D g2) {
 
