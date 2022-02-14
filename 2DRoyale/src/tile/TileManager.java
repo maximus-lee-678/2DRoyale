@@ -198,19 +198,13 @@ public class TileManager {
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
 		}
 
-		// BANDAID FIX FIX BY FINAL PRODUCTION
-		try {
 			if (type == "Entity") {
 				if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
 					return true;
 			} else if (type == "Projectile") {
 				if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
 					return true;
-			}
-		}catch (NullPointerException e){
-			return false;
-		}
-		
+			}		
 
 		return false;
 	}
