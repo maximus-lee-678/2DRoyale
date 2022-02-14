@@ -256,7 +256,7 @@ public class Screen {
 		for (int y = 0; y < minimapRadius * 2 + 1; y++) {
 			minimapX = 0;
 			for (int x = 0; x < minimapRadius * 2 + 1; x++) {
-				g2.drawImage(game.tileM.tile[12].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
+				g2.drawImage(game.tileM.tile[13].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;
 			}

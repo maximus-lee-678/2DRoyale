@@ -25,7 +25,7 @@ public class StructuresManager {
 	public List<Integer> crateTileNum;
 
 	// Obstruction Variables
-	public int obstructionTileSizeLower = 24;
+	public int obstructionTileSizeLower = 48;
 	public int obstructionTileSizeUpper = 96;
 
 	// Universal Variables
@@ -59,97 +59,33 @@ public class StructuresManager {
 
 	private void getTileImage() {
 
-		try {
+		tile[0] = new Tile("misc", "missing.png");
+		tile[1] = new Tile("buildings", "marble.png");
 
-			tile[0] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/misc/missing.png"));
-
-			tile[1] = new Tile();
-			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/marble.png"));
-
-			tile[2] = new Tile();
-			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wall.png"));
-			tile[2].collisionPlayer = true;
-			tile[2].collisionProjectile = true;
-
-			tile[3] = new Tile();
-			tile[3].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallHL.png"));
-			tile[3].collisionPlayer = true;
-			tile[3].collisionProjectile = true;
-
-			tile[4] = new Tile();
-			tile[4].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallHC.png"));
-			tile[4].collisionPlayer = true;
-			tile[4].collisionProjectile = true;
-
-			tile[5] = new Tile();
-			tile[5].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallHR.png"));
-			tile[5].collisionPlayer = true;
-			tile[5].collisionProjectile = true;
-
-			tile[6] = new Tile();
-			tile[6].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallVT.png"));
-			tile[6].collisionPlayer = true;
-			tile[6].collisionProjectile = true;
-
-			tile[7] = new Tile();
-			tile[7].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallVC.png"));
-			tile[7].collisionPlayer = true;
-			tile[7].collisionProjectile = true;
-
-			tile[8] = new Tile();
-			tile[8].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wallVB.png"));
-			tile[8].collisionPlayer = true;
-			tile[8].collisionProjectile = true;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		tile[2] = new Tile("buildings", "wall.png", true, true);
+		tile[3] = new Tile("buildings", "wallHL.png", true, true);
+		tile[4] = new Tile("buildings", "wallHC.png", true, true);
+		tile[5] = new Tile("buildings", "wallHR.png", true, true);
+		tile[6] = new Tile("buildings", "wallVT.png", true, true);
+		tile[7] = new Tile("buildings", "wallVC.png", true, true);
+		tile[8] = new Tile("buildings", "wallVB.png", true, true);
 
 	}
 
 	private void getSolidImage() {
-		try {
 
-			solid[0] = new Tile();
-			solid[0].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/crate.png"));
-			solid[0].collisionPlayer = true;
-			solid[0].collisionProjectile = true;
-			crateTileNum.add(0);
+		solid[0] = new Tile("solids", "crate.png", true, true);
+		crateTileNum.add(0);
 
-			solid[1] = new Tile();
-			solid[1].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/tree.png"));
-			solid[1].collisionPlayer = true;
-			solid[1].collisionProjectile = true;
+		solid[1] = new Tile("solids", "tree.png", true, true);
+		solid[2] = new Tile("solids", "rock.png", true, true);
 
-			solid[2] = new Tile();
-			solid[2].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/rock.png"));
-			solid[2].collisionPlayer = true;
-			solid[2].collisionProjectile = true;
+		solid[3] = new Tile("solids", "wintertree.png", true, true);
+		solid[4] = new Tile("solids", "winterrock.png", true, true);
 
-			solid[3] = new Tile();
-			solid[3].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/wintertree.png"));
-			solid[3].collisionPlayer = true;
-			solid[3].collisionProjectile = true;
+		solid[5] = new Tile("solids", "deadtree.png", true, true);
+		solid[6] = new Tile("solids", "ashrock.png", true, true);
 
-			solid[4] = new Tile();
-			solid[4].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/winterrock.png"));
-			solid[4].collisionPlayer = true;
-			solid[4].collisionProjectile = true;
-
-			solid[5] = new Tile();
-			solid[5].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/deadtree.png"));
-			solid[5].collisionPlayer = true;
-			solid[5].collisionProjectile = true;
-
-			solid[6] = new Tile();
-			solid[6].image = ImageIO.read(getClass().getResourceAsStream("/world_textures/solids/ashrock.png"));
-			solid[6].collisionPlayer = true;
-			solid[6].collisionProjectile = true;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void loadBuildings(int numberOfBuildings) {
@@ -170,7 +106,7 @@ public class StructuresManager {
 			int bottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
 			// Spawn buildings on pathable floor
-			for (int x = topLeftTileX; x <= topRightTileX; x++) { 
+			for (int x = topLeftTileX; x <= topRightTileX; x++) {
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
 					if (game.tileM.tile[game.tileM.mapTileNum[x][y][0]].collisionPlayer) {
 						failedBuildingAttempts++;
@@ -370,12 +306,27 @@ public class StructuresManager {
 
 			}
 
-			if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 0)
+			switch (game.tileM.tile[game.tileM.mapTileNum[biomeTileX][biomeTileY][0]].biome) {
+			case "Forest":
 				tryObstruction.imageID = game.rand.nextInt(1, 2 + 1);
-			else if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 1)
+				break;
+			case "Snow":
 				tryObstruction.imageID = game.rand.nextInt(3, 4 + 1);
-			else if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 2)
+				break;
+			case "Wasteland":
 				tryObstruction.imageID = game.rand.nextInt(5, 6 + 1);
+				break;
+			default:
+				tryObstruction.imageID = 1;
+				break;
+			}
+
+//			if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 0)
+//				tryObstruction.imageID = game.rand.nextInt(1, 2 + 1);
+//			else if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 1)
+//				tryObstruction.imageID = game.rand.nextInt(3, 4 + 1);
+//			else if (game.tileM.mapTileNum[biomeTileX][biomeTileY][3] == 2)
+//				tryObstruction.imageID = game.rand.nextInt(5, 6 + 1);
 
 			tryObstruction.mirrored = game.rand.nextBoolean();
 
@@ -551,5 +502,4 @@ public class StructuresManager {
 
 	}
 
-	
 }
