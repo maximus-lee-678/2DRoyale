@@ -91,7 +91,7 @@ public class GameClient extends Thread {
 			handleSeed(seedPacket);
 			break;
 		case 8:
-			System.out.println(System.currentTimeMillis() - latency);
+			System.out.println("Ping: " + (System.currentTimeMillis() - latency) + "ms");
 			break;
 		case 9:
 			// SERVER BULLET HIT
@@ -217,8 +217,10 @@ public class GameClient extends Thread {
 		else {
 			System.out.println("GO");
 			game.player.freeze = false;
+			System.out.println(1);
 		}
 	}
+	
 
 	private void handleGameStart(Pkt14StartGame startGamePacket) {
 		// Check who entered the new game, if it's player, refresh the map to the new one

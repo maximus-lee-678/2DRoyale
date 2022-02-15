@@ -385,7 +385,8 @@ public class Player extends Entity { // inherits Entity class
 		g2.setColor(new Color(255, 0, 30));
 		g2.fillRect(x - game.tileSize / 4, y - 15, (int) ((this.health)) / 2, 10);
 		g2.setColor(Color.white);
-		g2.drawString(this.getUsername(), x, y + 40);
+		int length = (int) g2.getFontMetrics().getStringBounds(this.getUsername(), g2).getWidth();
+		g2.drawString(this.getUsername(), x - length /2 + game.playerSize / 2 , y + 40);
 	}
 
 	public void renderBullets(Graphics2D g2) {

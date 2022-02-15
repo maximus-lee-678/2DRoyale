@@ -56,9 +56,6 @@ public class Projectile {
 			adjustedyVel = Math.ceil(yVel);
 		else
 			adjustedyVel = Math.floor(yVel);
-		
-		System.out.println(xVel + "," + adjustedxVel);
-		System.out.println(yVel + "," + adjustedyVel);
 
 		if (weap.game.tileM.hasCollidedWorld((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;

@@ -28,7 +28,6 @@ public class TileManager {
 		gasCounter = 0;
 		getTileImage(); // populate tile array
 
-		System.out.println(game.gameState);
 		if (game.gameState == game.waitState)
 			loadMap("/maps/lobby.png"); // load map
 		if (game.gameState == game.playState)
