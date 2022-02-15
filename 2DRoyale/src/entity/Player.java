@@ -255,10 +255,12 @@ public class Player extends Entity { // inherits Entity class
 			if (weap != null)
 				weap.update();
 
-		// Check if user is in gas
-		if (game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize))
-			new Pkt20GasDamage(this.getUsername()).sendData(game.socketClient);
-
+		
+		if (game.gameState == game.playState) {
+			// Check if user is in gas
+			if (game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize))
+				new Pkt20GasDamage(this.getUsername()).sendData(game.socketClient);
+		}
 	}
 
 	// Move event
