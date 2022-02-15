@@ -10,13 +10,14 @@ import net.GameClient;
 import net.GameServer;
 import net.Pkt01Login;
 import net.Pkt02Disconnect;
+import net.Pkt08ServerPing;
 import net.Pkt14StartGame;
 import net.Pkt17BackToLobby;
 
 public class KeyHandler implements KeyListener {
 
 	Game gp;
-	public boolean up, down, left, right, interact = false, drop = false, map = false;
+	public boolean up, down, left, right, interact = false, drop = false, map = false, ping = false;
 	String pattern = "^[a-zA-Z0-9]*$";
 	String ipPattern = "^[0-9\\.]*$";
 
@@ -334,6 +335,11 @@ public class KeyHandler implements KeyListener {
 			interact = true;
 		if (code == KeyEvent.VK_Q) 
 			drop = true;
+		if (code == KeyEvent.VK_P) {
+			gp.socketClient.latency = System.currentTimeMillis();
+			new Pkt08ServerPing().sendData(gp.socketClient);
+		}
+			
 			
 
 	}

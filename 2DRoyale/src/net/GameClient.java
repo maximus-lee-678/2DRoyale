@@ -20,6 +20,7 @@ public class GameClient extends Thread {
 	private InetAddress ipAddress;
 	private DatagramSocket socket;
 	private Game game;
+	public long latency;
 
 	public GameClient(Game game, String ipAddress) {
 		this.game = game;
@@ -88,6 +89,9 @@ public class GameClient extends Thread {
 			// SERVER SEED
 			Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(data);
 			handleSeed(seedPacket);
+			break;
+		case 8:
+			System.out.println(System.currentTimeMillis() - latency);
 			break;
 		case 9:
 			// SERVER BULLET HIT

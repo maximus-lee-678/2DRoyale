@@ -23,7 +23,7 @@ import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
 import net.Pkt02Disconnect;
-import net.Pkt08ServerTick;
+import net.Pkt08ServerPing;
 import structure.StructuresManager;
 import tile.TileManager;
 

@@ -1,8 +1,8 @@
 package net;
 
-public class Pkt08ServerTick extends Packet{
+public class Pkt08ServerPing extends Packet{
 	
-	public Pkt08ServerTick() {
+	public Pkt08ServerPing() {
 		super(8,null);
 	}
 	

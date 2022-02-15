@@ -98,7 +98,8 @@ public class GameServer extends Thread {
 			break;
 		case 8:
 			// SERVER TICK
-			update();
+			Pkt08ServerPing pingPacket = new Pkt08ServerPing();
+			sendData(pingPacket.getData(), address, port);
 			break;
 		case 10:
 			// WEAPON PICK UP
