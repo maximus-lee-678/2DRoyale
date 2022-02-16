@@ -1,7 +1,7 @@
 package net;
 
 public class Pkt02Disconnect extends Packet {
-	
+
 	public Pkt02Disconnect(String username) {
 		super(2, username);
 	}
@@ -11,9 +11,9 @@ public class Pkt02Disconnect extends Packet {
 		String message = new String(data).trim().substring(2);
 		this.username = message;
 	}
-	
+
 	@Override
 	public byte[] getData() {
-		return ("02"+getUsername()).getBytes();
+		return ("02" + getUsername()).getBytes();
 	}
 }

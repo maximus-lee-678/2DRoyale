@@ -46,7 +46,7 @@ public class Projectile {
 		int entityBottomWorldY = (int) (worldY + weap.bulletSize + yVel);
 
 		double adjustedxVel, adjustedyVel;
-		
+
 		if (xVel > 0)
 			adjustedxVel = Math.ceil(xVel);
 		else
@@ -56,7 +56,7 @@ public class Projectile {
 			adjustedyVel = Math.ceil(yVel);
 		else
 			adjustedyVel = Math.floor(yVel);
-		
+
 		System.out.println(xVel + "," + adjustedxVel);
 		System.out.println(yVel + "," + adjustedyVel);
 

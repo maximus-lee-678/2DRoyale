@@ -22,8 +22,6 @@ import entity.PlayerMP;
 import item.ItemManager;
 import net.GameClient;
 import net.GameServer;
-import net.Pkt02Disconnect;
-import net.Pkt08ServerPing;
 import structure.StructuresManager;
 import tile.TileManager;
 
@@ -199,7 +197,9 @@ public class Game extends JPanel implements Runnable {
 				for (PlayerMP p : getPlayers())
 					p.update();
 
-				if (socketServer != null) { socketServer.update(); }
+				if (socketServer != null) {
+					socketServer.update();
+				}
 				ui.update();
 			}
 		}
@@ -226,8 +226,8 @@ public class Game extends JPanel implements Runnable {
 		g2.dispose();
 
 	}
-	
-	//sound method
+
+	// sound method
 	public void playSE(int i) {
 		sound.setFile(i);
 		sound.play();

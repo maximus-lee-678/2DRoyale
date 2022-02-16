@@ -16,7 +16,7 @@ import structure.Building;
 import structure.Crate;
 import structure.Obstruction;
 
-public class Screen {
+public class Screen implements RenderInterface {
 
 	private Game game;
 
@@ -42,8 +42,7 @@ public class Screen {
 	}
 
 	/**
-	 * Handles screen rendering. Different aspects of the game are rendered in a
-	 * specific order to properly display information.
+	 * Handles screen rendering. Different aspects of the game are rendered in a specific order to properly display information.
 	 */
 	public void render(Graphics2D g2) {
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
@@ -295,70 +294,6 @@ public class Screen {
 		g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize / 2), megamapRenderAtY + playerMapY - (playerSize / 2), playerSize, playerSize, null);
 	}
 
-	private void renderMegamapObsolete(Graphics2D g2) {
-
-		int megamapLength = 640; // must be multiple of 128 (map size)
-		int megamapHeight = 640;
-		int megamapRenderAtX = game.player.screenX - megamapLength / 2;
-		int megamapRenderAtY = game.player.screenY - megamapHeight / 2;
-		int megamapTileSizeX = megamapLength / game.maxWorldCol;
-		int megamapTileSizeY = megamapHeight / game.maxWorldRow;
-		int playerSize = 8;
-
-		int playerMapX = (int) Math.round((double) game.player.worldX / game.worldWidth * megamapLength);
-		int playerMapY = (int) Math.round((double) game.player.worldY / game.worldHeight * megamapHeight);
-
-		int megamapX = 0;
-		int megamapY = 0;
-
-		// Render blocks
-		for (int y = 0; y < game.maxWorldRow; y++) {
-			megamapX = 0;
-			for (int x = 0; x < game.maxWorldCol; x++) {
-
-				if (game.tileM.mapTileNum[x][y].isFlipped)
-					g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
-				else
-					g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, megamapRenderAtX + megamapX + megamapTileSizeX, megamapRenderAtY + megamapY, -megamapTileSizeX,
-							megamapTileSizeY, null);
-				megamapX += megamapTileSizeX;
-			}
-			megamapY += megamapTileSizeY;
-		}
-
-		megamapX = 0;
-		megamapY = 0;
-		// Render buildings
-		for (int y = 0; y < game.maxWorldRow; y++) {
-			megamapX = 0;
-			for (int x = 0; x < game.maxWorldCol; x++) {
-				if (game.structM.buildingOccupiesTile[x][y])
-					g2.drawImage(game.tileM.tile[6].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
-				megamapX += megamapTileSizeX;
-			}
-			megamapY += megamapTileSizeY;
-		}
-
-		megamapX = 0;
-		megamapY = 0;
-		// Draw gas
-		for (int y = 0; y < game.maxWorldRow; y++) {
-			megamapX = 0;
-			for (int x = 0; x < game.maxWorldCol; x++) {
-
-				if (game.tileM.mapTileNum[x][y].isGassed)
-					g2.drawImage(game.tileM.gasTile.image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
-
-				megamapX += megamapTileSizeX;
-			}
-			megamapY += megamapTileSizeY;
-		}
-
-		// Draw player sprite (decent quality)
-		g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize / 2), megamapRenderAtY + playerMapY - (playerSize / 2), playerSize, playerSize, null);
-
-	}
-
 	/**
 	 * Draws minimap. 7th layer to render.
 	 */
@@ -473,8 +408,8 @@ public class Screen {
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
 
 				if (game.tileM.mapTileNum[x][y].isGassed())
-					g2.drawImage(game.tileM.gasTile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize), minimapRenderAtY + minimapY + (yOffset * minimapTileSize),
-							minimapTileSize, minimapTileSize, null);
+					g2.drawImage(game.tileM.gasTile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
+							minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;
 			}
@@ -482,8 +417,8 @@ public class Screen {
 		}
 
 		// Draw player sprite
-		g2.drawImage(game.player.sprite, minimapRenderAtX + (minimapRadius * minimapTileSize), minimapRenderAtY + (minimapRadius * minimapTileSize),
-				minimapTileSize, minimapTileSize, null);
+		g2.drawImage(game.player.sprite, minimapRenderAtX + (minimapRadius * minimapTileSize), minimapRenderAtY + (minimapRadius * minimapTileSize), minimapTileSize,
+				minimapTileSize, null);
 	}
 
 }

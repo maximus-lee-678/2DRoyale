@@ -8,8 +8,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import javax.swing.text.Position;
-
 import entity.PlayerMP;
 import item.SuperWeapon;
 import main.Game;
@@ -34,7 +32,7 @@ public class GameClient extends Thread {
 
 	public void run() {
 		// Listening for new packets
-		while (true) { 
+		while (true) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -82,7 +80,7 @@ public class GameClient extends Thread {
 		case 6:
 			// SHOOTING
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
-			if (game.gameState == game.playState) 
+			if (game.gameState == game.playState)
 				handleShooting(shootPacket);
 			break;
 		case 7:
@@ -115,7 +113,7 @@ public class GameClient extends Thread {
 			// DROP WEAPON
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
 			if (game.gameState == game.playState)
-				handleWeapDrop(dropPacket);			
+				handleWeapDrop(dropPacket);
 			break;
 		case 13:
 			// CLOSE GAS
@@ -150,7 +148,7 @@ public class GameClient extends Thread {
 			// SERVER SHUTDOWN
 			Pkt19ServerKick kickPacket = new Pkt19ServerKick(data);
 			System.out.println("Server Closed!");
-			handleServerShutdown(kickPacket);			
+			handleServerShutdown(kickPacket);
 			break;
 		case 20:
 			// GAS DAMAGE
@@ -166,7 +164,7 @@ public class GameClient extends Thread {
 
 	private void handleServerShutdown(Pkt19ServerKick kickPacket) {
 		// If player is host delete server
-		if(kickPacket.getIsHost()) 
+		if (kickPacket.getIsHost())
 			game.socketServer = null;
 		// Move to title screen and clear player array
 		game.gameState = game.titleState;
@@ -191,7 +189,7 @@ public class GameClient extends Thread {
 		// Update players that went back to lobby
 		game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
 		// If player is you, clear the number of kills
-		if (backToLobbyPacket.getUsername().equals(game.player.getUsername())) 
+		if (backToLobbyPacket.getUsername().equals(game.player.getUsername()))
 			game.ui.kills = 0;
 	}
 
@@ -222,15 +220,15 @@ public class GameClient extends Thread {
 
 	private void handleGameStart(Pkt14StartGame startGamePacket) {
 		// Check who entered the new game, if it's player, refresh the map to the new one
-		if(startGamePacket.getUsername().equals(game.player.getUsername())) {
+		if (startGamePacket.getUsername().equals(game.player.getUsername())) {
 			game.gameState = game.playState;
 			game.loadDefaults();
 			game.player.generatePlayerXY();
 			game.player.setPlayerDefault();
 			game.player.freeze = true;
 			game.player.playerState = game.playState;
-		} else 
-			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;		
+		} else
+			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;
 	}
 
 	private void handleWeapDrop(Pkt12DropWeapon dropPacket) {
@@ -240,7 +238,7 @@ public class GameClient extends Thread {
 
 	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
 		Crate crate = game.structM.deleteCrate(crateOpenPacket.getCrateIndex());
-		game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());		
+		game.itemM.spawnWeap(crate, crateOpenPacket.getWeapType(), crateOpenPacket.getWeapId());
 	}
 
 	private void handleWeapPickUp(Pkt10PickupWeapon pickUpPacket) {
@@ -275,12 +273,12 @@ public class GameClient extends Thread {
 
 	private void handleLogin(Pkt01Login loginPacket, PlayerMP player) {
 		player.playerState = loginPacket.getPlayerState();
-		if(loginPacket.getUsername().equals(game.player.getUsername()))
-			game.getPlayers().add(0,game.player);
+		if (loginPacket.getUsername().equals(game.player.getUsername()))
+			game.getPlayers().add(0, game.player);
 		else
 			game.getPlayers().add(player); // add new player to playerList
 	}
-	
+
 	private int weapIndex(PlayerMP player, int weapId) {
 		int index = 0;
 

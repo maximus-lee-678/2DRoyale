@@ -66,7 +66,7 @@ public class GameServer extends Thread {
 			// LOGIN
 			Pkt01Login loginPacket = new Pkt01Login(data);
 			PlayerMP player = new PlayerMP(game, loginPacket.getUsername(), loginPacket.getWorldX(), loginPacket.getWorldY(), loginPacket.getPlayerWeapIndex(), address, port);
-			if (addConnection(player, loginPacket)) 
+			if (addConnection(player, loginPacket))
 				System.out.println("Server: [" + address.getHostAddress() + ":" + port + "] " + loginPacket.getUsername() + " has connected...");
 			break;
 		case 2:
@@ -92,7 +92,8 @@ public class GameServer extends Thread {
 			break;
 		case 6:
 			// SHOOT
-			if (gameState != playState) return;
+			if (gameState != playState)
+				return;
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
 			handleShoot(shootPacket);
 			break;
@@ -103,19 +104,22 @@ public class GameServer extends Thread {
 			break;
 		case 10:
 			// WEAPON PICK UP
-			if (gameState != playState) return;
+			if (gameState != playState)
+				return;
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
 			handlePickUpWeapon(pickUpPacket);
 			break;
 		case 11:
 			// OPEN CRATE
-			if (gameState != playState) return;
+			if (gameState != playState)
+				return;
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
 			handleCrateOpen(crateOpenPacket);
 			break;
 		case 12:
 			// WEAPON DROP
-			if (gameState != playState) return;
+			if (gameState != playState)
+				return;
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
 			handleDropWeapon(dropPacket);
 			break;
@@ -138,7 +142,7 @@ public class GameServer extends Thread {
 			break;
 		}
 	}
-	
+
 	public void update() {
 		gameTicks++;
 
@@ -169,7 +173,8 @@ public class GameServer extends Thread {
 
 	private void handleGasDamage(Pkt20GasDamage gasDmgPacket) {
 		PlayerMP gasVictim = connectedPlayers.get(playerIndex(gasDmgPacket.getUsername()));
-		if (gasVictim.playerState != playState) return;
+		if (gasVictim.playerState != playState)
+			return;
 		// Decrease player hp
 		gasVictim.updatePlayerHP(-1);
 		gasDmgPacket.sendData(this);
@@ -177,7 +182,9 @@ public class GameServer extends Thread {
 		if (gasVictim.health == 0) {
 			if (gasVictim.getWeapons()[gasVictim.playerWeapIndex] != null) {
 				SuperWeapon dropWeap = gasVictim.getWeapons()[gasVictim.playerWeapIndex];
-				new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.playerWeapIndex, dropWeap.typeId, dropWeap.id, gasVictim.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, gasVictim.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
+				new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.playerWeapIndex, dropWeap.typeId, dropWeap.id,
+						gasVictim.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, gasVictim.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2)
+								.sendData(game.socketClient);
 			}
 			gasVictim.playerState = endState;
 			new Pkt16Death("Gas", gasVictim.getUsername(), playerRemaining--).sendData(this);
@@ -187,7 +194,7 @@ public class GameServer extends Thread {
 	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
 		PlayerMP playerBTL = connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername()));
 		// Decrement player remaining if player leaves during the game
-		if (connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState == playState) 
+		if (connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState == playState)
 			playerRemaining--;
 		// Reset player
 		playerBTL.setPlayerDefault();
@@ -204,14 +211,17 @@ public class GameServer extends Thread {
 
 	private void handleStartGame() {
 		// Host can't start again if game is in progress
-		if (gameState == playState) return;
-		if (findPlayerInPlayState() != null) return;
+		if (gameState == playState)
+			return;
+		if (findPlayerInPlayState() != null)
+			return;
 		gameState = playState;
 		playerRemaining = 0;
 		countDownSeq = 5;
 		// Tell all players who entered a new game
 		for (PlayerMP p : connectedPlayers) {
-			if (p.playerState == endState) continue;
+			if (p.playerState == endState)
+				continue;
 			playerRemaining++;
 			p.playerState = game.playState;
 			new Pkt14StartGame(p.getUsername()).sendData(this);
@@ -233,11 +243,11 @@ public class GameServer extends Thread {
 		pickUpPacket.sendData(this);
 	}
 
-	
 	private void handleCloseGas() {
 		// Send all players in game info of the gas closing
 		for (PlayerMP p : connectedPlayers) {
-			if (p.playerState != playState) continue;
+			if (p.playerState != playState)
+				continue;
 			Pkt13Gas gasPacket = new Pkt13Gas();
 			sendData(gasPacket.getData(), p.ipAddress, p.port);
 		}
@@ -288,7 +298,8 @@ public class GameServer extends Thread {
 			shutDownServer(isHost);
 			return;
 		}
-		if (connectedPlayers.get(playerIndex(disconnectPacket.getUsername())).playerState == playState) playerRemaining--;
+		if (connectedPlayers.get(playerIndex(disconnectPacket.getUsername())).playerState == playState)
+			playerRemaining--;
 		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
 		disconnectPacket.sendData(this);
 	}
@@ -298,7 +309,7 @@ public class GameServer extends Thread {
 
 		for (PlayerMP p : connectedPlayers) {
 			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
-				// Update host's ip and port 
+				// Update host's ip and port
 				if (p.ipAddress == null && p.port == -1) {
 					p.ipAddress = player.ipAddress;
 					p.port = player.port;
@@ -308,7 +319,7 @@ public class GameServer extends Thread {
 			} else {
 				// Send information of the new player to all connected players already in the server
 				sendData(loginPacket.getData(), p.ipAddress, p.port);
-				
+
 				// Send information of already connected players to the new player
 				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.worldX, p.worldY, p.playerWeapIndex, p.playerState);
 				sendData(otherPlayersLoginPacket.getData(), player.ipAddress, player.port);

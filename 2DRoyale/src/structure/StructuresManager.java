@@ -1,12 +1,8 @@
 package structure;
 
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import main.Game;
 import tile.Tile;
@@ -475,8 +471,7 @@ public class StructuresManager {
 			int structWidth = crate.collisionBoundingBox.width;
 			int structHeight = crate.collisionBoundingBox.height;
 
-			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight
-					&& entityBottomWorldY > structY) {
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
 				if (type == "Entity") {
 					if (solid[crate.imageID].collisionPlayer || solid[crate.imageID].collisionPlayer)
 						return true;
@@ -495,8 +490,7 @@ public class StructuresManager {
 	/**
 	 * Checks for collision with obstructions.
 	 */
-	public boolean hasCollidedObstruction(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY,
-			String type) {
+	public boolean hasCollidedObstruction(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
 
 		for (int obstructionIndex = 0; obstructionIndex < obstructions.length; obstructionIndex++) {
 			int obstructionX = obstructions[obstructionIndex].boundingBox.x;
@@ -520,8 +514,7 @@ public class StructuresManager {
 	}
 
 	/**
-	 * Checks for overlapping of player collision boxes and crate interact bounding
-	 * boxes.
+	 * Checks for overlapping of player collision boxes and crate interact bounding boxes.
 	 */
 	public int withinCrateRange(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
 
@@ -533,8 +526,7 @@ public class StructuresManager {
 			int structWidth = crate.interactBoundingBox.width;
 			int structHeight = crate.interactBoundingBox.height;
 
-			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight
-					&& entityBottomWorldY > structY) {
+			if (entityLeftWorldX < structX + structWidth && entityRightWorldX > structX && entityTopWorldY < structY + structHeight && entityBottomWorldY > structY) {
 				return crate.crateId;
 			}
 		}

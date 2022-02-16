@@ -6,28 +6,22 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import item.Rifle;
-import item.SMG;
-import item.Shotgun;
 import item.SuperWeapon;
 import main.Game;
 import main.KeyHandler;
 import main.MouseHandler;
+import main.RenderInterface;
 import net.Pkt03Move;
 import net.Pkt04MouseMove;
 import net.Pkt10PickupWeapon;
 import net.Pkt11CrateOpen;
 import net.Pkt12DropWeapon;
 import net.Pkt20GasDamage;
-import structure.Crate;
 
-public class Player extends Entity { // inherits Entity class
+public class Player extends Entity implements RenderInterface { // inherits Entity class
 
 	private Game game;
 	private KeyHandler keys;

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 import entity.PlayerMP;
@@ -36,7 +37,7 @@ public class UI {
 	public boolean option;
 	public int optionScreen;
 	public boolean endingSound;
-	
+
 	public int kills = 0;
 	public boolean win;
 	public int waitingPlayerCount;
@@ -63,15 +64,15 @@ public class UI {
 		}
 
 	}
-	
+
 	public void update() {
 		playingPlayerCount = waitingPlayerCount = 0;
-		for(PlayerMP p: game.getPlayers()) {
-			if(p.playerState == game.playState)
+		for (PlayerMP p : game.getPlayers()) {
+			if (p.playerState == game.playState)
 				playingPlayerCount++;
-			if(p.playerState == game.waitState)
+			if (p.playerState == game.waitState)
 				waitingPlayerCount++;
-		}				
+		}
 	}
 
 	public void draw(Graphics2D g2) {
@@ -89,7 +90,7 @@ public class UI {
 		int playerCount;
 		if (game.gameState == game.waitState || game.gameState == game.playState) {
 			endingSound = false;
-			if(playingPlayerCount > 1) {				
+			if (playingPlayerCount > 1) {
 				playerCount = playingPlayerCount;
 			} else {
 				playerCount = waitingPlayerCount;
@@ -101,18 +102,17 @@ public class UI {
 			drawMessage();
 			drawCountdown();
 			drawOption(option);
-			//start game message
+			// start game message
 			if (game.gameState == game.waitState)
 				drawWaitMessage();
-			
+
 		}
 		// End state
-		
+
 		if (game.gameState == game.endState) {
-			//true if player wins, false if player loses
+			// true if player wins, false if player loses
 			drawEndGame(win);
 		}
-		
 
 	}
 
@@ -216,12 +216,12 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
-			
+
 			text = "- Use Q to drop weapon";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
-			
+
 			text = "- Use scroll to change weapons";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
@@ -309,7 +309,7 @@ public class UI {
 			if (commandNum == 0) {
 				g2.drawString(">", x - game.tileSize, y);
 			}
-			
+
 			text = "Copy From Keyboard";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
@@ -320,8 +320,8 @@ public class UI {
 		}
 
 	}
-	
-	//function to align text in middle
+
+	// function to align text in middle
 	public int getXforCenteredText(String text) {
 		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
 		int x = game.screen.screenWidth / 2 - length / 2;
@@ -349,13 +349,13 @@ public class UI {
 		// slot
 		final int slotXstart = frameX + 24;
 		final int slotYstart = frameY + 20;
-		
-		//draw player's items in inventory
-		for(int i = 0; i < game.player.getWeapons().length; i++ ) {
-            SuperWeapon weap = game.player.getWeapons()[i];
-            if (weap != null)
-                g2.drawImage(weap.entityImg, slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.imgIconHeight/2, 50, 20, null);
-        } 
+
+		// draw player's items in inventory
+		for (int i = 0; i < game.player.getWeapons().length; i++) {
+			SuperWeapon weap = game.player.getWeapons()[i];
+			if (weap != null)
+				g2.drawImage(weap.entityImg, slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.imgIconHeight / 2, 50, 20, null);
+		}
 		// cursor
 		int cursorX = slotXstart;
 		int cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
@@ -367,53 +367,53 @@ public class UI {
 		g2.setStroke(new BasicStroke(3));
 		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 	}
-	
-	//draw sub translucent window
+
+	// draw sub translucent window
 	public void drawSubWindow(int x, int y, int width, int height) {
 		Color c = new Color(0, 0, 0, 100);
 		g2.setColor(c);
 		g2.fillRoundRect(x, y, width, height, 10, 10);
 	}
-	
-	//draw kill count
+
+	// draw kill count
 	public void drawKillsStat(int kills) {
-		int x = game.screen.screenWidth - game.tileSize*4;
-		int y =  game.tileSize;
-		//make box
-		drawSubWindow(x, y, game.tileSize*3, game.tileSize);
-		//draw knife
+		int x = game.screen.screenWidth - game.tileSize * 4;
+		int y = game.tileSize;
+		// make box
+		drawSubWindow(x, y, game.tileSize * 3, game.tileSize);
+		// draw knife
 		g2.drawImage(killCounterImage, x + 8, y + 12, 25, 25, null);
-		//draw string
+		// draw string
 		String text = ": " + kills;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
 		g2.drawString(text, x + 30, y + 30);
-		
+
 	}
-	
-	//draw player count
-	public void drawPlayerCount(int playerCount){
-		
-		int x = game.screen.screenWidth - game.tileSize*4 + 85;
+
+	// draw player count
+	public void drawPlayerCount(int playerCount) {
+
+		int x = game.screen.screenWidth - game.tileSize * 4 + 85;
 		int y = game.tileSize + 14;
-		//draw player count image
+		// draw player count image
 		g2.drawImage(remainingPlayersImage, x, y, 20, 20, null);
-		//draw string
+		// draw string
 		String text = ": " + playerCount;
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
 		g2.drawString(text, x + 22, y + 16);
-		
+
 	}
-	
-	//countdown timer interface
+
+	// countdown timer interface
 	public void drawCountdown() {
 		if (game.gameState == game.playState && countdown > 0) {
-			if(tempcounter != countdown) {
+			if (tempcounter != countdown) {
 				tempcounter = countdown;
 				game.playSE(6);
 			}
-			
+
 			String text = "Game Starting in " + countdown;
 			int x = getXforCenteredText(text);
 			int y = game.tileSize * 3;
@@ -422,47 +422,47 @@ public class UI {
 			g2.drawString(text, x + 2, y + 2);
 			g2.setColor(Color.white);
 			g2.drawString(text, x, y);
-			
+
 		}
 	}
-	
-	//display option screen when esc is pressed
+
+	// display option screen when esc is pressed
 	public void drawOption(boolean option) {
 		if (option) {
-			int x = game.tileSize*6;
-			int y =  game.tileSize*2;
-			//make box
-			drawSubWindow(x, y, game.screen.screenWidth - x*2, game.screen.screenHeight - y*6);
+			int x = game.tileSize * 6;
+			int y = game.tileSize * 2;
+			// make box
+			drawSubWindow(x, y, game.screen.screenWidth - x * 2, game.screen.screenHeight - y * 6);
 			String text = "Back To Game";
 			x = getXforCenteredText(text);
 			y += game.tileSize + 30;
 			g2.setColor(Color.white);
 			g2.drawString(text, x, y);
-			if (commandNum == 0) 
+			if (commandNum == 0)
 				g2.drawString(">", x - game.tileSize, y);
-			
+
 			text = "Back to Main Menu";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
-			if (commandNum == 1) 
+			if (commandNum == 1)
 				g2.drawString(">", x - game.tileSize, y);
-			
+
 			text = "Quit Game";
 			x = getXforCenteredText(text);
 			y += game.tileSize;
 			g2.drawString(text, x, y);
-			if (commandNum == 2) 
+			if (commandNum == 2)
 				g2.drawString(">", x - game.tileSize, y);
 		}
 	}
-	
-	//host message to start game
+
+	// host message to start game
 	public void drawWaitMessage() {
 		String text;
-		if(game.socketServer != null) 
+		if (game.socketServer != null)
 			text = "You are the host! Press F to start game!";
-		else 
+		else
 			text = "Waiting for host to start game!";
 
 		int x = getXforCenteredText(text);
@@ -471,41 +471,42 @@ public class UI {
 		g2.drawString(text, x + 2, y + 2);
 		g2.setColor(Color.white);
 		g2.drawString(text, x, y);
-	}	
-	
+	}
+
 	// for scrolling killing feed
 	public void addMessage(String text) {
 		message.add(text);
 		messageCounter.add(0);
 		// add this line to the killed function -> game.iu.addMessage("blank killed blank")
-		
+
 	}
+
 	public void drawMessage() {
-		int messageX = game.screen.screenWidth - game.tileSize*4;
-		int messageY = game.tileSize*4;
+		int messageX = game.screen.screenWidth - game.tileSize * 4;
+		int messageY = game.tileSize * 4;
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
-		
-		for(int i = 0; i < message.size(); i++) {
-			if(message.get(i) != null) {
-				
+
+		for (int i = 0; i < message.size(); i++) {
+			if (message.get(i) != null) {
+
 				g2.setColor(Color.black);
-				g2.drawString(message.get(i),messageX+2, messageY+2);
+				g2.drawString(message.get(i), messageX + 2, messageY + 2);
 				g2.setColor(Color.white);
-				g2.drawString(message.get(i),messageX, messageY);
-			
-				int counter = messageCounter.get(i) + 1; //messageCounter++
-				messageCounter.set(i,  counter); //set the counter to the array
+				g2.drawString(message.get(i), messageX, messageY);
+
+				int counter = messageCounter.get(i) + 1; // messageCounter++
+				messageCounter.set(i, counter); // set the counter to the array
 				messageY += 50;
-				
-				if(messageCounter.get(i) > 180) {
+
+				if (messageCounter.get(i) > 180) {
 					message.remove(i);
 					messageCounter.remove(i);
 				}
 			}
 		}
 	}
-	
-	//end game screen
+
+	// end game screen
 	public void drawEndGame(boolean win) {
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(42F));
@@ -522,9 +523,8 @@ public class UI {
 				game.playSE(10);
 				endingSound = true;
 			}
-			
-		}
-		else {
+
+		} else {
 			text = "You Died!";
 			x = getXforCenteredText(text);
 			y = game.tileSize * 3;
@@ -534,31 +534,31 @@ public class UI {
 				endingSound = true;
 			}
 		}
-		
-		//get kills from player
+
+		// get kills from player
 		text = "Number of Kills: " + this.kills;
 		x = getXforCenteredText(text);
 		y += game.tileSize * 3;
 		g2.drawString(text, x, y);
-		
-		//get position of player from the length of array
+
+		// get position of player from the length of array
 		text = "Position: #" + (this.playingPlayerCount + 1);
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);
-		
+
 		text = "Back to Lobby";
 		x = getXforCenteredText(text);
 		y += game.tileSize * 3;
 		g2.drawString(text, x, y);
-		if (commandNum == 0) 
+		if (commandNum == 0)
 			g2.drawString(">", x - game.tileSize, y);
-		
+
 		text = "Back to Main Menu";
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);
-		if (commandNum == 1) 
+		if (commandNum == 1)
 			g2.drawString(">", x - game.tileSize, y);
 	}
 }

@@ -3,7 +3,6 @@ package item;
 import java.util.ArrayList;
 import java.util.List;
 
-import entity.Player;
 import main.Game;
 import structure.Crate;
 

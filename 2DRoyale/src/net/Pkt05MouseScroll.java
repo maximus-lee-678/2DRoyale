@@ -19,9 +19,9 @@ public class Pkt05MouseScroll extends Packet {
 
 	@Override
 	public byte[] getData() {
-		return ("05"+getUsername()+","+getMouseScrollDir()).getBytes();
+		return ("05" + getUsername() + "," + getMouseScrollDir()).getBytes();
 	}
-	
+
 	public int getMouseScrollDir() {
 		return mouseScrollDir;
 	}

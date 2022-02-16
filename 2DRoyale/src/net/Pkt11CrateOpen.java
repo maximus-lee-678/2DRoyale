@@ -33,7 +33,7 @@ public class Pkt11CrateOpen extends Packet {
 	public int getWeapType() {
 		return weapType;
 	}
-	
+
 	public void setWeapType(int weapType) {
 		this.weapType = weapType;
 	}
@@ -45,6 +45,5 @@ public class Pkt11CrateOpen extends Packet {
 	public void setWeapId(int weapId) {
 		this.weapId = weapId;
 	}
-	
-	
+
 }
