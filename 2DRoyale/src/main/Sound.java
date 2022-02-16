@@ -13,6 +13,7 @@ public class Sound {
 	URL soundURL[] = new URL[30];
 
 	public Sound() {
+		//input your sounds here!
 		soundURL[0] = getClass().getResource("/sound/select.wav");
 		soundURL[1] = getClass().getResource("/sound/machinegun.wav");
 		soundURL[2] = getClass().getResource("/sound/rifle.wav");
@@ -36,6 +37,7 @@ public class Sound {
 		}
 	}
 
+	// different functions, only play is used in this game, loop and stop are for music
 	public void play() {
 		clip.start();
 	}

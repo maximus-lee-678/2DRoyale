@@ -62,7 +62,9 @@ public class SMG extends SuperWeapon {
 			new Pkt06Shoot(game.player.getUsername(), this.id, angle, worldX, worldY).sendData(game.socketClient);
 
 			fireRateTick = 0;
-			game.playSE(1);
+			if(game.gameState == game.playState) {
+				game.playSE(1);
+			}
 		}
 
 	}

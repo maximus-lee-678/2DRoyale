@@ -47,6 +47,7 @@ public class UI {
 		this.game = game;
 
 		try {
+			// Get the font
 			InputStream is = getClass().getResourceAsStream("/font/x12y16pxMaruMonica.ttf");
 			maruMonica = Font.createFont(Font.TRUETYPE_FONT, is);
 		} catch (FontFormatException e) {
@@ -56,6 +57,7 @@ public class UI {
 		}
 
 		try {
+			// Get the UI images
 			healthImage = ImageIO.read(getClass().getResourceAsStream("/UI/HP.png"));
 			killCounterImage = ImageIO.read(getClass().getResourceAsStream("/UI/killcounter.png"));
 			remainingPlayersImage = ImageIO.read(getClass().getResourceAsStream("/UI/remainingplayers.png"));
@@ -95,6 +97,7 @@ public class UI {
 			} else {
 				playerCount = waitingPlayerCount;
 			}
+			// Draw all UI
 			drawHP();
 			drawInventory();
 			drawKillsStat(this.kills);
@@ -102,26 +105,26 @@ public class UI {
 			drawMessage();
 			drawCountdown();
 			drawOption(option);
-			// start game message
+			// Start game message
 			if (game.gameState == game.waitState)
 				drawWaitMessage();
 
 		}
 		// End state
-
 		if (game.gameState == game.endState) {
-			// true if player wins, false if player loses
+			// True if player wins, false if player loses
 			drawEndGame(win);
 		}
 
 	}
-
+	
+	//Title Name
 	public void drawTitleScreen() {
-
+		// Main Screen when user opens the game
 		if (titleScreenState == 0) {
 			g2.setColor(new Color(0, 0, 0));
 			g2.fillRect(0, 0, game.screen.screenWidth, game.screen.screenHeight);
-			// Title Name
+			
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
 			String text = "2D Royale";
 			int x = getXforCenteredText(text);
@@ -169,6 +172,8 @@ public class UI {
 			if (commandNum == 3) {
 				g2.drawString(">", x - game.tileSize, y);
 			}
+			
+		// When user click on "HOW TO PLAY"
 		} else if (titleScreenState == 1) {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(42F));
@@ -198,6 +203,8 @@ public class UI {
 			y += game.tileSize * 2;
 			g2.drawString(text, x, y);
 			g2.drawString(">", x - game.tileSize, y);
+			
+		// When user click on "PLAYERS CONTROL"
 		} else if (titleScreenState == 2) {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(32F));
@@ -237,10 +244,13 @@ public class UI {
 			y += game.tileSize * 2;
 			g2.drawString(text, x, y);
 			g2.drawString(">", x - game.tileSize, y);
+			
+		// When user click on "START"
 		} else if (titleScreenState == 3) {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(42F));
 
+			// Ask the user if he/she wants to host the server
 			String text = "Do you want to run the server?";
 			int x = getXforCenteredText(text);
 			int y = game.tileSize * 3;
@@ -269,6 +279,8 @@ public class UI {
 			if (commandNum == 2) {
 				g2.drawString(">", x - game.tileSize, y);
 			}
+		
+		// Enter nickname screen
 		} else if (titleScreenState == 4) {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(42F));
@@ -288,6 +300,8 @@ public class UI {
 			y += game.tileSize * 3;
 			g2.drawString(text, x, y);
 			g2.drawString(">", x - game.tileSize, y);
+			
+		// Only shown when user does not wants to host the server, he/she will have to provide the server's ip to join
 		} else if (titleScreenState == 5) {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(42F));
@@ -321,22 +335,23 @@ public class UI {
 
 	}
 
-	// function to align text in middle
+	//function to align text in middle
 	public int getXforCenteredText(String text) {
 		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
 		int x = game.screen.screenWidth / 2 - length / 2;
 		return x;
 	}
-
+	//draw HP UI
 	public void drawHP() {
 		// display health logo
-		g2.drawImage(healthImage, game.tileSize, game.tileSize * 16, 25, 25, null);
+		g2.drawImage(healthImage, game.tileSize, game.tileSize * 12, 25, 25, null);
 		// display health bar
 		Color c = new Color(255, 0, 30);
 		g2.setColor(c);
-		g2.fillRect(game.tileSize * 2, game.tileSize * 10, (int) (game.player.health * 2), game.tileSize / 2);
+		g2.fillRect(game.tileSize * 2, game.tileSize * 12, (int) (game.player.health * 2), game.tileSize / 2);
 	}
 
+	//draw Inventory UI
 	public void drawInventory() {
 
 		// frame
@@ -477,10 +492,9 @@ public class UI {
 	public void addMessage(String text) {
 		message.add(text);
 		messageCounter.add(0);
-		// add this line to the killed function -> game.iu.addMessage("blank killed blank")
-
 	}
 
+	// also for scrolling kill feed
 	public void drawMessage() {
 		int messageX = game.screen.screenWidth - game.tileSize * 4;
 		int messageY = game.tileSize * 4;
@@ -513,7 +527,8 @@ public class UI {
 		String text;
 		int x;
 		int y;
-
+		
+		// if player wins
 		if (win) {
 			text = "You Win!";
 			x = getXforCenteredText(text);
@@ -524,6 +539,7 @@ public class UI {
 				endingSound = true;
 			}
 
+		// if player loses
 		} else {
 			text = "You Died!";
 			x = getXforCenteredText(text);

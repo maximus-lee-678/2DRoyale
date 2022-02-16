@@ -60,7 +60,10 @@ public class Shotgun extends SuperWeapon {
 			}
 
 			fireRateTick = 0;
-			game.playSE(3);
+			if(game.gameState == game.playState) {
+				game.playSE(3);
+			}
+			
 		}
 
 	}

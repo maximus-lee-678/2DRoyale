@@ -20,8 +20,8 @@ public class Screen implements RenderInterface {
 
 	private Game game;
 
-	public final int maxScreenCol = 24;
-	public final int maxScreenRow = 18;
+	public final int maxScreenCol = 26;
+	public final int maxScreenRow = 15;
 	public final int screenWidth;
 	public final int screenHeight;
 	private BufferedImage minimapBack, megamapLobby, megamapGame, buildingMinimap;

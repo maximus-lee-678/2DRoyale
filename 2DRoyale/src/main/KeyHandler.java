@@ -16,13 +16,15 @@ import net.Pkt17BackToLobby;
 
 public class KeyHandler implements KeyListener {
 
-	Game gp;
+	Game game;
 	public boolean up, down, left, right, interact = false, drop = false, map = false, ping = false;
+	// regex for username
 	String pattern = "^[a-zA-Z0-9]*$";
+	// regex for ip address
 	String ipPattern = "^[0-9\\.]*$";
 
-	public KeyHandler(Game gp) {
-		this.gp = gp;
+	public KeyHandler(Game game) {
+		this.game = game;
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -31,165 +33,168 @@ public class KeyHandler implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
 		// when in menu page
-		if (gp.gameState == gp.titleState) {
-			if (gp.ui.titleScreenState == 0) {
+		if (game.gameState == game.titleState) {
+			if (game.ui.titleScreenState == 0) {
 				if (code == KeyEvent.VK_W) {
-					gp.playSE(0);
-					gp.ui.commandNum--;
-					if (gp.ui.commandNum < 0) {
-						gp.ui.commandNum = 3;
+					game.playSE(0);
+					game.ui.commandNum--;
+					if (game.ui.commandNum < 0) {
+						game.ui.commandNum = 3;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
-					gp.playSE(0);
-					gp.ui.commandNum++;
-					if (gp.ui.commandNum > 3) {
-						gp.ui.commandNum = 0;
+					game.playSE(0);
+					game.ui.commandNum++;
+					if (game.ui.commandNum > 3) {
+						game.ui.commandNum = 0;
 					}
 				}
 				if (code == KeyEvent.VK_ENTER) {
 					// when user click "start"
-					if (gp.ui.commandNum == 0) {
-						gp.ui.titleScreenState = 3;
+					if (game.ui.commandNum == 0) {
+						game.ui.titleScreenState = 3;
 					}
 					//// when user click "how to play"
-					if (gp.ui.commandNum == 1) {
-						gp.ui.titleScreenState = 1;
+					if (game.ui.commandNum == 1) {
+						game.ui.titleScreenState = 1;
 					}
 					// when user click "players control"
-					if (gp.ui.commandNum == 2) {
-						gp.ui.titleScreenState = 2;
+					if (game.ui.commandNum == 2) {
+						game.ui.titleScreenState = 2;
 					}
 					// when user click "quit"
-					if (gp.ui.commandNum == 3) {
+					if (game.ui.commandNum == 3) {
 						System.exit(0);
 					}
 				}
 			}
 			// when in "how to play" page
-			else if (gp.ui.titleScreenState == 1) {
+			else if (game.ui.titleScreenState == 1) {
 				if (code == KeyEvent.VK_ENTER) {
-					gp.ui.titleScreenState = 0;
+					game.ui.titleScreenState = 0;
 				}
 			}
 			// when in "players control page"
-			else if (gp.ui.titleScreenState == 2) {
+			else if (game.ui.titleScreenState == 2) {
 				if (code == KeyEvent.VK_ENTER) {
-					gp.ui.titleScreenState = 0;
+					game.ui.titleScreenState = 0;
 				}
 			}
 			// when in "do you want to host the server" page
-			else if (gp.ui.titleScreenState == 3) {
+			else if (game.ui.titleScreenState == 3) {
 				if (code == KeyEvent.VK_W) {
-					gp.playSE(0);
-					gp.ui.commandNum--;
-					if (gp.ui.commandNum < 0) {
-						gp.ui.commandNum = 2;
+					game.playSE(0);
+					game.ui.commandNum--;
+					if (game.ui.commandNum < 0) {
+						game.ui.commandNum = 2;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
-					gp.playSE(0);
-					gp.ui.commandNum++;
-					if (gp.ui.commandNum > 2) {
-						gp.ui.commandNum = 0;
+					game.playSE(0);
+					game.ui.commandNum++;
+					if (game.ui.commandNum > 2) {
+						game.ui.commandNum = 0;
 					}
 				}
 				if (code == KeyEvent.VK_ENTER) {
-					// user will create a server using his localhost
-					if (gp.ui.commandNum == 0) {
-						gp.ui.titleScreenState = 4;
-						gp.socketServer = new GameServer(gp, gp.randSeed);
-						gp.socketServer.start();
-						gp.socketClient = new GameClient(gp, "localhost");
-						gp.socketClient.start();
-					} else if (gp.ui.commandNum == 1) {
-						gp.ui.titleScreenState = 5;
-						gp.ui.commandNum = 0;
-					} else if (gp.ui.commandNum == 2) {
-						gp.ui.titleScreenState = 0;
-						gp.ui.commandNum = 0;
+					// user will create a server using his/her ip address
+					if (game.ui.commandNum == 0) {
+						game.ui.titleScreenState = 4;
+						game.socketServer = new GameServer(game, game.randSeed);
+						game.socketServer.start();
+						game.socketClient = new GameClient(game, "localhost");
+						game.socketClient.start();
+					} else if (game.ui.commandNum == 1) {
+						game.ui.titleScreenState = 5;
+						game.ui.commandNum = 0;
+					} else if (game.ui.commandNum == 2) {
+						game.ui.titleScreenState = 0;
+						game.ui.commandNum = 0;
 					}
 				}
 			}
 			// when in "Enter your nickname" page
-			else if (gp.ui.titleScreenState == 4) {
+			else if (game.ui.titleScreenState == 4) {
 				char input = e.getKeyChar();
 				String tempInput = "";
 				tempInput += input;
 				if (input == KeyEvent.VK_BACK_SPACE) {
-					gp.ui.name = removeLastChar(gp.ui.name);
+					game.ui.name = removeLastChar(game.ui.name);
 				} else if (tempInput.matches(pattern)) {
-					gp.ui.name += input;
-					gp.ui.name = maxLength(gp.ui.name, 15);
+					game.ui.name += input;
+					game.ui.name = maxLength(game.ui.name, 15);
 				}
-				if (gp.ui.name != "" && code == KeyEvent.VK_ENTER) {
-					gp.player.setUsername(gp.ui.name.trim());
-					Pkt01Login loginPacket = new Pkt01Login(gp.player.getUsername(), gp.player.worldX, gp.player.worldY, gp.player.playerWeapIndex, gp.waitState);
-					if (gp.socketServer != null) {
-						gp.getPlayers().add(gp.player);
+				// check to see if nickname is empty
+				if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
+					game.player.setUsername(game.ui.name.trim());
+					Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.worldX, game.player.worldY, game.player.playerWeapIndex, game.waitState);
+					if (game.socketServer != null) {
+						game.getPlayers().add(game.player);
 						PlayerMP clonePlayer = null;
 						try {
-							clonePlayer = (PlayerMP) gp.player.clone();
+							clonePlayer = (PlayerMP) game.player.clone();
 						} catch (CloneNotSupportedException e1) {
 							e1.printStackTrace();
 						}
-						gp.socketServer.addConnection(clonePlayer, loginPacket);
-						gp.gameState = gp.waitState;
-						gp.player.playerState = gp.waitState;
-						gp.loadDefaults();
-						loginPacket.sendData(gp.socketClient);
-						gp.player.generatePlayerXY();
+						game.socketServer.addConnection(clonePlayer, loginPacket);
+						game.gameState = game.waitState;
+						game.player.playerState = game.waitState;
+						game.loadDefaults();
+						loginPacket.sendData(game.socketClient);
+						game.player.generatePlayerXY();
 					} else {
-						loginPacket.sendData(gp.socketClient);
+						loginPacket.sendData(game.socketClient);
 					}
 				}
 
 			}
 			// when in "Type the server ip:" page
-			else if (gp.ui.titleScreenState == 5) {
+			else if (game.ui.titleScreenState == 5) {
 				if (code == KeyEvent.VK_W) {
-					gp.playSE(0);
-					gp.ui.commandNum--;
-					if (gp.ui.commandNum < 0) {
-						gp.ui.commandNum = 1;
+					game.playSE(0);
+					game.ui.commandNum--;
+					if (game.ui.commandNum < 0) {
+						game.ui.commandNum = 1;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
-					gp.playSE(0);
-					gp.ui.commandNum++;
-					if (gp.ui.commandNum > 1) {
-						gp.ui.commandNum = 0;
+					game.playSE(0);
+					game.ui.commandNum++;
+					if (game.ui.commandNum > 1) {
+						game.ui.commandNum = 0;
 					}
 				}
-				if (gp.ui.commandNum == 0) {
+				if (game.ui.commandNum == 0) {
+					// user type in server address
 					char input = e.getKeyChar();
 					String tempInput = "";
 					tempInput += input;
 					if (input == KeyEvent.VK_BACK_SPACE) {
-						gp.ui.ipAddress = removeLastChar(gp.ui.ipAddress);
+						game.ui.ipAddress = removeLastChar(game.ui.ipAddress);
 					} else if (tempInput.matches(ipPattern)) {
-						gp.ui.ipAddress += input;
-						gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
+						game.ui.ipAddress += input;
+						game.ui.ipAddress = maxLength(game.ui.ipAddress, 15);
 					}
 					if (code == KeyEvent.VK_ENTER) {
-						// user type in server address
-						gp.ui.ipAddress = gp.ui.ipAddress.trim();
-						// if user leave it empty, the user will enter localhost alone without a server
-						if (gp.ui.ipAddress.isEmpty() == true) {
-							gp.ui.ipAddress = "localhost";
+						game.ui.ipAddress = game.ui.ipAddress.trim();
+						// if user leave it empty, the user will enter his/her own ip address
+						if (game.ui.ipAddress.isEmpty() == true) {
+							game.ui.ipAddress = "localhost";
 						}
-						gp.ui.titleScreenState = 4;
-						gp.socketClient = new GameClient(gp, gp.ui.ipAddress);
-						gp.socketClient.start();
+						// go to "Enter your nickname" page
+						game.ui.titleScreenState = 4;
+						game.socketClient = new GameClient(game, game.ui.ipAddress);
+						game.socketClient.start();
 
 					}
-				} else if (gp.ui.commandNum == 1) {
+					// if user wants to copy from keyboard
+				} else if (game.ui.commandNum == 1) {
 					if (code == KeyEvent.VK_ENTER) {
 						try {
 							String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
 							if (data.matches(ipPattern)) {
-								gp.ui.ipAddress = data;
-								gp.ui.ipAddress = maxLength(gp.ui.ipAddress, 15);
+								game.ui.ipAddress = data;
+								game.ui.ipAddress = maxLength(game.ui.ipAddress, 15);
 							} else
 								System.out.println("bad syntax");
 						} catch (Exception x) {
@@ -200,45 +205,46 @@ public class KeyHandler implements KeyListener {
 			}
 		}
 		// when in option screen
-		if ((gp.gameState == gp.waitState || gp.gameState == gp.playState) && gp.ui.option == true) {
+		if ((game.gameState == game.waitState || game.gameState == game.playState) && game.ui.option == true) {
 			if (code == KeyEvent.VK_W) {
-				gp.playSE(0);
-				gp.ui.commandNum--;
-				if (gp.ui.commandNum < 0) {
-					gp.ui.commandNum = 2;
+				game.playSE(0);
+				game.ui.commandNum--;
+				if (game.ui.commandNum < 0) {
+					game.ui.commandNum = 2;
 				}
 			}
 			if (code == KeyEvent.VK_S) {
-				gp.playSE(0);
-				gp.ui.commandNum++;
-				if (gp.ui.commandNum > 2) {
-					gp.ui.commandNum = 0;
+				game.playSE(0);
+				game.ui.commandNum++;
+				if (game.ui.commandNum > 2) {
+					game.ui.commandNum = 0;
 				}
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to game
-				if (gp.ui.commandNum == 0) {
-					gp.ui.option = false;
+				if (game.ui.commandNum == 0) {
+					game.ui.option = false;
 				}
 				// back to main menu
-				else if (gp.ui.commandNum == 1) {
-					gp.gameState = gp.titleState;
-					gp.player.playerState = gp.titleState;
-					gp.clearPlayers();
-					gp.ui.titleScreenState = 0;
-					gp.ui.commandNum = 0;
-					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
+				else if (game.ui.commandNum == 1) {
+					game.gameState = game.titleState;
+					game.player.playerState = game.titleState;
+					game.clearPlayers();
+					game.ui.titleScreenState = 0;
+					game.ui.commandNum = 0;
+					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 				}
 				// exit game
-				else if (gp.ui.commandNum == 2) {
+				else if (game.ui.commandNum == 2) {
 					System.exit(0);
 				}
 			}
+			// press escape to go back to game
 			if (code == KeyEvent.VK_ESCAPE) {
-				gp.playSE(0);
-				gp.ui.option = false;
+				game.playSE(0);
+				game.ui.option = false;
 			}
-		} else if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
+		} else if (game.gameState == game.waitState || game.gameState == game.playState) {
 			// true if user presses button
 			if (code == KeyEvent.VK_W)
 				up = true;
@@ -251,14 +257,14 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_E)
 				interact = false;
 			if (code == KeyEvent.VK_F) {
-				if (gp.socketServer != null)
-					new Pkt14StartGame(gp.player.getUsername()).sendData(gp.socketClient);
+				if (game.socketServer != null)
+					new Pkt14StartGame(game.player.getUsername()).sendData(game.socketClient);
 
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
-				gp.playSE(0);
-				gp.ui.option = true;
-				gp.ui.commandNum = 0;
+				game.playSE(0);
+				game.ui.option = true;
+				game.ui.commandNum = 0;
 				;
 			}
 
@@ -267,48 +273,49 @@ public class KeyHandler implements KeyListener {
 			}
 			if (code == KeyEvent.VK_M) {
 				map = !map;
-				gp.playSE(5);
+				game.playSE(5);
 			}
 
 			if (code == KeyEvent.VK_1) {
-				gp.player.playerWeapIndex = 0;
+				game.player.playerWeapIndex = 0;
 			}
 			if (code == KeyEvent.VK_2) {
-				gp.player.playerWeapIndex = 1;
+				game.player.playerWeapIndex = 1;
 			}
 			if (code == KeyEvent.VK_3) {
-				gp.player.playerWeapIndex = 2;
+				game.player.playerWeapIndex = 2;
 			}
 			if (code == KeyEvent.VK_4) {
-				gp.player.playerWeapIndex = 3;
+				game.player.playerWeapIndex = 3;
 			}
 
 		}
-		if (gp.gameState == gp.endState) {
+		// when in end game screen
+		if (game.gameState == game.endState) {
 			if (code == KeyEvent.VK_W) {
-				gp.playSE(0);
-				gp.ui.commandNum--;
-				if (gp.ui.commandNum < 0) {
-					gp.ui.commandNum = 1;
+				game.playSE(0);
+				game.ui.commandNum--;
+				if (game.ui.commandNum < 0) {
+					game.ui.commandNum = 1;
 				}
 			}
 			if (code == KeyEvent.VK_S) {
-				gp.playSE(0);
-				gp.ui.commandNum++;
-				if (gp.ui.commandNum > 1) {
-					gp.ui.commandNum = 0;
+				game.playSE(0);
+				game.ui.commandNum++;
+				if (game.ui.commandNum > 1) {
+					game.ui.commandNum = 0;
 				}
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to lobby
-				if (gp.ui.commandNum == 0) {
-					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
+				if (game.ui.commandNum == 0) {
+					new Pkt17BackToLobby(game.player.getUsername()).sendData(game.socketClient);
 					// back to main menu
-				} else if (gp.ui.commandNum == 1) {
-					gp.gameState = gp.titleState;
-					gp.ui.titleScreenState = 0;
-					gp.ui.commandNum = 0;
-					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
+				} else if (game.ui.commandNum == 1) {
+					game.gameState = game.titleState;
+					game.ui.titleScreenState = 0;
+					game.ui.commandNum = 0;
+					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 				}
 			}
 		}
@@ -332,12 +339,13 @@ public class KeyHandler implements KeyListener {
 		if (code == KeyEvent.VK_Q)
 			drop = true;
 		if (code == KeyEvent.VK_P) {
-			gp.socketClient.latency = System.currentTimeMillis();
-			new Pkt08ServerPing().sendData(gp.socketClient);
+			game.socketClient.latency = System.currentTimeMillis();
+			new Pkt08ServerPing().sendData(game.socketClient);
 		}
 
 	}
-
+	
+	// method to backspace a character when keying nickname
 	public String removeLastChar(String str) {
 		if (str != null && str.length() > 0) {
 			str = str.substring(0, str.length() - 1);
@@ -346,6 +354,7 @@ public class KeyHandler implements KeyListener {
 		return str;
 	}
 
+	// method to limit nickname and ip address length
 	public String maxLength(String str, int max) {
 		if (str.length() > max) {
 			str = str.substring(0, max);
