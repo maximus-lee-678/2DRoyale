@@ -11,10 +11,10 @@ public class Pkt18Winner extends Packet {
 		String message = new String(data).trim().substring(2);
 		this.username = message;
 	}
-	
+
 	@Override
 	public byte[] getData() {
-		return ("18"+getUsername()).getBytes();
-	}	
+		return ("18" + getUsername()).getBytes();
+	}
 
 }

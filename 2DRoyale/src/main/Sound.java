@@ -11,7 +11,7 @@ public class Sound {
 
 	Clip clip;
 	URL soundURL[] = new URL[30];
-	
+
 	public Sound() {
 		soundURL[0] = getClass().getResource("/sound/select.wav");
 		soundURL[1] = getClass().getResource("/sound/machinegun.wav");
@@ -26,24 +26,26 @@ public class Sound {
 		soundURL[10] = getClass().getResource("/sound/win.wav");
 		soundURL[11] = getClass().getResource("/sound/lose.wav");
 	}
-	
+
 	public void setFile(int i) {
 		try {
 			AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
 			clip = AudioSystem.getClip();
 			clip.open(ais);
-		}catch(Exception e) {
+		} catch (Exception e) {
 		}
 	}
+
 	public void play() {
 		clip.start();
 	}
+
 	public void loop() {
 		clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
+
 	public void stop() {
 		clip.stop();
 	}
-
 
 }

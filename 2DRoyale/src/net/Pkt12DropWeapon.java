@@ -1,7 +1,7 @@
 package net;
 
-public class Pkt12DropWeapon extends Packet{
-	
+public class Pkt12DropWeapon extends Packet {
+
 	private int playerWeapIndex;
 	private int weapType;
 	private int weapId;
@@ -41,7 +41,7 @@ public class Pkt12DropWeapon extends Packet{
 	public int getWeapType() {
 		return weapType;
 	}
-	
+
 	public int getWeapId() {
 		return weapId;
 	}
@@ -53,5 +53,5 @@ public class Pkt12DropWeapon extends Packet{
 	public int getWorldY() {
 		return worldY;
 	}
-	
+
 }

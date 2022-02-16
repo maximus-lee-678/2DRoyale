@@ -28,7 +28,7 @@ public class Pkt06Shoot extends Packet {
 
 	@Override
 	public byte[] getData() {
-		return ("06"+getUsername()+","+getWeapId()+","+getProjAngle()+","+getWorldX()+","+getWorldY()).getBytes();
+		return ("06" + getUsername() + "," + getWeapId() + "," + getProjAngle() + "," + getWorldX() + "," + getWorldY()).getBytes();
 	}
 
 	public int getWeapId() {

@@ -1,12 +1,7 @@
 package tile;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
@@ -148,13 +143,13 @@ public class TileManager {
 			mapTileNum[gasCounter][y].setIsGassed(true);
 			mapTileNum[maxWorldCol - gasCounter - 1][y].setIsGassed(true);
 		}
-		
+
 		// Close y axis
 		for (int x = 0; x < maxWorldCol; x++) {
 			mapTileNum[x][gasCounter].setIsGassed(true);
 			mapTileNum[x][maxWorldRow - gasCounter - 1].setIsGassed(true);
 		}
-		
+
 		gasCounter++;
 		if (gasCounter > maxWorldCol - 1 || gasCounter > maxWorldRow - 1)
 			gasCounter--;
@@ -197,13 +192,13 @@ public class TileManager {
 			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
 		}
 
-			if (type == "Entity") {
-				if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
-					return true;
-			} else if (type == "Projectile") {
-				if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
-					return true;
-			}		
+		if (type == "Entity") {
+			if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
+				return true;
+		} else if (type == "Projectile") {
+			if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
+				return true;
+		}
 
 		return false;
 	}

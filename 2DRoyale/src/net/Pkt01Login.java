@@ -25,12 +25,12 @@ public class Pkt01Login extends Packet {
 		this.playerWeapIndex = Integer.parseInt(dataArr[3]);
 		this.playerState = Integer.parseInt(dataArr[4]);
 	}
-	
+
 	@Override
 	public byte[] getData() {
-		return ("01"+getUsername()+","+getWorldX()+","+getWorldY()+","+getPlayerWeapIndex()+","+getPlayerState()).getBytes();
+		return ("01" + getUsername() + "," + getWorldX() + "," + getWorldY() + "," + getPlayerWeapIndex() + "," + getPlayerState()).getBytes();
 	}
-	
+
 	public int getWorldX() {
 		return worldX;
 	}
@@ -38,7 +38,7 @@ public class Pkt01Login extends Packet {
 	public int getWorldY() {
 		return worldY;
 	}
-	
+
 	public int getPlayerWeapIndex() {
 		return playerWeapIndex;
 	}
@@ -46,7 +46,5 @@ public class Pkt01Login extends Packet {
 	public int getPlayerState() {
 		return playerState;
 	}
-	
-	
 
 }

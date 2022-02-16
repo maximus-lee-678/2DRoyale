@@ -9,12 +9,13 @@ import entity.Entity;
 import entity.Player;
 import entity.PlayerMP;
 import main.Game;
+import main.RenderInterface;
 import net.GameServer;
 import net.Pkt09ServerBulletHit;
 import net.Pkt12DropWeapon;
 import net.Pkt16Death;
 
-public abstract class SuperWeapon extends Entity implements shootInterface, Cloneable {
+public abstract class SuperWeapon extends Entity implements ShootInterface, Cloneable, RenderInterface {
 
 	public Game game;
 	public Player player;
@@ -66,17 +67,17 @@ public abstract class SuperWeapon extends Entity implements shootInterface, Clon
 		for (int i = 0; i < getBullets().size(); i++) {
 			Projectile p = getBullets().get(i);
 			// Check if projectile collided or expired
-			if (p.hasCollided() || p.checkDistance()) 
+			if (p.hasCollided() || p.checkDistance())
 				getBullets().remove(i--);
 			else
 				p.update();
 		}
 	}
-	
+
 	// Handle shoot event
 	public abstract void shoot();
-	
-	//////////SERVER AND CLIENT FUNCTIONS //////////
+
+	////////// SERVER AND CLIENT FUNCTIONS //////////
 	public void updateMPProjectiles(double projAngle, int worldX, int worldY) {
 		Projectile bullet = new Projectile(bulletIdCount++, this, projAngle, worldX, worldY);
 		getBullets().add(bullet);
@@ -85,18 +86,21 @@ public abstract class SuperWeapon extends Entity implements shootInterface, Clon
 	public void serverHit(int bulletId) {
 		for (int i = 0; i < getBullets().size(); i++) {
 			Projectile p = getBullets().get(i);
-			if (bulletId == p.id) getBullets().remove(i--);
+			if (bulletId == p.id)
+				getBullets().remove(i--);
 		}
 	}
 
 	public void checkPlayerHit(GameServer socketServer) {
 		for (PlayerMP p : socketServer.connectedPlayers) {
 
-			if (player.getUsername().equals(p.getUsername()) || player.playerState != p.playerState) continue;
+			if (player.getUsername().equals(p.getUsername()) || player.playerState != p.playerState)
+				continue;
 			for (int i = 0; i < getBullets().size(); i++) {
 				Projectile proj = getBullets().get(i);
 
-				if (p.worldX < proj.worldX + bulletSize && p.worldX + game.playerSize > proj.worldX && p.worldY < proj.worldY + bulletSize && p.worldY + game.playerSize > proj.worldY) {
+				if (p.worldX < proj.worldX + bulletSize && p.worldX + game.playerSize > proj.worldX && p.worldY < proj.worldY + bulletSize
+						&& p.worldY + game.playerSize > proj.worldY) {
 					getBullets().remove(i--);
 					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.id);
 					serverHitPacket.sendData(socketServer);
@@ -105,7 +109,8 @@ public abstract class SuperWeapon extends Entity implements shootInterface, Clon
 					if (p.health == 0) {
 						if (p.getWeapons()[p.playerWeapIndex] != null) {
 							SuperWeapon dropWeap = p.getWeapons()[p.playerWeapIndex];
-							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.playerWeapIndex, dropWeap.typeId, dropWeap.id, p.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.playerWeapIndex, dropWeap.typeId, dropWeap.id,
+									p.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
 							dropPacket.sendData(game.socketClient);
 						}
 						p.playerState = socketServer.endState;

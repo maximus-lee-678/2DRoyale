@@ -5,10 +5,10 @@ import java.awt.event.WindowListener;
 
 import net.Pkt02Disconnect;
 
-public class WindowHandler implements WindowListener{
+public class WindowHandler implements WindowListener {
 
 	private final Game game;
-	
+
 	public WindowHandler(Game game) {
 		this.game = game;
 		this.game.window.addWindowListener(this);
@@ -16,16 +16,27 @@ public class WindowHandler implements WindowListener{
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if(game.gameState == game.waitState || game.gameState == game.playState) 
+		if (game.gameState == game.waitState || game.gameState == game.playState)
 			new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 	}
-	
-	//default funcs, delete will throw warning :(
-	public void windowOpened(WindowEvent e) {}
-	public void windowClosed(WindowEvent e) {}
-	public void windowIconified(WindowEvent e) {}
-	public void windowDeiconified(WindowEvent e) {}
-	public void windowActivated(WindowEvent e) {}
-	public void windowDeactivated(WindowEvent e) {}
-	
+
+	// default funcs, delete will throw warning :(
+	public void windowOpened(WindowEvent e) {
+	}
+
+	public void windowClosed(WindowEvent e) {
+	}
+
+	public void windowIconified(WindowEvent e) {
+	}
+
+	public void windowDeiconified(WindowEvent e) {
+	}
+
+	public void windowActivated(WindowEvent e) {
+	}
+
+	public void windowDeactivated(WindowEvent e) {
+	}
+
 }

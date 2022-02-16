@@ -132,11 +132,11 @@ public class KeyHandler implements KeyListener {
 							clonePlayer = (PlayerMP) gp.player.clone();
 						} catch (CloneNotSupportedException e1) {
 							e1.printStackTrace();
-						}						
+						}
 						gp.socketServer.addConnection(clonePlayer, loginPacket);
 						gp.gameState = gp.waitState;
 						gp.player.playerState = gp.waitState;
-						gp.loadDefaults();			
+						gp.loadDefaults();
 						loginPacket.sendData(gp.socketClient);
 						gp.player.generatePlayerXY();
 					} else {
@@ -199,7 +199,7 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 		}
-		//when in option screen
+		// when in option screen
 		if ((gp.gameState == gp.waitState || gp.gameState == gp.playState) && gp.ui.option == true) {
 			if (code == KeyEvent.VK_W) {
 				gp.playSE(0);
@@ -215,22 +215,22 @@ public class KeyHandler implements KeyListener {
 					gp.ui.commandNum = 0;
 				}
 			}
-			if(code == KeyEvent.VK_ENTER) {
-				//back to game
-				if(gp.ui.commandNum == 0) {
+			if (code == KeyEvent.VK_ENTER) {
+				// back to game
+				if (gp.ui.commandNum == 0) {
 					gp.ui.option = false;
 				}
-				//back to main menu
+				// back to main menu
 				else if (gp.ui.commandNum == 1) {
 					gp.gameState = gp.titleState;
 					gp.player.playerState = gp.titleState;
 					gp.clearPlayers();
 					gp.ui.titleScreenState = 0;
-					gp.ui.commandNum = 0;					
+					gp.ui.commandNum = 0;
 					new Pkt02Disconnect(gp.player.getUsername()).sendData(gp.socketClient);
-				} 
-				//exit game
-				else if(gp.ui.commandNum == 2) {
+				}
+				// exit game
+				else if (gp.ui.commandNum == 2) {
 					System.exit(0);
 				}
 			}
@@ -238,8 +238,7 @@ public class KeyHandler implements KeyListener {
 				gp.playSE(0);
 				gp.ui.option = false;
 			}
-		}
-		else if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
+		} else if (gp.gameState == gp.waitState || gp.gameState == gp.playState) {
 			// true if user presses button
 			if (code == KeyEvent.VK_W)
 				up = true;
@@ -252,17 +251,17 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_E)
 				interact = false;
 			if (code == KeyEvent.VK_F) {
-				if (gp.socketServer != null) 
+				if (gp.socketServer != null)
 					new Pkt14StartGame(gp.player.getUsername()).sendData(gp.socketClient);
-				
-				
+
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
 				gp.playSE(0);
 				gp.ui.option = true;
-				gp.ui.commandNum = 0;;
+				gp.ui.commandNum = 0;
+				;
 			}
-				
+
 			if (code == KeyEvent.VK_Q) {
 				drop = false;
 			}
@@ -270,9 +269,8 @@ public class KeyHandler implements KeyListener {
 				map = !map;
 				gp.playSE(5);
 			}
-				
-			
-			if(code == KeyEvent.VK_1) {
+
+			if (code == KeyEvent.VK_1) {
 				gp.player.playerWeapIndex = 0;
 			}
 			if (code == KeyEvent.VK_2) {
@@ -302,10 +300,10 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 			if (code == KeyEvent.VK_ENTER) {
-				//back to lobby
+				// back to lobby
 				if (gp.ui.commandNum == 0) {
 					new Pkt17BackToLobby(gp.player.getUsername()).sendData(gp.socketClient);
-				//back to main menu
+					// back to main menu
 				} else if (gp.ui.commandNum == 1) {
 					gp.gameState = gp.titleState;
 					gp.ui.titleScreenState = 0;
@@ -314,7 +312,6 @@ public class KeyHandler implements KeyListener {
 				}
 			}
 		}
-		
 
 	}
 
@@ -332,14 +329,12 @@ public class KeyHandler implements KeyListener {
 			right = false;
 		if (code == KeyEvent.VK_E)
 			interact = true;
-		if (code == KeyEvent.VK_Q) 
+		if (code == KeyEvent.VK_Q)
 			drop = true;
 		if (code == KeyEvent.VK_P) {
 			gp.socketClient.latency = System.currentTimeMillis();
 			new Pkt08ServerPing().sendData(gp.socketClient);
 		}
-			
-			
 
 	}
 

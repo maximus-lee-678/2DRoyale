@@ -4,7 +4,7 @@ public abstract class Packet {
 
 	public int id;
 	public String username;
-	
+
 	public Packet(int id) {
 		this.id = id;
 	}

@@ -1,7 +1,7 @@
 package net;
 
-public class Pkt20GasDamage extends Packet{
-	
+public class Pkt20GasDamage extends Packet {
+
 	public Pkt20GasDamage(String username) {
 		super(20, username);
 	}
@@ -13,7 +13,7 @@ public class Pkt20GasDamage extends Packet{
 	}
 
 	public byte[] getData() {
-		return ("20"+getUsername()).getBytes();
+		return ("20" + getUsername()).getBytes();
 	}
 
 }

@@ -19,10 +19,10 @@ public class Pkt16Death extends Packet {
 		this.victim = dataArr[1];
 		this.remainingPlayers = Integer.parseInt(dataArr[2]);
 	}
-	
+
 	@Override
 	public byte[] getData() {
-		return ("16"+getUsername()+","+getVictim()+","+getRemainingPlayers()).getBytes();
+		return ("16" + getUsername() + "," + getVictim() + "," + getRemainingPlayers()).getBytes();
 	}
 
 	public String getVictim() {
@@ -32,7 +32,5 @@ public class Pkt16Death extends Packet {
 	public int getRemainingPlayers() {
 		return remainingPlayers;
 	}
-	
-	
 
 }

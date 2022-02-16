@@ -51,14 +51,14 @@ public class Shotgun extends SuperWeapon {
 			int worldX = game.player.worldX + game.playerSize / 2 - bulletSize / 2;
 			int worldY = game.player.worldY + game.playerSize / 2 - bulletSize / 2;
 			double angle = Math.atan2(game.player.mouseX - game.player.screenX, game.player.mouseY - game.player.screenY);
-			
+
 			// Spawn 5 bullets with incrementing spread angles
 			for (int i = -2; i < 3; i++) {
 				double spreadRad = Math.toRadians(bulletSpread * i);
 				// Update server on this shoot event
 				new Pkt06Shoot(game.player.getUsername(), this.id, angle + spreadRad, worldX, worldY).sendData(game.socketClient);
 			}
-			
+
 			fireRateTick = 0;
 			game.playSE(3);
 		}

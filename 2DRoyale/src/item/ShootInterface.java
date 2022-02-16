@@ -1,5 +1,5 @@
 package item;
 
-interface shootInterface {
+interface ShootInterface {
 	public void shoot();
 }
