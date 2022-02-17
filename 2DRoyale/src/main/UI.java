@@ -299,12 +299,17 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += game.tileSize * 3;
 			g2.drawString(text, x, y);
-			g2.drawString(">", x - game.tileSize, y);
+			if (commandNum == 0) {
+				g2.drawString(">", x - game.tileSize, y);
+			}
 			
-			text = "Press ESC to go back";
+			text = "Back";
 			x = getXforCenteredText(text);
-			y += game.tileSize * 2;
+			y += game.tileSize;
 			g2.drawString(text, x, y);
+			if (commandNum == 1) {
+				g2.drawString(">", x - game.tileSize, y);
+			}
 			
 		// Only shown when user does not wants to host the server, he/she will have to provide the server's ip to join
 		} else if (titleScreenState == 5) {

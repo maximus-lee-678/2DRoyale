@@ -36,14 +36,14 @@ public class KeyHandler implements KeyListener {
 		// when in menu page
 		if (game.gameState == game.titleState) {
 			if (game.ui.titleScreenState == 0) {
-				if (code == KeyEvent.VK_W) {
+				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
 					if (game.ui.commandNum < 0) {
 						game.ui.commandNum = 3;
 					}
 				}
-				if (code == KeyEvent.VK_S) {
+				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
 					if (game.ui.commandNum > 3) {
@@ -83,14 +83,14 @@ public class KeyHandler implements KeyListener {
 			}
 			// when in "do you want to host the server" page
 			else if (game.ui.titleScreenState == 3) {
-				if (code == KeyEvent.VK_W) {
+				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
 					if (game.ui.commandNum < 0) {
 						game.ui.commandNum = 2;
 					}
 				}
-				if (code == KeyEvent.VK_S) {
+				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
 					if (game.ui.commandNum > 2) {
@@ -113,6 +113,20 @@ public class KeyHandler implements KeyListener {
 			}
 			// when in "Enter your nickname" page
 			else if (game.ui.titleScreenState == 4) {
+				if (code == KeyEvent.VK_UP) {
+					game.playSE(0);
+					game.ui.commandNum--;
+					if (game.ui.commandNum < 0) {
+						game.ui.commandNum = 1;
+					}
+				}
+				if (code == KeyEvent.VK_DOWN) {
+					game.playSE(0);
+					game.ui.commandNum++;
+					if (game.ui.commandNum > 1) {
+						game.ui.commandNum = 0;
+					}
+				}
 				char input = e.getKeyChar();
 				String tempInput = "";
 				tempInput += input;
@@ -123,57 +137,61 @@ public class KeyHandler implements KeyListener {
 					game.ui.name = maxLength(game.ui.name, 15);
 				}
 				// check to see if nickname is empty
-				if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
-					if (isHost) {
-						game.socketServer = new GameServer(game, game.randSeed);
-						game.socketServer.start();
-						game.socketClient = new GameClient(game, "localhost");
-						game.socketClient.start();
-					}
-					else {
-						game.socketClient = new GameClient(game, game.ui.ipAddress);
-						game.socketClient.start();
-					}
-					game.player.setUsername(game.ui.name.trim());
-					Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.worldX, game.player.worldY, game.player.playerWeapIndex, game.waitState);
-					if (game.socketServer != null) {
-						game.getPlayers().add(game.player);
-						PlayerMP clonePlayer = null;
-						try {
-							clonePlayer = (PlayerMP) game.player.clone();
-						} catch (CloneNotSupportedException e1) {
-							e1.printStackTrace();
+				if (game.ui.commandNum == 0) {
+					if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
+						if (isHost) {
+							game.socketServer = new GameServer(game, game.randSeed);
+							game.socketServer.start();
+							game.socketClient = new GameClient(game, "localhost");
+							game.socketClient.start();
 						}
-						game.socketServer.addConnection(clonePlayer, loginPacket);
-						game.gameState = game.waitState;
-						game.player.playerState = game.waitState;
-						game.loadDefaults();
-						loginPacket.sendData(game.socketClient);
-						game.player.generatePlayerXY();
-					} else {
-						loginPacket.sendData(game.socketClient);
+						else {
+							game.socketClient = new GameClient(game, game.ui.ipAddress);
+							game.socketClient.start();
+						}
+						game.player.setUsername(game.ui.name.trim());
+						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.worldX, game.player.worldY, game.player.playerWeapIndex, game.waitState);
+						if (game.socketServer != null) {
+							game.getPlayers().add(game.player);
+							PlayerMP clonePlayer = null;
+							try {
+								clonePlayer = (PlayerMP) game.player.clone();
+							} catch (CloneNotSupportedException e1) {
+								e1.printStackTrace();
+							}
+							game.socketServer.addConnection(clonePlayer, loginPacket);
+							game.gameState = game.waitState;
+							game.player.playerState = game.waitState;
+							game.loadDefaults();
+							loginPacket.sendData(game.socketClient);
+							game.player.generatePlayerXY();
+						} else {
+							loginPacket.sendData(game.socketClient);
+						}
+					}
+				} else if (game.ui.commandNum == 1) {
+					if(code == KeyEvent.VK_ENTER) {
+						if (isHost) {
+							game.ui.titleScreenState = 3;
+							game.ui.commandNum = 0;
+						}
+						else {
+							game.ui.titleScreenState = 5;
+							game.ui.commandNum = 0;
+						}
 					}
 				}
-				if (code == KeyEvent.VK_ESCAPE) {
-					if (isHost) {
-						game.ui.titleScreenState = 3;
-					}
-					else {
-						game.ui.titleScreenState = 5;
-					}
-				}
-
 			}
 			// when in "Type the server ip:" page
 			else if (game.ui.titleScreenState == 5) {
-				if (code == KeyEvent.VK_W) {
+				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
 					if (game.ui.commandNum < 0) {
 						game.ui.commandNum = 2;
 					}
 				}
-				if (code == KeyEvent.VK_S) {
+				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
 					if (game.ui.commandNum > 2) {
@@ -228,14 +246,14 @@ public class KeyHandler implements KeyListener {
 		}
 		// when in option screen
 		if ((game.gameState == game.waitState || game.gameState == game.playState) && game.ui.option == true) {
-			if (code == KeyEvent.VK_W) {
+			if (code == KeyEvent.VK_UP) {
 				game.playSE(0);
 				game.ui.commandNum--;
 				if (game.ui.commandNum < 0) {
 					game.ui.commandNum = 2;
 				}
 			}
-			if (code == KeyEvent.VK_S) {
+			if (code == KeyEvent.VK_DOWN) {
 				game.playSE(0);
 				game.ui.commandNum++;
 				if (game.ui.commandNum > 2) {
@@ -314,14 +332,14 @@ public class KeyHandler implements KeyListener {
 		}
 		// when in end game screen
 		if (game.gameState == game.endState) {
-			if (code == KeyEvent.VK_W) {
+			if (code == KeyEvent.VK_UP) {
 				game.playSE(0);
 				game.ui.commandNum--;
 				if (game.ui.commandNum < 0) {
 					game.ui.commandNum = 1;
 				}
 			}
-			if (code == KeyEvent.VK_S) {
+			if (code == KeyEvent.VK_DOWN) {
 				game.playSE(0);
 				game.ui.commandNum++;
 				if (game.ui.commandNum > 1) {
