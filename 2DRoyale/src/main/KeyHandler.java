@@ -22,6 +22,7 @@ public class KeyHandler implements KeyListener {
 	String pattern = "^[a-zA-Z0-9]*$";
 	// regex for ip address
 	String ipPattern = "^[0-9\\.]*$";
+	boolean isHost;
 
 	public KeyHandler(Game game) {
 		this.game = game;
@@ -100,10 +101,7 @@ public class KeyHandler implements KeyListener {
 					// user will create a server using his/her ip address
 					if (game.ui.commandNum == 0) {
 						game.ui.titleScreenState = 4;
-						game.socketServer = new GameServer(game, game.randSeed);
-						game.socketServer.start();
-						game.socketClient = new GameClient(game, "localhost");
-						game.socketClient.start();
+						isHost = true;
 					} else if (game.ui.commandNum == 1) {
 						game.ui.titleScreenState = 5;
 						game.ui.commandNum = 0;
@@ -126,6 +124,16 @@ public class KeyHandler implements KeyListener {
 				}
 				// check to see if nickname is empty
 				if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
+					if (isHost) {
+						game.socketServer = new GameServer(game, game.randSeed);
+						game.socketServer.start();
+						game.socketClient = new GameClient(game, "localhost");
+						game.socketClient.start();
+					}
+					else {
+						game.socketClient = new GameClient(game, game.ui.ipAddress);
+						game.socketClient.start();
+					}
 					game.player.setUsername(game.ui.name.trim());
 					Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.worldX, game.player.worldY, game.player.playerWeapIndex, game.waitState);
 					if (game.socketServer != null) {
@@ -146,6 +154,14 @@ public class KeyHandler implements KeyListener {
 						loginPacket.sendData(game.socketClient);
 					}
 				}
+				if (code == KeyEvent.VK_ESCAPE) {
+					if (isHost) {
+						game.ui.titleScreenState = 3;
+					}
+					else {
+						game.ui.titleScreenState = 5;
+					}
+				}
 
 			}
 			// when in "Type the server ip:" page
@@ -154,27 +170,28 @@ public class KeyHandler implements KeyListener {
 					game.playSE(0);
 					game.ui.commandNum--;
 					if (game.ui.commandNum < 0) {
-						game.ui.commandNum = 1;
+						game.ui.commandNum = 2;
 					}
 				}
 				if (code == KeyEvent.VK_S) {
 					game.playSE(0);
 					game.ui.commandNum++;
-					if (game.ui.commandNum > 1) {
+					if (game.ui.commandNum > 2) {
 						game.ui.commandNum = 0;
 					}
 				}
+				
+				// user type in server address
+				char input = e.getKeyChar();
+				String tempInput = "";
+				tempInput += input;
+				if (input == KeyEvent.VK_BACK_SPACE) {
+					game.ui.ipAddress = removeLastChar(game.ui.ipAddress);
+				} else if (tempInput.matches(ipPattern)) {
+					game.ui.ipAddress += input;
+					game.ui.ipAddress = maxLength(game.ui.ipAddress, 15);
+				}
 				if (game.ui.commandNum == 0) {
-					// user type in server address
-					char input = e.getKeyChar();
-					String tempInput = "";
-					tempInput += input;
-					if (input == KeyEvent.VK_BACK_SPACE) {
-						game.ui.ipAddress = removeLastChar(game.ui.ipAddress);
-					} else if (tempInput.matches(ipPattern)) {
-						game.ui.ipAddress += input;
-						game.ui.ipAddress = maxLength(game.ui.ipAddress, 15);
-					}
 					if (code == KeyEvent.VK_ENTER) {
 						game.ui.ipAddress = game.ui.ipAddress.trim();
 						// if user leave it empty, the user will enter his/her own ip address
@@ -183,8 +200,7 @@ public class KeyHandler implements KeyListener {
 						}
 						// go to "Enter your nickname" page
 						game.ui.titleScreenState = 4;
-						game.socketClient = new GameClient(game, game.ui.ipAddress);
-						game.socketClient.start();
+						isHost = false;
 
 					}
 					// if user wants to copy from keyboard
@@ -200,6 +216,12 @@ public class KeyHandler implements KeyListener {
 						} catch (Exception x) {
 							System.out.println(x);
 						}
+					}
+					// go back
+				} else if (game.ui.commandNum == 2) {
+					if (code == KeyEvent.VK_ENTER) {
+						game.ui.titleScreenState = 3;
+						game.ui.commandNum = 0;
 					}
 				}
 			}

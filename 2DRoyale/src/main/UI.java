@@ -301,6 +301,11 @@ public class UI {
 			g2.drawString(text, x, y);
 			g2.drawString(">", x - game.tileSize, y);
 			
+			text = "Press ESC to go back";
+			x = getXforCenteredText(text);
+			y += game.tileSize * 2;
+			g2.drawString(text, x, y);
+			
 		// Only shown when user does not wants to host the server, he/she will have to provide the server's ip to join
 		} else if (titleScreenState == 5) {
 			g2.setColor(Color.white);
@@ -329,6 +334,14 @@ public class UI {
 			y += game.tileSize;
 			g2.drawString(text, x, y);
 			if (commandNum == 1) {
+				g2.drawString(">", x - game.tileSize, y);
+			}
+			
+			text = "Back";
+			x = getXforCenteredText(text);
+			y += game.tileSize;
+			g2.drawString(text, x, y);
+			if (commandNum == 2) {
 				g2.drawString(">", x - game.tileSize, y);
 			}
 		}
@@ -447,7 +460,7 @@ public class UI {
 			int x = game.tileSize * 6;
 			int y = game.tileSize * 2;
 			// make box
-			drawSubWindow(x, y, game.screen.screenWidth - x * 2, game.screen.screenHeight - y * 6);
+			drawSubWindow(x, y, game.screen.screenWidth - x * 2, game.screen.screenHeight - y * 5);
 			String text = "Back To Game";
 			x = getXforCenteredText(text);
 			y += game.tileSize + 30;
