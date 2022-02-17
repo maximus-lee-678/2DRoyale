@@ -379,6 +379,7 @@ public class KeyHandler implements KeyListener {
 		if (code == KeyEvent.VK_Q)
 			drop = true;
 		if (code == KeyEvent.VK_P) {
+			if(game.gameState == game.titleState) return;
 			game.socketClient.latency = System.currentTimeMillis();
 			new Pkt08ServerPing().sendData(game.socketClient);
 		}

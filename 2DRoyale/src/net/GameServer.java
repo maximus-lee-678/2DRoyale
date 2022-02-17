@@ -256,8 +256,11 @@ public class GameServer extends Thread {
 	private void handleShoot(Pkt06Shoot shootPacket) {
 		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
 		// Spawn bullet at player
-		p.getWeapons()[weapIndex(p, shootPacket.getWeapId())].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
-		shootPacket.sendData(this);
+		int weapI = weapIndex(p, shootPacket.getWeapId());
+		if (weapI != -1) {
+			p.getWeapons()[weapI].updateMPProjectiles(shootPacket.getProjAngle(), shootPacket.getWorldX(), shootPacket.getWorldY());
+			shootPacket.sendData(this);
+		}		
 	}
 
 	private void handleMouseScroll(Pkt05MouseScroll mouseScrollPacket) {

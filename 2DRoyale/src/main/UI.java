@@ -68,6 +68,8 @@ public class UI {
 	}
 
 	public void update() {
+		if (game.gameState == game.endState) 
+			return;
 		playingPlayerCount = waitingPlayerCount = 0;
 		for (PlayerMP p : game.getPlayers()) {
 			if (p.playerState == game.playState)
@@ -576,7 +578,7 @@ public class UI {
 		g2.drawString(text, x, y);
 
 		// get position of player from the length of array
-		text = "Position: #" + (this.playingPlayerCount + 1);
+		text = "Position: #" + (this.playingPlayerCount);
 		x = getXforCenteredText(text);
 		y += game.tileSize;
 		g2.drawString(text, x, y);

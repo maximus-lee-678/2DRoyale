@@ -194,7 +194,6 @@ public class GameClient extends Thread {
 	}
 
 	private void handleDeath(Pkt16Death deathPacket) {
-		game.ui.playingPlayerCount = deathPacket.getRemainingPlayers();
 		game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
 		game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
 		// If player is the shooter, increment kills
