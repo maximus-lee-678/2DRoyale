@@ -57,24 +57,24 @@ public class Projectile {
 		else
 			adjustedyVel = Math.floor(yVel);
 
-		if (weap.game.tileM.hasCollidedWorld((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (xVel != 0 && weap.game.tileM.hasCollidedWorld((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
-		if (weap.game.tileM.hasCollidedWorld(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
-			return true;
-
-		if (weap.game.structM.hasCollidedBuilding((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
-			return true;
-		if (weap.game.structM.hasCollidedBuilding(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (yVel != 0 && weap.game.tileM.hasCollidedWorld(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
 
-		if (weap.game.structM.hasCollidedCrate((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (xVel != 0 && weap.game.structM.hasCollidedBuilding((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
-		if (weap.game.structM.hasCollidedCrate(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (yVel != 0 && weap.game.structM.hasCollidedBuilding(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
 
-		if (weap.game.structM.hasCollidedObstruction((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (xVel != 0 && weap.game.structM.hasCollidedCrate((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
-		if (weap.game.structM.hasCollidedObstruction(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+		if (yVel != 0 && weap.game.structM.hasCollidedCrate(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+			return true;
+
+		if (xVel != 0 && weap.game.structM.hasCollidedObstruction((int) adjustedxVel, 0, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
+			return true;
+		if (yVel != 0 && weap.game.structM.hasCollidedObstruction(0, (int) adjustedyVel, entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY, "Projectile"))
 			return true;
 
 		return false;
