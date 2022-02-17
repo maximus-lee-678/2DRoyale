@@ -154,7 +154,7 @@ public class GameServer extends Thread {
 			handleCloseGas();
 		}
 		// Check if no remaining players
-		if (gameState == playState && countDownSeq < 0 && playerRemaining == 1) {
+		if (gameState == playState && countDownSeq < 0 && playerRemaining <= 1) {
 			String lastPlayer = findPlayerInPlayState();
 			new Pkt18Winner(lastPlayer).sendData(this);
 			connectedPlayers.get(playerIndex(lastPlayer)).playerState = endState;
@@ -172,7 +172,9 @@ public class GameServer extends Thread {
 	}
 
 	private void handleGasDamage(Pkt20GasDamage gasDmgPacket) {
-		PlayerMP gasVictim = connectedPlayers.get(playerIndex(gasDmgPacket.getUsername()));
+		int playerI = playerIndex(gasDmgPacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP gasVictim = connectedPlayers.get(playerI);
 		if (gasVictim.playerState != playState)
 			return;
 		// Decrease player hp
@@ -192,9 +194,11 @@ public class GameServer extends Thread {
 	}
 
 	private void handleBackToLobby(Pkt17BackToLobby backToLobbyPacket) {
-		PlayerMP playerBTL = connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername()));
+		int playerI = playerIndex(backToLobbyPacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP playerBTL = connectedPlayers.get(playerI);
 		// Decrement player remaining if player leaves during the game
-		if (connectedPlayers.get(playerIndex(backToLobbyPacket.getUsername())).playerState == playState)
+		if (connectedPlayers.get(playerI).playerState == playState)
 			playerRemaining--;
 		// Reset player
 		playerBTL.setPlayerDefault();
@@ -205,7 +209,9 @@ public class GameServer extends Thread {
 	}
 
 	private void handleDropWeapon(Pkt12DropWeapon dropPacket) {
-		connectedPlayers.get(playerIndex(dropPacket.getUsername())).dropWeapon(dropPacket.getPlayerWeapIndex());
+		int playerI = playerIndex(dropPacket.getUsername());
+		if(playerI == -1) return;
+		connectedPlayers.get(playerI).dropWeapon(dropPacket.getPlayerWeapIndex());
 		dropPacket.sendData(this);
 	}
 
@@ -239,7 +245,9 @@ public class GameServer extends Thread {
 	}
 
 	private void handlePickUpWeapon(Pkt10PickupWeapon pickUpPacket) {
-		connectedPlayers.get(playerIndex(pickUpPacket.getUsername())).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
+		int playerI = playerIndex(pickUpPacket.getUsername());
+		if(playerI == -1) return;
+		connectedPlayers.get(playerI).addWeapon(pickUpPacket.getPlayerWeapIndex(), pickUpPacket.getWeapType(), pickUpPacket.getWeapId());
 		pickUpPacket.sendData(this);
 	}
 
@@ -254,7 +262,9 @@ public class GameServer extends Thread {
 	}
 
 	private void handleShoot(Pkt06Shoot shootPacket) {
-		PlayerMP p = connectedPlayers.get(playerIndex(shootPacket.getUsername()));
+		int playerI = playerIndex(shootPacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP p = connectedPlayers.get(playerI);
 		// Spawn bullet at player
 		int weapI = weapIndex(p, shootPacket.getWeapId());
 		if (weapI != -1) {
@@ -264,19 +274,25 @@ public class GameServer extends Thread {
 	}
 
 	private void handleMouseScroll(Pkt05MouseScroll mouseScrollPacket) {
-		PlayerMP p = connectedPlayers.get(playerIndex(mouseScrollPacket.getUsername()));
+		int playerI = playerIndex(mouseScrollPacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP p = connectedPlayers.get(playerI);
 		p.playerMouseScroll(mouseScrollPacket.getMouseScrollDir());
 		mouseScrollPacket.sendData(this);
 	}
 
 	private void handleMouseMove(Pkt04MouseMove mouseMovePacket) {
-		PlayerMP p = connectedPlayers.get(playerIndex(mouseMovePacket.getUsername()));
+		int playerI = playerIndex(mouseMovePacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP p = connectedPlayers.get(playerI);
 		p.updateMouseDirection(mouseMovePacket.getMouseX(), mouseMovePacket.getMouseY());
 		mouseMovePacket.sendData(this);
 	}
 
 	private void handleMove(Pkt03Move movePacket) {
-		PlayerMP p = connectedPlayers.get(playerIndex(movePacket.getUsername()));
+		int playerI = playerIndex(movePacket.getUsername());
+		if(playerI == -1) return;
+		PlayerMP p = connectedPlayers.get(playerI);
 		p.updatePlayerXY(movePacket.getWorldX(), movePacket.getWorldY());
 		movePacket.sendData(this);
 	}
@@ -301,9 +317,11 @@ public class GameServer extends Thread {
 			shutDownServer(isHost);
 			return;
 		}
-		if (connectedPlayers.get(playerIndex(disconnectPacket.getUsername())).playerState == playState)
+		int playerI = playerIndex(disconnectPacket.getUsername());
+		if(playerI == -1) return;
+		if (connectedPlayers.get(playerI).playerState == playState)
 			playerRemaining--;
-		connectedPlayers.remove(playerIndex(disconnectPacket.getUsername()));
+		connectedPlayers.remove(playerI);
 		disconnectPacket.sendData(this);
 	}
 
@@ -344,11 +362,11 @@ public class GameServer extends Thread {
 		int index = 0;
 		for (PlayerMP p : connectedPlayers) {
 			if (p.getUsername().equals(username)) {
-				break;
+				return index;
 			}
 			index++;
 		}
-		return index;
+		return -1;
 	}
 
 	private int weapIndex(PlayerMP player, int weapId) {
