@@ -250,7 +250,7 @@ public class GameClient extends Thread {
 	private void handleBulletHit(Pkt09ServerBulletHit serverHitPacket) {
 		PlayerMP p2 = game.getPlayers().get(playerIndex(serverHitPacket.getUsername()));
 		p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].serverHit(serverHitPacket.getBullet());
-		double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].damage;
+		double dmg = p2.getWeapons()[weapIndex(p2, serverHitPacket.getWeapId())].getDamage();
 		// Apply damage to victim
 		game.getPlayers().get(playerIndex(serverHitPacket.getVictim())).updatePlayerHP(-dmg);
 	}
@@ -284,7 +284,7 @@ public class GameClient extends Thread {
 		int index = 0;
 
 		for (SuperWeapon w : player.getWeapons()) {
-			if (w != null && w.id == weapId) {
+			if (w != null && w.getId() == weapId) {
 				break;
 			}
 			index++;

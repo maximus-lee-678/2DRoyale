@@ -2,9 +2,9 @@ package item;
 
 public class Projectile {
 
-	public int id;
-	public double worldX;
-	public double worldY;
+	private int id;
+	private double worldX;
+	private double worldY;
 	private double travelDistance;
 
 	private SuperWeapon weap;
@@ -78,5 +78,20 @@ public class Projectile {
 			return true;
 
 		return false;
+	}	
+
+	public int getId() {
+		return id;
 	}
+
+	public double getWorldX() {
+		return worldX;
+	}
+
+	public double getWorldY() {
+		return worldY;
+	}
+
+	
+	
 }

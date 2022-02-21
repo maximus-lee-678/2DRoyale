@@ -72,7 +72,7 @@ public class Screen implements RenderInterface {
 			renderGas(g2);
 
 			// 7th layer
-			if (game.keys.map)
+			if (game.keys.isMap())
 				renderMegamap(g2);
 			else
 				renderMinimap(g2);
@@ -156,7 +156,7 @@ public class Screen implements RenderInterface {
 			// Only render crates player can see
 			if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
 					&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
-				g2.drawImage(game.structM.solid[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
+				g2.drawImage(game.structM.getSolid()[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ public class Screen implements RenderInterface {
 	 * Renders items. 3rd layer to render.
 	 */
 	private void renderItems(Graphics2D g2) {
-		List<SuperWeapon> worldWeapons = game.itemM.worldWeapons;
+		List<SuperWeapon> worldWeapons = game.itemM.getWorldWeapons();
 		for (int i = 0; i < worldWeapons.size(); i++) {
 
 			SuperWeapon weap = worldWeapons.get(i);
@@ -210,7 +210,7 @@ public class Screen implements RenderInterface {
 				g2.setColor(c);
 				g2.setStroke(new BasicStroke(2));
 				g2.drawOval(gameX + weap.getEntityArea().x, gameY + weap.getEntityArea().y, 18, 18);
-				g2.drawImage(weap.entityImg, gameX, gameY, weap.imgIconWidth, weap.imgIconHeight, null);
+				g2.drawImage(weap.getEntityImg(), gameX, gameY, weap.getImgIconWidth(), weap.getImgIconHeight(), null);
 			}
 		}
 

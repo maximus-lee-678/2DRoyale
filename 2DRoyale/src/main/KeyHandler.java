@@ -16,16 +16,20 @@ import net.Pkt17BackToLobby;
 
 public class KeyHandler implements KeyListener {
 
-	Game game;
-	public boolean up, down, left, right, interact = false, drop = false, map = false, ping = false;
-	// regex for username
-	String pattern = "^[a-zA-Z0-9]*$";
-	// regex for ip address
-	String ipPattern = "^[0-9\\.]*$";
-	boolean isHost;
+	private Game game;
+	private boolean up, down, left, right;
+	private boolean interact, drop, map, ping;
+	private boolean isHost;
+	String pattern = "^[a-zA-Z0-9]*$";	// regex for username	
+	String ipPattern = "^[0-9\\.]*$";	// regex for ip address
+	
 
 	public KeyHandler(Game game) {
 		this.game = game;
+		this.interact = false;
+		this.drop = false;
+		this.map = false;
+		this.ping= false; 
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -139,19 +143,14 @@ public class KeyHandler implements KeyListener {
 				// check to see if nickname is empty
 				if (game.ui.commandNum == 0) {
 					if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
+						game.player.setUsername(game.ui.name.trim());
+						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), game.waitState);
 						if (isHost) {
 							game.socketServer = new GameServer(game, game.randSeed);
 							game.socketServer.start();
 							game.socketClient = new GameClient(game, "localhost");
 							game.socketClient.start();
-						}
-						else {
-							game.socketClient = new GameClient(game, game.ui.ipAddress);
-							game.socketClient.start();
-						}
-						game.player.setUsername(game.ui.name.trim());
-						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), game.waitState);
-						if (game.socketServer != null) {
+							
 							game.getPlayers().add(game.player);
 							PlayerMP clonePlayer = null;
 							try {
@@ -165,9 +164,14 @@ public class KeyHandler implements KeyListener {
 							game.loadDefaults();
 							loginPacket.sendData(game.socketClient);
 							game.player.generatePlayerXY();
-						} else {
+						}
+						else {
+							game.socketClient = new GameClient(game, game.ui.ipAddress);
+							game.socketClient.start();
+							
 							loginPacket.sendData(game.socketClient);
 						}
+						
 					}
 				} else if (game.ui.commandNum == 1) {
 					if(code == KeyEvent.VK_ENTER) {
@@ -403,4 +407,46 @@ public class KeyHandler implements KeyListener {
 		return str;
 	}
 
+	public boolean isUp() {
+		return up;
+	}
+
+	public boolean isDown() {
+		return down;
+	}
+
+	public boolean isLeft() {
+		return left;
+	}
+
+	public boolean isRight() {
+		return right;
+	}
+
+	public boolean isInteract() {
+		return interact;
+	}
+
+	public boolean isDrop() {
+		return drop;
+	}
+
+	public boolean isPing() {
+		return ping;
+	}
+
+	public boolean isMap() {
+		return map;
+	}
+
+	public void setInteract(boolean interact) {
+		this.interact = interact;
+	}
+
+	public void setDrop(boolean drop) {
+		this.drop = drop;
+	}
+	
+	
+	
 }

@@ -389,7 +389,7 @@ public class UI {
 		for (int i = 0; i < game.player.getWeapons().length; i++) {
 			SuperWeapon weap = game.player.getWeapons()[i];
 			if (weap != null)
-				g2.drawImage(weap.entityImg, slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.imgIconHeight / 2, 50, 20, null);
+				g2.drawImage(weap.getEntityImg(), slotXstart, slotYstart + game.tileSize * i + game.tileSize / 2 - weap.getImgIconHeight() / 2, 50, 20, null);
 		}
 		// cursor
 		int cursorX = slotXstart;

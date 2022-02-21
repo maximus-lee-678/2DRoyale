@@ -164,9 +164,9 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 	public void addWeapon(int playerWeapIndex, int weapType, int weapId) {
 		try {
 			SuperWeapon newWeap;
-			newWeap = (SuperWeapon) game.itemM.weaponsArr[weapType].clone();
-			newWeap.id = weapId;
-			newWeap.player = this;
+			newWeap = (SuperWeapon) game.itemM.getWeaponsArr()[weapType].clone();
+			newWeap.setId(weapId);
+			newWeap.setPlayer(this);
 
 			playerWeap[playerWeapIndex] = newWeap;
 		} catch (CloneNotSupportedException e) {
@@ -183,18 +183,18 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 		// Check keyboard inputs
 		if (keys != null) {
-			if ((keys.up == true || keys.down == true || keys.left == true || keys.right == true) && !freeze) {
+			if ((keys.isUp() == true || keys.isDown() == true || keys.isLeft() == true || keys.isRight() == true) && !freeze) {
 				int xa = 0;
 				int ya = 0;
 
 				// Read keyboard inputs
-				if (keys.up == true)
+				if (keys.isUp() == true)
 					ya -= 1;
-				if (keys.down == true)
+				if (keys.isDown() == true)
 					ya += 1;
-				if (keys.left == true)
+				if (keys.isLeft() == true)
 					xa -= 1;
-				if (keys.right == true)
+				if (keys.isRight() == true)
 					xa += 1;
 
 				if (!(xa == 0 && ya == 0)) {
@@ -207,21 +207,21 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 				}
 			}
 
-			if (keys.interact == true) {
+			if (keys.isInteract() == true) {
 				// Handle "F" key input to check if there's any within range events
 				withinRange();
-				keys.interact = false;
+				keys.setInteract(false);
 			}
-			if (keys.drop == true) {
+			if (keys.isDrop() == true) {
 				// Handle "Q" key input to drop player weapon
 				if (playerWeap[playerWeapIndex] != null) {
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 					// Update weapon drop to server
-					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, this.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2,
-							this.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2).sendData(game.socketClient);
+					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), this.worldX - dropWeap.getImgIconWidth() / 2 + game.playerSize / 2,
+							this.worldY - dropWeap.getImgIconHeight() / 2 + game.playerSize / 2).sendData(game.socketClient);
 					game.playSE(9);
 				}
-				keys.drop = false;
+				keys.setDrop(false);
 			}
 
 		}
@@ -306,10 +306,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 			// If player is holding a weapon, swap with the one the player is picking up
 			if (playerWeap[playerWeapIndex] != null) {
 				SuperWeapon dropWeap = playerWeap[playerWeapIndex];
-				new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.typeId, dropWeap.id, weapon.worldX, weapon.worldY).sendData(game.socketClient);
+				new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), weapon.worldX, weapon.worldY).sendData(game.socketClient);
 				game.playSE(9);
 			}
-			new Pkt10PickupWeapon(username, playerWeapIndex, weapon.typeId, weapon.id).sendData(game.socketClient);
+			new Pkt10PickupWeapon(username, playerWeapIndex, weapon.getTypeId(), weapon.getId()).sendData(game.socketClient);
 			game.playSE(8);
 			return;
 		}
@@ -344,7 +344,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		// hand
 		if (sp != null) {
 			holding = sp.sprite;
-			handOffset = sp.imgOffset;
+			handOffset = sp.getImgOffset();
 		} else {
 			holding = playerHand;
 			handOffset = -4;

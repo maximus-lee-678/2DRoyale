@@ -8,9 +8,9 @@ import structure.Crate;
 
 public class ItemManager {
 
-	public SuperWeapon[] weaponsArr;
-	public Game game;
-	public List<SuperWeapon> worldWeapons;
+	private SuperWeapon[] weaponsArr;
+	private Game game;
+	private List<SuperWeapon> worldWeapons;
 
 	public ItemManager(Game game) {
 		this.game = game;
@@ -79,5 +79,16 @@ public class ItemManager {
 		}
 		return null;
 	}
+
+	public SuperWeapon[] getWeaponsArr() {
+		return weaponsArr;
+	}
+
+	public List<SuperWeapon> getWorldWeapons() {
+		return worldWeapons;
+	}
+
+	
+	
 
 }

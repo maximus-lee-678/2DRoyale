@@ -184,8 +184,8 @@ public class GameServer extends Thread {
 		if (gasVictim.getHealth() == 0) {
 			if (gasVictim.getWeapons()[gasVictim.getPlayerWeapIndex()] != null) {
 				SuperWeapon dropWeap = gasVictim.getWeapons()[gasVictim.getPlayerWeapIndex()];
-				new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.getPlayerWeapIndex(), dropWeap.typeId, dropWeap.id,
-						gasVictim.getWorldX() - dropWeap.imgIconWidth / 2 + game.playerSize / 2, gasVictim.getWorldY() - dropWeap.imgIconHeight / 2 + game.playerSize / 2)
+				new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.getPlayerWeapIndex(), dropWeap.getTypeId(), dropWeap.getId(),
+						gasVictim.getWorldX() - dropWeap.getImgIconWidth() / 2 + game.playerSize / 2, gasVictim.getWorldY() - dropWeap.getImgIconHeight() / 2 + game.playerSize / 2)
 								.sendData(game.socketClient);
 			}
 			gasVictim.setPlayerState(endState);
@@ -205,7 +205,7 @@ public class GameServer extends Thread {
 		backToLobbyPacket.sendData(this);
 		// Send player the newly generated seed
 		Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(this.seed);
-		sendData(seedPacket.getData(), playerBTL.ipAddress, playerBTL.port);
+		sendData(seedPacket.getData(), playerBTL.getIpAddress(), playerBTL.getPort());
 	}
 
 	private void handleDropWeapon(Pkt12DropWeapon dropPacket) {
@@ -239,7 +239,7 @@ public class GameServer extends Thread {
 	private void handleCrateOpen(Pkt11CrateOpen crateOpenPacket) {
 		// Generate a random value to spawn a random weapon
 		Random r = new Random();
-		crateOpenPacket.setWeapType(r.nextInt(game.itemM.weaponsArr.length));
+		crateOpenPacket.setWeapType(r.nextInt(game.itemM.getWeaponsArr().length));
 		crateOpenPacket.setWeapId(weaponIdCount++);
 		crateOpenPacket.sendData(this);
 	}
@@ -257,7 +257,7 @@ public class GameServer extends Thread {
 			if (p.getPlayerState() != playState)
 				continue;
 			Pkt13Gas gasPacket = new Pkt13Gas();
-			sendData(gasPacket.getData(), p.ipAddress, p.port);
+			sendData(gasPacket.getData(), p.getIpAddress(), p.getPort());
 		}
 	}
 
@@ -302,10 +302,10 @@ public class GameServer extends Thread {
 		for (int i = 1; i < getPlayers().size(); i++) {
 			PlayerMP kickPlayer = getPlayers().get(1);
 			Pkt19ServerKick playersKickPacket = new Pkt19ServerKick(false);
-			sendData(playersKickPacket.getData(), kickPlayer.ipAddress, kickPlayer.port);
+			sendData(playersKickPacket.getData(), kickPlayer.getIpAddress(), kickPlayer.getPort());
 		}
 		Pkt19ServerKick hostKickPacket = new Pkt19ServerKick(true);
-		sendData(hostKickPacket.getData(), isHost.ipAddress, isHost.port);
+		sendData(hostKickPacket.getData(), isHost.getIpAddress(), isHost.getPort());
 		socket.close();
 		return;
 	}
@@ -331,28 +331,28 @@ public class GameServer extends Thread {
 		for (PlayerMP p : getPlayers()) {
 			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
 				// Update host's ip and port
-				if (p.ipAddress == null && p.port == -1) {
-					p.ipAddress = player.ipAddress;
-					p.port = player.port;
+				if (p.getIpAddress() == null && p.getPort() == -1) {
+					p.setIpAddress(player.getIpAddress());
+					p.setPort(player.getPort());
 				} else
 					return false;
 				isConnected = true;
 			} else {
 				// Send information of the new player to all connected players already in the server
-				sendData(loginPacket.getData(), p.ipAddress, p.port);
+				sendData(loginPacket.getData(), p.getIpAddress(), p.getPort());
 
 				// Send information of already connected players to the new player
 				Pkt01Login otherPlayersLoginPacket = new Pkt01Login(p.getUsername(), p.getWorldX(), p.getWorldY(), p.getPlayerWeapIndex(), p.getPlayerState());
-				sendData(otherPlayersLoginPacket.getData(), player.ipAddress, player.port);
+				sendData(otherPlayersLoginPacket.getData(), player.getIpAddress(), player.getPort());
 			}
 		}
 		if (!isConnected) {
 			getPlayers().add(player);
 			if (!player.isLocal()) {
 				// If not host send them the seed
-				sendData(loginPacket.getData(), player.ipAddress, player.port);
+				sendData(loginPacket.getData(), player.getIpAddress(), player.getPort());
 				Pkt07ServerSeed seedPacket = new Pkt07ServerSeed(this.seed);
-				sendData(seedPacket.getData(), player.ipAddress, player.port);
+				sendData(seedPacket.getData(), player.getIpAddress(), player.getPort());
 			}
 		}
 		return true;
@@ -373,7 +373,7 @@ public class GameServer extends Thread {
 		int index = 0;
 
 		for (SuperWeapon w : player.getWeapons()) {
-			if (w != null && w.id == weapId) {
+			if (w != null && w.getId() == weapId) {
 				return index;
 			}
 			index++;
@@ -412,7 +412,7 @@ public class GameServer extends Thread {
 
 	public void sendDataToAllClients(byte[] data) { // send data from server to all clients
 		for (PlayerMP p : getPlayers()) {
-			sendData(data, p.ipAddress, p.port);
+			sendData(data, p.getIpAddress(), p.getPort());
 		}
 	}
 	

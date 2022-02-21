@@ -17,28 +17,28 @@ import net.Pkt16Death;
 
 public abstract class SuperWeapon extends Entity implements Cloneable, RenderInterface {
 
-	public Game game;
-	public Player player;
+	protected Game game;
+	protected Player player;
 
-	public String name;
-	public int id;
-	public int typeId;
-	public double damage;
-	public int range;
-	public int speed;
-	public int fireRate;
-	public int bulletSpread;
-	public int bulletSize;
-	public int bulletIdCount;
-	public int fireRateTick;
+	protected String name;
+	protected int id;
+	protected int typeId;
+	protected double damage;
+	protected int range;
+	protected int speed;
+	protected int fireRate;
+	protected int bulletSpread;
+	protected int bulletSize;
+	protected int bulletIdCount;
+	protected int fireRateTick;
 
-	public BufferedImage entityImg;
-	public int imgIconWidth;
-	public int imgIconHeight;
-	public int imgOffset;
+	protected BufferedImage entityImg;
+	protected int imgIconWidth;
+	protected int imgIconHeight;
+	protected int imgOffset;
 
-	public List<Projectile> bullets;
-	public BufferedImage bulletImg;
+	protected List<Projectile> bullets;
+	protected BufferedImage bulletImg;
 
 	public SuperWeapon(Game game, Player player) {
 		this.game = game;
@@ -55,8 +55,8 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 	// Render projectiles (bullets)
 	public void render(Graphics2D g2) {
 		for (int i = 0; i < getBullets().size(); i++) {
-			int x = (int) getBullets().get(i).worldX - game.player.getWorldX() + game.player.getScreenX();
-			int y = (int) getBullets().get(i).worldY - game.player.getWorldY() + game.player.getScreenY();
+			int x = (int) getBullets().get(i).getWorldX() - game.player.getWorldX() + game.player.getScreenX();
+			int y = (int) getBullets().get(i).getWorldY() - game.player.getWorldY() + game.player.getScreenY();
 
 			g2.drawImage(bulletImg, x, y, bulletSize, bulletSize, null); // Draw player
 		}
@@ -86,8 +86,10 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 	public void serverHit(int bulletId) {
 		for (int i = 0; i < getBullets().size(); i++) {
 			Projectile p = getBullets().get(i);
-			if (bulletId == p.id)
+			if (bulletId == p.getId()) {
 				getBullets().remove(i--);
+				break;
+			}				
 		}
 	}
 
@@ -99,10 +101,10 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 			for (int i = 0; i < getBullets().size(); i++) {
 				Projectile proj = getBullets().get(i);
 
-				if (p.getWorldX() < proj.worldX + bulletSize && p.getWorldX() + game.playerSize > proj.worldX && p.getWorldY() < proj.worldY + bulletSize
-						&& p.getWorldY() + game.playerSize > proj.worldY) {
+				if (p.getWorldX() < proj.getWorldX() + bulletSize && p.getWorldX() + game.playerSize > proj.getWorldX() && p.getWorldY() < proj.getWorldY() + bulletSize
+						&& p.getWorldY() + game.playerSize > proj.getWorldY()) {
 					getBullets().remove(i--);
-					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.id);
+					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.getId());
 					serverHitPacket.sendData(socketServer);
 
 					p.updatePlayerHP(-this.damage);
@@ -121,6 +123,48 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 				}
 			}
 		}
+	}
+	
+	
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getTypeId() {
+		return typeId;
+	}
+
+	public int getImgIconWidth() {
+		return imgIconWidth;
+	}
+
+	public int getImgIconHeight() {
+		return imgIconHeight;
+	}
+
+	public int getImgOffset() {
+		return imgOffset;
+	}
+
+	public double getDamage() {
+		return damage;
+	}
+
+	public BufferedImage getEntityImg() {
+		return entityImg;
 	}
 
 	@Override

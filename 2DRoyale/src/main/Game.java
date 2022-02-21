@@ -60,7 +60,7 @@ public class Game extends JPanel implements Runnable {
 	private List<PlayerMP> playerList;
 	public UI ui;
 	public PlayerMP player;
-	Sound sound = new Sound();
+	SoundHandler sound = new SoundHandler();
 
 	public KeyHandler keys = new KeyHandler(this);
 	public MouseHandler mouse = new MouseHandler(this);

@@ -9,8 +9,8 @@ import main.MouseHandler;
 
 public class PlayerMP extends Player implements Cloneable {
 
-	public InetAddress ipAddress;
-	public int port;
+	private InetAddress ipAddress;
+	private int port;
 
 	// Create using this constructor when player is the user (we have keyHandler here)
 	public PlayerMP(Game game, KeyHandler keys, MouseHandler mouse, String username, InetAddress ipAddress, int port) {
@@ -34,6 +34,22 @@ public class PlayerMP extends Player implements Cloneable {
 	@Override
 	public void update() {
 		super.update();
+	}
+
+	public InetAddress getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(InetAddress ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	@Override
