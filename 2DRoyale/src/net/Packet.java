@@ -2,8 +2,8 @@ package net;
 
 public abstract class Packet {
 
-	public int id;
-	public String username;
+	protected int id;
+	protected String username;
 
 	public Packet(int id) {
 		this.id = id;

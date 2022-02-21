@@ -27,30 +27,30 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 	private KeyHandler keys;
 	private MouseHandler mouse;
 
-	public int playerState;
-	public final int playerOffset;
-	public final int screenX;
-	public final int screenY;
-	public double mouseX;
-	public double mouseY;
+	private int playerState;
+	private final int playerOffset;
+	private final int screenX;
+	private final int screenY;
+	private double mouseX;
+	private double mouseY;
 
 	protected String username;
-	public boolean isLocal;
-	public boolean freeze;
+	private boolean local;
+	private boolean freeze;
 
 	private double imageAngleRad = 0;
 	private BufferedImage playerHand;
 
 	protected SuperWeapon[] playerWeap;
-	public int playerWeapIndex;
-	public double health;
+	protected int playerWeapIndex;
+	private double health;
 
-	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean isLocal) {
+	public Player(Game game, KeyHandler keys, MouseHandler mouse, String username, boolean local) {
 		this.game = game;
 		this.keys = keys;
 		this.mouse = mouse;
 
-		this.playerState = game.waitState;
+		this.setPlayerState(game.waitState);
 		this.playerOffset = 12;
 		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
 		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
@@ -58,7 +58,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		this.mouseY = 0;
 
 		this.username = username;
-		this.isLocal = isLocal;
+		this.local = local;
 		this.freeze = false;
 
 		this.playerWeapIndex = 0;
@@ -82,7 +82,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 	// Refresh player to a new state
 	public void setPlayerDefault() {
-		this.playerState = game.waitState;
+		this.setPlayerState(game.waitState);
 		this.playerWeap = new SuperWeapon[4];
 		this.health = 100;
 	}
@@ -355,9 +355,9 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 		// If player is himself, render him in the middle of the screen, else render
 		// other players relative to the main player
-		if (!isLocal) {
-			x = worldX - game.player.worldX + game.player.screenX;
-			y = worldY - game.player.worldY + game.player.screenY;
+		if (!local) {
+			x = worldX - game.player.worldX + game.player.getScreenX();
+			y = worldY - game.player.worldY + game.player.getScreenY();
 			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
 			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
 		} else {
@@ -421,4 +421,70 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		return this.health;
 	}
 
+	public int getPlayerState() {
+		return playerState;
+	}
+
+	public void setPlayerState(int playerState) {
+		this.playerState = playerState;
+	}
+
+	public int getScreenX() {
+		return screenX;
+	}
+
+	public int getScreenY() {
+		return screenY;
+	}
+
+	public double getMouseX() {
+		return mouseX;
+	}
+
+	public void setMouseX(double mouseX) {
+		this.mouseX = mouseX;
+	}
+
+	public double getMouseY() {
+		return mouseY;
+	}
+
+	public void setMouseY(double mouseY) {
+		this.mouseY = mouseY;
+	}
+
+	public boolean isLocal() {
+		return local;
+	}
+
+	public void setLocal(boolean local) {
+		this.local = local;
+	}
+
+	public int getPlayerWeapIndex() {
+		return playerWeapIndex;
+	}
+
+	public void setPlayerWeapIndex(int playerWeapIndex) {
+		this.playerWeapIndex = playerWeapIndex;
+	}
+
+	public double getHealth() {
+		return health;
+	}
+
+	public void setHealth(double health) {
+		this.health = health;
+	}
+
+	public boolean isFreeze() {
+		return freeze;
+	}
+
+	public void setFreeze(boolean freeze) {
+		this.freeze = freeze;
+	}
+	
+	
+	
 }

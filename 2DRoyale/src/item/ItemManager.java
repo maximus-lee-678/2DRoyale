@@ -33,8 +33,8 @@ public class ItemManager {
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
 			newWeap.id = weapId;
-			newWeap.worldX = crate.collisionBoundingBox.x - newWeap.imgIconWidth / 2 + crate.collisionBoundingBox.width / 2;
-			newWeap.worldY = crate.collisionBoundingBox.y - newWeap.imgIconHeight / 2 + crate.collisionBoundingBox.height / 2;
+			newWeap.setWorldX(crate.collisionBoundingBox.x - newWeap.imgIconWidth / 2 + crate.collisionBoundingBox.width / 2);
+			newWeap.setWorldY(crate.collisionBoundingBox.y - newWeap.imgIconHeight / 2 + crate.collisionBoundingBox.height / 2);
 			worldWeapons.add(newWeap);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -46,8 +46,8 @@ public class ItemManager {
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
 			newWeap.id = weapId;
-			newWeap.worldX = worldX;
-			newWeap.worldY = worldY;
+			newWeap.setWorldX(worldX);
+			newWeap.setWorldY(worldY);
 			worldWeapons.add(newWeap);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -69,10 +69,10 @@ public class ItemManager {
 		for (int i = 0; i < worldWeapons.size(); i++) {
 			SuperWeapon weap = worldWeapons.get(i);
 
-			int weapX = weap.worldX + weap.entityArea.x;
-			int weapY = weap.worldY + weap.entityArea.y;
-			int weapWidth = weap.entityArea.width;
-			int weapHeight = weap.entityArea.height;
+			int weapX = weap.getWorldX() + weap.getEntityArea().x;
+			int weapY = weap.getWorldY() + weap.getEntityArea().y;
+			int weapWidth = weap.getEntityArea().width;
+			int weapHeight = weap.getEntityArea().height;
 
 			if (entityLeftWorldX < weapX + weapWidth && entityRightWorldX > weapX && entityTopWorldY < weapY + weapHeight && entityBottomWorldY > weapY)
 				return weap;

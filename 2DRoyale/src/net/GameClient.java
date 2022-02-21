@@ -18,7 +18,7 @@ public class GameClient extends Thread {
 	private InetAddress ipAddress;
 	private DatagramSocket socket;
 	private Game game;
-	public long latency;
+	private long latency;
 
 	public GameClient(Game game, String ipAddress) {
 		this.game = game;
@@ -168,7 +168,7 @@ public class GameClient extends Thread {
 			game.socketServer = null;
 		// Move to title screen and clear player array
 		game.gameState = game.titleState;
-		game.player.playerState = game.titleState;
+		game.player.setPlayerState(game.titleState);
 		game.ui.titleScreenState = 0;
 		game.ui.commandNum = 0;
 		game.clearPlayers();
@@ -181,7 +181,7 @@ public class GameClient extends Thread {
 			game.ui.playingPlayerCount = 1;
 			game.ui.win = true;
 			game.gameState = game.endState;
-			game.player.playerState = game.endState;
+			game.player.setPlayerState(game.endState);
 		}
 	}
 
@@ -195,7 +195,7 @@ public class GameClient extends Thread {
 
 	private void handleDeath(Pkt16Death deathPacket) {
 		game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
-		game.getPlayers().get(playerIndex(deathPacket.getVictim())).playerState = game.endState;
+		game.getPlayers().get(playerIndex(deathPacket.getVictim())).setPlayerState(game.endState);
 		// If player is the shooter, increment kills
 		if (deathPacket.getUsername().equals(game.player.getUsername()))
 			game.ui.kills++;
@@ -213,7 +213,7 @@ public class GameClient extends Thread {
 			System.out.println("Game Starting in " + countDownPacket.getCountDown());
 		else {
 			System.out.println("GO");
-			game.player.freeze = false;
+			game.player.setFreeze(false);
 			System.out.println(1);
 		}
 	}
@@ -226,10 +226,10 @@ public class GameClient extends Thread {
 			game.loadDefaults();
 			game.player.generatePlayerXY();
 			game.player.setPlayerDefault();
-			game.player.freeze = true;
-			game.player.playerState = game.playState;
+			game.player.setFreeze(true);
+			game.player.setPlayerState(game.playState);
 		} else
-			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).playerState = game.playState;
+			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).setPlayerState(game.playState);
 	}
 
 	private void handleWeapDrop(Pkt12DropWeapon dropPacket) {
@@ -260,7 +260,7 @@ public class GameClient extends Thread {
 		game.randSeed = seedPacket.getServerSeed();
 		game.rand = new Random(game.randSeed);
 		game.gameState = game.waitState;
-		game.player.playerState = game.waitState;
+		game.player.setPlayerState(game.waitState);
 		game.loadDefaults();
 		game.player.generatePlayerXY();
 	}
@@ -273,7 +273,7 @@ public class GameClient extends Thread {
 	}
 
 	private void handleLogin(Pkt01Login loginPacket, PlayerMP player) {
-		player.playerState = loginPacket.getPlayerState();
+		player.setPlayerState(loginPacket.getPlayerState());
 		if (loginPacket.getUsername().equals(game.player.getUsername()))
 			game.getPlayers().add(0, game.player);
 		else
@@ -323,5 +323,9 @@ public class GameClient extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setLatency(long latency) {
+		this.latency = latency;
 	}
 }

@@ -150,7 +150,7 @@ public class KeyHandler implements KeyListener {
 							game.socketClient.start();
 						}
 						game.player.setUsername(game.ui.name.trim());
-						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.worldX, game.player.worldY, game.player.playerWeapIndex, game.waitState);
+						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), game.waitState);
 						if (game.socketServer != null) {
 							game.getPlayers().add(game.player);
 							PlayerMP clonePlayer = null;
@@ -161,7 +161,7 @@ public class KeyHandler implements KeyListener {
 							}
 							game.socketServer.addConnection(clonePlayer, loginPacket);
 							game.gameState = game.waitState;
-							game.player.playerState = game.waitState;
+							game.player.setPlayerState(game.waitState);
 							game.loadDefaults();
 							loginPacket.sendData(game.socketClient);
 							game.player.generatePlayerXY();
@@ -268,7 +268,7 @@ public class KeyHandler implements KeyListener {
 				// back to main menu
 				else if (game.ui.commandNum == 1) {
 					game.gameState = game.titleState;
-					game.player.playerState = game.titleState;
+					game.player.setPlayerState(game.titleState);
 					game.clearPlayers();
 					game.ui.titleScreenState = 0;
 					game.ui.commandNum = 0;
@@ -317,16 +317,16 @@ public class KeyHandler implements KeyListener {
 			}
 
 			if (code == KeyEvent.VK_1) {
-				game.player.playerWeapIndex = 0;
+				game.player.setPlayerWeapIndex(0);
 			}
 			if (code == KeyEvent.VK_2) {
-				game.player.playerWeapIndex = 1;
+				game.player.setPlayerWeapIndex(1);
 			}
 			if (code == KeyEvent.VK_3) {
-				game.player.playerWeapIndex = 2;
+				game.player.setPlayerWeapIndex(2);
 			}
 			if (code == KeyEvent.VK_4) {
-				game.player.playerWeapIndex = 3;
+				game.player.setPlayerWeapIndex(3);
 			}
 
 		}
@@ -380,7 +380,7 @@ public class KeyHandler implements KeyListener {
 			drop = true;
 		if (code == KeyEvent.VK_P) {
 			if(game.gameState == game.titleState) return;
-			game.socketClient.latency = System.currentTimeMillis();
+			game.socketClient.setLatency(System.currentTimeMillis());
 			new Pkt08ServerPing().sendData(game.socketClient);
 		}
 

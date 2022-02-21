@@ -49,9 +49,9 @@ public class SMG extends SuperWeapon {
 		fireRateTick++;
 		if (fireRateTick == fireRate) {
 			// Spawn bullet at the player's location
-			int worldX = game.player.worldX + game.playerSize / 2 - bulletSize / 2;
-			int worldY = game.player.worldY + game.playerSize / 2 - bulletSize / 2;
-			double angle = Math.atan2(game.player.mouseX - game.player.screenX, game.player.mouseY - game.player.screenY);
+			int worldX = game.player.getWorldX() + game.playerSize / 2 - bulletSize / 2;
+			int worldY = game.player.getWorldY() + game.playerSize / 2 - bulletSize / 2;
+			double angle = Math.atan2(game.player.getMouseX() - game.player.getScreenX(), game.player.getMouseY() - game.player.getScreenY());
 
 			// Get random value for weapon spread
 			Random rand = new Random();

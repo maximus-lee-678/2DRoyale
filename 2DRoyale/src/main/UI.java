@@ -72,9 +72,9 @@ public class UI {
 			return;
 		playingPlayerCount = waitingPlayerCount = 0;
 		for (PlayerMP p : game.getPlayers()) {
-			if (p.playerState == game.playState)
+			if (p.getPlayerState() == game.playState)
 				playingPlayerCount++;
-			if (p.playerState == game.waitState)
+			if (p.getPlayerState() == game.waitState)
 				waitingPlayerCount++;
 		}
 	}
@@ -368,7 +368,7 @@ public class UI {
 		// display health bar
 		Color c = new Color(255, 0, 30);
 		g2.setColor(c);
-		g2.fillRect(game.tileSize * 2, game.tileSize * 12, (int) (game.player.health * 2), game.tileSize / 2);
+		g2.fillRect(game.tileSize * 2, game.tileSize * 12, (int) (game.player.getHealth() * 2), game.tileSize / 2);
 	}
 
 	//draw Inventory UI
@@ -393,7 +393,7 @@ public class UI {
 		}
 		// cursor
 		int cursorX = slotXstart;
-		int cursorY = slotYstart + game.tileSize * (game.player.playerWeapIndex);
+		int cursorY = slotYstart + game.tileSize * (game.player.getPlayerWeapIndex());
 		int cursorWidth = game.tileSize;
 		int cursorHeight = game.tileSize;
 

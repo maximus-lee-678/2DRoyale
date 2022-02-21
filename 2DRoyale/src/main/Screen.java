@@ -59,12 +59,12 @@ public class Screen implements RenderInterface {
 
 			// 4th layer
 			for (PlayerMP p : game.getPlayers())
-				if (p.playerState == game.gameState)
+				if (p.getPlayerState() == game.gameState)
 					p.renderBullets(g2);
 
 			// 5th layer
 			for (PlayerMP p : game.getPlayers())
-				if (p.playerState == game.gameState)
+				if (p.getPlayerState() == game.gameState)
 					p.render(g2);
 
 			// 6th layer
@@ -90,12 +90,12 @@ public class Screen implements RenderInterface {
 			for (int x = 0; x < game.maxWorldCol; x++) {
 				int worldX = x * game.tileSize;
 				int worldY = y * game.tileSize;
-				int gameX = worldX - game.player.worldX + game.player.screenX;
-				int gameY = worldY - game.player.worldY + game.player.screenY;
+				int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+				int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 				// Only render tiles player can see
-				if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
-						&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
+						&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 					// Render tiles based on flip orientation
 					if (!game.tileM.mapTileNum[x][y].isFlipped())
 						g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, gameX, gameY, game.tileSize, game.tileSize, null);
@@ -123,12 +123,12 @@ public class Screen implements RenderInterface {
 					int tileNum = rowNum[x];
 					int worldX = buildings[i].boundingBox.x + (x * buildingTileSize);
 					int worldY = buildings[i].boundingBox.y + (y * buildingTileSize);
-					int gameX = worldX - game.player.worldX + game.player.screenX;
-					int gameY = worldY - game.player.worldY + game.player.screenY;
+					int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+					int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 					// Only render bounding boxes player can see
-					if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
-							&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+					if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
+							&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 						if (tileNum != 0) // Don't draw empty spaces
 							g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
 					}
@@ -149,12 +149,12 @@ public class Screen implements RenderInterface {
 			Crate crate = crates.get(i);
 			int worldX = crate.collisionBoundingBox.x;
 			int worldY = crate.collisionBoundingBox.y;
-			int gameX = worldX - game.player.worldX + game.player.screenX;
-			int gameY = worldY - game.player.worldY + game.player.screenY;
+			int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+			int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 			// Only render crates player can see
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
-					&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+			if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
+					&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 				g2.drawImage(game.structM.solid[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
 			}
 		}
@@ -169,14 +169,14 @@ public class Screen implements RenderInterface {
 		for (int i = 0; i < obstructions.length; i++) {
 			int worldX = obstructions[i].boundingBox.x;
 			int worldY = obstructions[i].boundingBox.y;
-			int gameX = worldX - game.player.worldX + game.player.screenX;
-			int gameY = worldY - game.player.worldY + game.player.screenY;
+			int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+			int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 			// Only render crates player can see
-			if (worldX + obstructions[i].boundingBox.width > game.player.worldX - game.player.screenX
-					&& worldX - obstructions[i].boundingBox.width < game.player.worldX + game.player.screenX
-					&& worldY + obstructions[i].boundingBox.height > game.player.worldY - game.player.screenY
-					&& worldY - obstructions[i].boundingBox.height < game.player.worldY + game.player.screenY) {
+			if (worldX + obstructions[i].boundingBox.width > game.player.getWorldX() - game.player.getScreenX()
+					&& worldX - obstructions[i].boundingBox.width < game.player.getWorldX() + game.player.getScreenX()
+					&& worldY + obstructions[i].boundingBox.height > game.player.getWorldY() - game.player.getScreenY()
+					&& worldY - obstructions[i].boundingBox.height < game.player.getWorldY() + game.player.getScreenY()) {
 				// Render obstructions based on flip orientation
 				if (!obstructions[i].mirrored)
 					g2.drawImage(game.structM.solid[obstructions[i].imageID].image, gameX, gameY, obstructions[i].boundingBox.width, obstructions[i].boundingBox.height, null);
@@ -197,18 +197,18 @@ public class Screen implements RenderInterface {
 
 			SuperWeapon weap = worldWeapons.get(i);
 
-			int worldX = weap.worldX;
-			int worldY = weap.worldY;
-			int gameX = worldX - game.player.worldX + game.player.screenX;
-			int gameY = worldY - game.player.worldY + game.player.screenY;
+			int worldX = weap.getWorldX();
+			int worldY = weap.getWorldY();
+			int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+			int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 			// Only render weapons player can see
-			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
-					&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+			if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
+					&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 				Color c = new Color(255, 255, 50);
 				g2.setColor(c);
 				g2.setStroke(new BasicStroke(2));
-				g2.drawOval(gameX + weap.entityArea.x, gameY + weap.entityArea.y, 18, 18);
+				g2.drawOval(gameX + weap.getEntityArea().x, gameY + weap.getEntityArea().y, 18, 18);
 				g2.drawImage(weap.entityImg, gameX, gameY, weap.imgIconWidth, weap.imgIconHeight, null);
 			}
 		}
@@ -225,12 +225,12 @@ public class Screen implements RenderInterface {
 			for (int x = 0; x < game.maxWorldCol; x++) {
 				int worldX = x * game.tileSize;
 				int worldY = y * game.tileSize;
-				int gameX = worldX - game.player.worldX + game.player.screenX;
-				int gameY = worldY - game.player.worldY + game.player.screenY;
+				int gameX = worldX - game.player.getWorldX() + game.player.getScreenX();
+				int gameY = worldY - game.player.getWorldY() + game.player.getScreenY();
 
 				// Only render tiles player can see
-				if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
-						&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
+						&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 					if (game.tileM.mapTileNum[x][y].isGassed())
 						g2.drawImage(game.tileM.gasTile.image, gameX, gameY, game.tileSize, game.tileSize, null);
 				}
@@ -249,12 +249,12 @@ public class Screen implements RenderInterface {
 		int megamapBackBorder = 2;
 		int megamapTileSizeX = megamapLength / game.maxWorldRow;
 		int megamapTileSizeY = megamapLength / game.maxWorldCol;
-		int megamapRenderAtX = game.player.screenX - megamapLength / 2;
-		int megamapRenderAtY = game.player.screenY - megamapHeight / 2;
+		int megamapRenderAtX = game.player.getScreenX() - megamapLength / 2;
+		int megamapRenderAtY = game.player.getScreenY() - megamapHeight / 2;
 		int playerSize = 8;
 
-		int playerMapX = (int) Math.round((double) game.player.worldX / game.worldWidth * megamapLength);
-		int playerMapY = (int) Math.round((double) game.player.worldY / game.worldHeight * megamapHeight);
+		int playerMapX = (int) Math.round((double) game.player.getWorldX() / game.worldWidth * megamapLength);
+		int playerMapY = (int) Math.round((double) game.player.getWorldY() / game.worldHeight * megamapHeight);
 
 		// Draw megamap back
 		Color back = new Color(11, 227, 178);
@@ -291,7 +291,7 @@ public class Screen implements RenderInterface {
 				megamapHeight - (megamapTileSizeX * gasCounter * 2), megamapTileSizeY * gasCounter);
 
 		// Draw player sprite
-		g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize / 2), megamapRenderAtY + playerMapY - (playerSize / 2), playerSize, playerSize, null);
+		g2.drawImage(game.player.getSprite(), megamapRenderAtX + playerMapX - (playerSize / 2), megamapRenderAtY + playerMapY - (playerSize / 2), playerSize, playerSize, null);
 	}
 
 	/**
@@ -310,8 +310,8 @@ public class Screen implements RenderInterface {
 		// Draw minimap back
 		g2.drawImage(minimapBack, minimapBackRenderAtX, minimapBackRenderAtY, minimapBackSize, minimapBackSize, null);
 
-		int playerTileX = game.player.worldX / game.tileSize;
-		int playerTileY = game.player.worldY / game.tileSize;
+		int playerTileX = game.player.getWorldX() / game.tileSize;
+		int playerTileY = game.player.getWorldY() / game.tileSize;
 
 		// For making minimap render with player in center
 		int xLowerBound = playerTileX - minimapRadius;
@@ -417,7 +417,7 @@ public class Screen implements RenderInterface {
 		}
 
 		// Draw player sprite
-		g2.drawImage(game.player.sprite, minimapRenderAtX + (minimapRadius * minimapTileSize), minimapRenderAtY + (minimapRadius * minimapTileSize), minimapTileSize,
+		g2.drawImage(game.player.getSprite(), minimapRenderAtX + (minimapRadius * minimapTileSize), minimapRenderAtY + (minimapRadius * minimapTileSize), minimapTileSize,
 				minimapTileSize, null);
 	}
 

@@ -15,7 +15,7 @@ import net.Pkt09ServerBulletHit;
 import net.Pkt12DropWeapon;
 import net.Pkt16Death;
 
-public abstract class SuperWeapon extends Entity implements ShootInterface, Cloneable, RenderInterface {
+public abstract class SuperWeapon extends Entity implements Cloneable, RenderInterface {
 
 	public Game game;
 	public Player player;
@@ -55,8 +55,8 @@ public abstract class SuperWeapon extends Entity implements ShootInterface, Clon
 	// Render projectiles (bullets)
 	public void render(Graphics2D g2) {
 		for (int i = 0; i < getBullets().size(); i++) {
-			int x = (int) getBullets().get(i).worldX - game.player.worldX + game.player.screenX;
-			int y = (int) getBullets().get(i).worldY - game.player.worldY + game.player.screenY;
+			int x = (int) getBullets().get(i).worldX - game.player.getWorldX() + game.player.getScreenX();
+			int y = (int) getBullets().get(i).worldY - game.player.getWorldY() + game.player.getScreenY();
 
 			g2.drawImage(bulletImg, x, y, bulletSize, bulletSize, null); // Draw player
 		}
@@ -92,29 +92,30 @@ public abstract class SuperWeapon extends Entity implements ShootInterface, Clon
 	}
 
 	public void checkPlayerHit(GameServer socketServer) {
-		for (PlayerMP p : socketServer.connectedPlayers) {
+		for (PlayerMP p : socketServer.getPlayers()) {
 
-			if (player.getUsername().equals(p.getUsername()) || player.playerState != p.playerState)
+			if (player.getUsername().equals(p.getUsername()) || player.getPlayerState() != p.getPlayerState())
 				continue;
 			for (int i = 0; i < getBullets().size(); i++) {
 				Projectile proj = getBullets().get(i);
 
-				if (p.worldX < proj.worldX + bulletSize && p.worldX + game.playerSize > proj.worldX && p.worldY < proj.worldY + bulletSize
-						&& p.worldY + game.playerSize > proj.worldY) {
+				if (p.getWorldX() < proj.worldX + bulletSize && p.getWorldX() + game.playerSize > proj.worldX && p.getWorldY() < proj.worldY + bulletSize
+						&& p.getWorldY() + game.playerSize > proj.worldY) {
 					getBullets().remove(i--);
 					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.id);
 					serverHitPacket.sendData(socketServer);
 
 					p.updatePlayerHP(-this.damage);
-					if (p.health == 0) {
-						if (p.getWeapons()[p.playerWeapIndex] != null) {
-							SuperWeapon dropWeap = p.getWeapons()[p.playerWeapIndex];
-							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.playerWeapIndex, dropWeap.typeId, dropWeap.id,
-									p.worldX - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.worldY - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+					if (p.getHealth() == 0) {
+						if (p.getWeapons()[p.getPlayerWeapIndex()] != null) {
+							SuperWeapon dropWeap = p.getWeapons()[p.getPlayerWeapIndex()];
+							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.getPlayerWeapIndex(), dropWeap.typeId, dropWeap.id,
+									p.getWorldX() - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.getWorldY() - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
 							dropPacket.sendData(game.socketClient);
 						}
-						p.playerState = socketServer.endState;
-						Pkt16Death deathPacket = new Pkt16Death(player.getUsername(), p.getUsername(), socketServer.playerRemaining--);
+						p.setPlayerState(GameServer.endState);
+						Pkt16Death deathPacket = new Pkt16Death(player.getUsername(), p.getUsername(), socketServer.getPlayerRemaining());
+						socketServer.decrementPlayerRemaining();
 						deathPacket.sendData(socketServer);
 					}
 				}

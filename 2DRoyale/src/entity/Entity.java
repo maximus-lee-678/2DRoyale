@@ -5,11 +5,38 @@ import java.awt.image.BufferedImage;
 
 public class Entity {
 
-	public int worldX, worldY;
-	public int speed;
+	protected int worldX, worldY;
+	protected int speed;
 
-	public BufferedImage sprite;
+	protected BufferedImage sprite;
 
-	public Rectangle entityArea;
+	protected Rectangle entityArea;
+
+	public int getWorldX() {
+		return worldX;
+	}
+
+	public void setWorldX(int worldX) {
+		this.worldX = worldX;
+	}
+
+	public int getWorldY() {
+		return worldY;
+	}
+
+	public void setWorldY(int worldY) {
+		this.worldY = worldY;
+	}
+	
+	public BufferedImage getSprite() {
+		return sprite;
+	}
+
+	public Rectangle getEntityArea() {
+		return entityArea;
+	}
+
+	
+	
 
 }
