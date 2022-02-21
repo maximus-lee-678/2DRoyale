@@ -11,16 +11,15 @@ public class WindowHandler implements WindowListener {
 
 	public WindowHandler(Game game) {
 		this.game = game;
-		this.game.window.addWindowListener(this);
 	}
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState)
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState)
 			new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 	}
 
-	// default funcs, delete will throw warning :(
+	// Functions from WindowListener Interface
 	public void windowOpened(WindowEvent e) {
 	}
 

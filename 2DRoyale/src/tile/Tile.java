@@ -9,15 +9,19 @@ import javax.imageio.ImageIO;
 
 public class Tile {
 
-	public BufferedImage image;
-	public boolean collisionPlayer = false;
-	public boolean collisionProjectile = false;
-	public String biome;
+	private BufferedImage image;
+	private boolean collisionPlayer;
+	private boolean collisionProjectile;
+	private String biome;
 
 	/**
 	 * No biomes, no collision constructor.
 	 */
 	public Tile(String folder, String fileName) {
+		
+		this.collisionPlayer = false;
+		this.collisionProjectile = false;
+		
 		try {
 			this.image = toCompatibleImage(ImageIO.read(getClass().getResourceAsStream(String.format("/world_textures/%s/%s", folder, fileName))));
 		} catch (Exception e) {
@@ -92,4 +96,23 @@ public class Tile {
 		// return the new optimized image
 		return newImage;
 	}
+
+	public boolean isCollisionPlayer() {
+		return collisionPlayer;
+	}
+
+	public boolean isCollisionProjectile() {
+		return collisionProjectile;
+	}
+
+	public String getBiome() {
+		return biome;
+	}
+
+	public BufferedImage getImage() {
+		return image;
+	}
+	
+	
+	
 }

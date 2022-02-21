@@ -33,8 +33,8 @@ public class ItemManager {
 		try {
 			SuperWeapon newWeap = (SuperWeapon) weaponsArr[weapType].clone();
 			newWeap.id = weapId;
-			newWeap.setWorldX(crate.collisionBoundingBox.x - newWeap.imgIconWidth / 2 + crate.collisionBoundingBox.width / 2);
-			newWeap.setWorldY(crate.collisionBoundingBox.y - newWeap.imgIconHeight / 2 + crate.collisionBoundingBox.height / 2);
+			newWeap.setWorldX(crate.getCollisionBoundingBox().x - newWeap.imgIconWidth / 2 + crate.getCollisionBoundingBox().width / 2);
+			newWeap.setWorldY(crate.getCollisionBoundingBox().y - newWeap.imgIconHeight / 2 + crate.getCollisionBoundingBox().height / 2);
 			worldWeapons.add(newWeap);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

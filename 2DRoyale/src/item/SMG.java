@@ -17,7 +17,7 @@ public class SMG extends SuperWeapon {
 		this.name = "SMG";
 		this.typeId = 1;
 		this.damage = 8;
-		this.range = 10 * game.tileSize;
+		this.range = 10 * Game.tileSize;
 		this.speed = 20;
 		this.fireRate = 7;
 		this.bulletSpread = 10; // in degrees
@@ -37,10 +37,10 @@ public class SMG extends SuperWeapon {
 		this.imgIconHeight = (int) (entityImg.getHeight() * scale);
 
 		this.entityArea = new Rectangle();
-		entityArea.height = 18;
-		entityArea.width = 18;
-		entityArea.x = imgIconWidth / 2 - entityArea.width / 2;
-		entityArea.y = imgIconHeight / 2 - entityArea.height / 2;
+		this.entityArea.height = 18;
+		this.entityArea.width = 18;
+		this.entityArea.x = imgIconWidth / 2 - entityArea.width / 2;
+		this.entityArea.y = imgIconHeight / 2 - entityArea.height / 2;
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class SMG extends SuperWeapon {
 		fireRateTick++;
 		if (fireRateTick == fireRate) {
 			// Spawn bullet at the player's location
-			int worldX = game.player.getWorldX() + game.playerSize / 2 - bulletSize / 2;
-			int worldY = game.player.getWorldY() + game.playerSize / 2 - bulletSize / 2;
+			int worldX = game.player.getWorldX() + Game.playerSize / 2 - bulletSize / 2;
+			int worldY = game.player.getWorldY() + Game.playerSize / 2 - bulletSize / 2;
 			double angle = Math.atan2(game.player.getMouseX() - game.player.getScreenX(), game.player.getMouseY() - game.player.getScreenY());
 
 			// Get random value for weapon spread
@@ -62,9 +62,8 @@ public class SMG extends SuperWeapon {
 			new Pkt06Shoot(game.player.getUsername(), this.id, angle, worldX, worldY).sendData(game.socketClient);
 
 			fireRateTick = 0;
-			if(game.gameState == game.playState) {
+			if(game.getGameState() == Game.playState) 
 				game.playSE(1);
-			}
 		}
 
 	}

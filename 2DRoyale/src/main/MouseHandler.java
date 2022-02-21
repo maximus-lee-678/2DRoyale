@@ -10,9 +10,9 @@ import net.Pkt05MouseScroll;
 
 public class MouseHandler implements MouseListener, MouseMotionListener, MouseWheelListener {
 
-	public double x;
-	public double y;
-	public boolean mousePressed;
+	private double x;
+	private double y;
+	private boolean mousePressed;
 	private Game game;
 
 	public MouseHandler(Game game) {
@@ -21,7 +21,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState) {
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState) {
 			this.x = e.getX();
 			this.y = e.getY();
 		}
@@ -29,19 +29,19 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState)
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState)
 			new Pkt05MouseScroll(game.player.getUsername(), e.getWheelRotation()).sendData(game.socketClient);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState)
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState)
 			mousePressed = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState)
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState)
 			mousePressed = false;
 	}
 
@@ -52,7 +52,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (game.gameState == game.waitState || game.gameState == game.playState) {
+		if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState) {
 			this.x = e.getX();
 			this.y = e.getY();
 		}
@@ -67,4 +67,17 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 	public void mouseExited(MouseEvent e) {
 	}
 
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public boolean isMousePressed() {
+		return mousePressed;
+	}
+
+	
 }

@@ -19,13 +19,13 @@ public class TileManager {
 	public TileManager(Game game) {
 
 		this.game = game;
-		floorTile = new Tile[20]; // Currently we just store 20 types of tiles
-		gasCounter = 0;
+		this.floorTile = new Tile[20]; // Currently we just store 20 types of tiles
+		this.gasCounter = 0;
 		getTileImage(); // populate tile array
 
-		if (game.gameState == game.waitState)
+		if (game.getGameState() == Game.waitState)
 			loadMap("/maps/lobby.png"); // load map
-		if (game.gameState == game.playState)
+		if (game.getGameState() == Game.playState)
 			loadMap("/maps/olympus.png"); // load map
 
 	}
@@ -62,7 +62,7 @@ public class TileManager {
 	 */
 	private int mapRGBValues(int red, int green, int blue) {
 
-		double roll = game.rand.nextDouble();
+		double roll = game.getRand().nextDouble();
 
 		if (red == 34 && green == 177 && blue == 76) { // grass
 			if (roll < (double) 1 / 2)
@@ -125,7 +125,7 @@ public class TileManager {
 					int green = color.getGreen();
 					int blue = color.getBlue();
 
-					mapTileData[x][y] = new MapTiles(floorTile[mapRGBValues(red, green, blue)], game.rand.nextBoolean());
+					mapTileData[x][y] = new MapTiles(floorTile[mapRGBValues(red, green, blue)], game.getRand().nextBoolean());
 				}
 			}
 
@@ -160,13 +160,13 @@ public class TileManager {
 	 */
 	public boolean hasCollidedWorld(int xa, int ya, int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY, String type) {
 
-		int entityLeftCol = entityLeftWorldX / game.tileSize;
-		int entityRightCol = entityRightWorldX / game.tileSize;
-		int entityTopRow = entityTopWorldY / game.tileSize;
-		int entityBottomRow = entityBottomWorldY / game.tileSize;
+		int entityLeftCol = entityLeftWorldX / Game.tileSize;
+		int entityRightCol = entityRightWorldX / Game.tileSize;
+		int entityTopRow = entityTopWorldY / Game.tileSize;
+		int entityBottomRow = entityBottomWorldY / Game.tileSize;
 
-		int checkLimitX = game.maxWorldCol - 1;
-		int checkLimitY = game.maxWorldRow - 1;
+		int checkLimitX = maxWorldCol - 1;
+		int checkLimitY = maxWorldRow - 1;
 		// Out of bounds prevention
 		if (entityLeftCol > checkLimitX || entityRightCol > checkLimitX || entityTopRow > checkLimitY || entityBottomRow > checkLimitY)
 			return true;
@@ -176,27 +176,27 @@ public class TileManager {
 		Tile tileNum1 = null, tileNum2 = null;
 
 		if (ya < 0) { // UP
-			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileData[entityRightCol][entityTopRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].getTile();
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityTopRow].getTile();
 		}
 		if (ya > 0) { // DOWN
-			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].tile;
-			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].getTile();
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].getTile();
 		}
 		if (xa < 0) { // LEFT
-			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].getTile();
+			tileNum2 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].getTile();
 		}
 		if (xa > 0) { // RIGHT
-			tileNum1 = game.tileM.mapTileData[entityRightCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityRightCol][entityTopRow].getTile();
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].getTile();
 		}
 
 		if (type == "Entity") {
-			if (tileNum1.collisionPlayer || tileNum2.collisionPlayer)
+			if (tileNum1.isCollisionPlayer() || tileNum2.isCollisionPlayer())
 				return true;
 		} else if (type == "Projectile") {
-			if (tileNum1.collisionProjectile || tileNum2.collisionProjectile)
+			if (tileNum1.isCollisionProjectile() || tileNum2.isCollisionProjectile())
 				return true;
 		}
 
@@ -208,14 +208,14 @@ public class TileManager {
 	 */
 	public boolean withinGas(int entityLeftWorldX, int entityRightWorldX, int entityTopWorldY, int entityBottomWorldY) {
 
-		int topLeftTileX = entityLeftWorldX / game.tileSize;
-		int topLeftTileY = entityTopWorldY / game.tileSize;
-		int topRightTileX = entityRightWorldX / game.tileSize;
-		int topRightTileY = entityTopWorldY / game.tileSize;
-		int bottomLeftTileX = entityLeftWorldX / game.tileSize;
-		int bottomLeftTileY = entityBottomWorldY / game.tileSize;
-		int bottomRightTileX = entityRightWorldX / game.tileSize;
-		int bottomRightTileY = entityBottomWorldY / game.tileSize;
+		int topLeftTileX = entityLeftWorldX / Game.tileSize;
+		int topLeftTileY = entityTopWorldY / Game.tileSize;
+		int topRightTileX = entityRightWorldX / Game.tileSize;
+		int topRightTileY = entityTopWorldY / Game.tileSize;
+		int bottomLeftTileX = entityLeftWorldX / Game.tileSize;
+		int bottomLeftTileY = entityBottomWorldY / Game.tileSize;
+		int bottomRightTileX = entityRightWorldX / Game.tileSize;
+		int bottomRightTileY = entityBottomWorldY / Game.tileSize;
 
 		if (mapTileData[topLeftTileX][topLeftTileY].isGassed() || mapTileData[topRightTileX][topRightTileY].isGassed() || mapTileData[bottomLeftTileX][bottomLeftTileY].isGassed()
 				|| mapTileData[bottomRightTileX][bottomRightTileY].isGassed()) {

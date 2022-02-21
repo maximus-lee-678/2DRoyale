@@ -1,13 +1,14 @@
 package tile;
 
 public class MapTiles {
-	public Tile tile;
-	public boolean isFlipped = false;
-	public boolean isGassed = false;
+	private Tile tile;
+	private boolean isFlipped;
+	private boolean isGassed;
 
 	public MapTiles(Tile tile, boolean isFlipped) {
 		this.tile = tile;
 		this.isFlipped = isFlipped;
+		this.isGassed = false;
 	}
 
 	public void setIsGassed(boolean isGassed) {

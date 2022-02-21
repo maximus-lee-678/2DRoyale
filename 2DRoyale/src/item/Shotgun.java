@@ -18,7 +18,7 @@ public class Shotgun extends SuperWeapon {
 		this.damage = 10;
 		this.speed = 10;
 		this.fireRate = 20;
-		this.range = 6 * game.tileSize;
+		this.range = 6 * Game.tileSize;
 		this.bulletSpread = 5; // in degrees
 		this.bulletSize = 8;
 
@@ -36,10 +36,10 @@ public class Shotgun extends SuperWeapon {
 		this.imgIconHeight = (int) (entityImg.getHeight() * scale);
 
 		this.entityArea = new Rectangle();
-		entityArea.height = 18;
-		entityArea.width = 18;
-		entityArea.x = imgIconWidth / 2 - entityArea.width / 2;
-		entityArea.y = imgIconHeight / 2 - entityArea.height / 2;
+		this.entityArea.height = 18;
+		this.entityArea.width = 18;
+		this.entityArea.x = imgIconWidth / 2 - entityArea.width / 2;
+		this.entityArea.y = imgIconHeight / 2 - entityArea.height / 2;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class Shotgun extends SuperWeapon {
 		fireRateTick++;
 		if (fireRateTick == fireRate) {
 			// Spawn bullet at the player's location
-			int worldX = game.player.getWorldX() + game.playerSize / 2 - bulletSize / 2;
-			int worldY = game.player.getWorldY() + game.playerSize / 2 - bulletSize / 2;
+			int worldX = game.player.getWorldX() + Game.playerSize / 2 - bulletSize / 2;
+			int worldY = game.player.getWorldY() + Game.playerSize / 2 - bulletSize / 2;
 			double angle = Math.atan2(game.player.getMouseX() - game.player.getScreenX(), game.player.getMouseY() - game.player.getScreenY());
 
 			// Spawn 5 bullets with incrementing spread angles
@@ -60,9 +60,8 @@ public class Shotgun extends SuperWeapon {
 			}
 
 			fireRateTick = 0;
-			if(game.gameState == game.playState) {
+			if(game.getGameState() == Game.playState) 
 				game.playSE(3);
-			}
 			
 		}
 

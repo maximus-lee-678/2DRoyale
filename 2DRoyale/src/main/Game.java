@@ -30,62 +30,59 @@ public class Game extends JPanel implements Runnable {
 	private static final long serialVersionUID = 1L;
 
 	// Screen
-	public JFrame window;
+	private JFrame window;
 
-	private final int originalTileSize = 16;
-	private final int scale = 3;
-	public final int tileSize = originalTileSize * scale;
-	public final int playerSize = tileSize / 2;
-
-	private int FPS = 60;
+	public static final int tileSize = 48;
+	public static final int playerSize = 24;
+	private static final int FPS = 60;
+	
 	private boolean running = false;
 	private BufferedImage cursor;
 
 	// World
-	public long randSeed;
-	public Random rand;
-	public int maxWorldCol;
-	public int maxWorldRow;
-	public int worldWidth;
-	public int worldHeight;
-	public int numberOfBuildings;
-	public int numberOfCrates;
-	public int numberOfObstructions;
+	private long randSeed;
+	private Random rand;
 
 	public WindowHandler windowHandler;
 	public TileManager tileM;
 	public ItemManager itemM;
 	public StructuresManager structM;
-	public Screen screen;
-	private List<PlayerMP> playerList;
-	public UI ui;
+	public Screen screen;	
+	public UI ui;	
+	public SoundHandler sound;
 	public PlayerMP player;
-	SoundHandler sound = new SoundHandler();
+	private List<PlayerMP> playerList;
 
-	public KeyHandler keys = new KeyHandler(this);
-	public MouseHandler mouse = new MouseHandler(this);
+	public KeyHandler keys;
+	public MouseHandler mouse;
 
 	// Server
 	public GameClient socketClient;
 	public GameServer socketServer;
 
 	// Game State
-	public boolean loading = false;
-	public int gameState = 0;
-	public final int titleState = 0;
-	public final int waitState = 1;
-	public final int playState = 2;
-	public final int endState = 3;
+	private boolean loading;
+	private int gameState;
+	public static final int titleState = 0;
+	public static final int waitState = 1;
+	public static final int playState = 2;
+	public static final int endState = 3;
 
 	public Game() {
 
-		screen = new Screen(this);
-		player = new PlayerMP(this, keys, mouse, null, null, -1);
-		ui = new UI(this);
+		this.keys = new KeyHandler(this);
+		this.mouse = new MouseHandler(this);
+		this.screen = new Screen(this);
+		this.sound = new SoundHandler();
+		this.player = new PlayerMP(this, keys, mouse, null, null, -1);
+		this.windowHandler = new WindowHandler(this);
+		this.ui = new UI(this);
 
-		randSeed = System.currentTimeMillis();
-		rand = new Random(randSeed);
-		playerList = new ArrayList<PlayerMP>();
+		this.randSeed = System.currentTimeMillis();
+		this.rand = new Random(randSeed);
+		this.playerList = new ArrayList<PlayerMP>();
+		this.loading = false;
+		this.gameState = titleState;	
 
 		this.setPreferredSize(new Dimension(screen.getScreenWidth(), screen.getScreenHeight()));
 		this.setBackground(Color.BLACK);
@@ -96,19 +93,16 @@ public class Game extends JPanel implements Runnable {
 		this.addMouseWheelListener(mouse);
 		this.addMouseListener(mouse);
 
-		window = new JFrame();
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setResizable(false);
-		window.setTitle("2D Royale");
-
-		window.add(this, BorderLayout.CENTER);
-		window.pack();
-
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
-		gameState = titleState;
-
-		windowHandler = new WindowHandler(this);
+		this.window = new JFrame();
+		this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.window.setResizable(false);
+		this.window.setTitle("2D Royale");
+		this.window.add(this, BorderLayout.CENTER);
+		this.window.pack();
+		this.window.setLocationRelativeTo(null);
+		this.window.setVisible(true);	
+		this.window.addWindowListener(windowHandler);			
+		
 		try {
 			cursor = ImageIO.read(getClass().getResourceAsStream("/cursor/crosshair.png"));
 			Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -161,25 +155,22 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void loadDefaults() {
+		int numberOfBuildings = 0, numberOfObstructions = 0, numberOfCrates = 0;
 		// Load world defaults based on game state
-		loading = true;
-		tileM = new TileManager(this);
-		maxWorldCol = tileM.getMaxWorldCol();
-		maxWorldRow = tileM.getMaxWorldRow();
-		worldWidth = tileSize * maxWorldCol;
-		worldHeight = tileSize * maxWorldRow;
+		this.loading = true;
+		this.tileM = new TileManager(this);
 		if (gameState == playState) {
 			numberOfBuildings = 50;
-			numberOfCrates = 100;
 			numberOfObstructions = 100;
+			numberOfCrates = 100;
 		} else if (gameState == waitState) {
 			numberOfBuildings = 10;
-			numberOfCrates = 0;
 			numberOfObstructions = 15;
+			numberOfCrates = 0;
 		}
-		itemM = new ItemManager(this);
-		structM = new StructuresManager(this);
-		loading = false;
+		this.itemM = new ItemManager(this);
+		this.structM = new StructuresManager(this, numberOfBuildings, numberOfObstructions, numberOfCrates);
+		this.loading = false;
 	}
 
 	public synchronized List<PlayerMP> getPlayers() {
@@ -187,7 +178,7 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	public void clearPlayers() {
-		playerList = new ArrayList<PlayerMP>();
+		this.playerList = new ArrayList<PlayerMP>();
 	}
 
 	// UPDATE ALL ASSETS
@@ -239,4 +230,33 @@ public class Game extends JPanel implements Runnable {
 		new Game().startGameThread();
 	}
 
+	public int getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(int gameState) {
+		this.gameState = gameState;
+	}
+
+	public long getRandSeed() {
+		return randSeed;
+	}
+
+	public void setRandSeed(long randSeed) {
+		this.randSeed = randSeed;
+		this.rand = new Random(randSeed);
+	}
+
+	public Random getRand() {
+		return rand;
+	}
+
+	public void setRand(Random rand) {
+		this.rand = rand;
+	}
+	
+	
+
+	
+	
 }

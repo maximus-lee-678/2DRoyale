@@ -9,17 +9,15 @@ import java.util.List;
 
 public class Building {
 
-	public Rectangle boundingBox;
-	public List<int[]> buildingTileNum;
+	private Rectangle boundingBox;
+	private List<int[]> buildingTileNum;
 
 	public Building(String filePath, int buildingTileSize) {
 
 		this.buildingTileNum = new ArrayList<int[]>();
-		int col = 0;
-		int row = 0;
-
+		
+		int col = 0, row = 0;
 		try {
-
 			InputStream is = getClass().getResourceAsStream(filePath);
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			String line;
@@ -46,4 +44,13 @@ public class Building {
 		this.boundingBox = new Rectangle(0, 0, col * buildingTileSize, row * buildingTileSize);
 	}
 
+	public Rectangle getBoundingBox() {
+		return boundingBox;
+	}
+
+	public List<int[]> getBuildingTileNum() {
+		return buildingTileNum;
+	}
+
+	
 }

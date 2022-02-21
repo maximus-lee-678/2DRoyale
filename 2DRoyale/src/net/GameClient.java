@@ -6,7 +6,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Random;
 
 import entity.PlayerMP;
 import item.SuperWeapon;
@@ -80,7 +79,7 @@ public class GameClient extends Thread {
 		case 6:
 			// SHOOTING
 			Pkt06Shoot shootPacket = new Pkt06Shoot(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				handleShooting(shootPacket);
 			break;
 		case 7:
@@ -94,25 +93,25 @@ public class GameClient extends Thread {
 		case 9:
 			// SERVER BULLET HIT
 			Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				handleBulletHit(serverHitPacket);
 			break;
 		case 10:
 			// PICK UP WEAPON
 			Pkt10PickupWeapon pickUpPacket = new Pkt10PickupWeapon(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				handleWeapPickUp(pickUpPacket);
 			break;
 		case 11:
 			// OPEN CRATE
 			Pkt11CrateOpen crateOpenPacket = new Pkt11CrateOpen(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				handleCrateOpen(crateOpenPacket);
 			break;
 		case 12:
 			// DROP WEAPON
 			Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				handleWeapDrop(dropPacket);
 			break;
 		case 13:
@@ -153,7 +152,7 @@ public class GameClient extends Thread {
 		case 20:
 			// GAS DAMAGE
 			Pkt20GasDamage gasDmgPacket = new Pkt20GasDamage(data);
-			if (game.gameState == game.playState)
+			if (game.getGameState() == Game.playState)
 				game.getPlayers().get(playerIndex(gasDmgPacket.getUsername())).updatePlayerHP(-1);
 			break;
 		default:
@@ -167,8 +166,8 @@ public class GameClient extends Thread {
 		if (kickPacket.getIsHost())
 			game.socketServer = null;
 		// Move to title screen and clear player array
-		game.gameState = game.titleState;
-		game.player.setPlayerState(game.titleState);
+		game.setGameState(Game.titleState);
+		game.player.setPlayerState(Game.titleState);
 		game.ui.titleScreenState = 0;
 		game.ui.commandNum = 0;
 		game.clearPlayers();
@@ -180,8 +179,8 @@ public class GameClient extends Thread {
 		if (winnerPacket.getUsername().equals(game.player.getUsername())) {
 			game.ui.playingPlayerCount = 1;
 			game.ui.win = true;
-			game.gameState = game.endState;
-			game.player.setPlayerState(game.endState);
+			game.setGameState(Game.endState);
+			game.player.setPlayerState(Game.endState);
 		}
 	}
 
@@ -195,13 +194,13 @@ public class GameClient extends Thread {
 
 	private void handleDeath(Pkt16Death deathPacket) {
 		game.ui.addMessage(deathPacket.getUsername() + " killed " + deathPacket.getVictim());
-		game.getPlayers().get(playerIndex(deathPacket.getVictim())).setPlayerState(game.endState);
+		game.getPlayers().get(playerIndex(deathPacket.getVictim())).setPlayerState(Game.endState);
 		// If player is the shooter, increment kills
 		if (deathPacket.getUsername().equals(game.player.getUsername()))
 			game.ui.kills++;
 		// If player is victim, end game
 		if (deathPacket.getVictim().equals(game.player.getUsername())) {
-			game.gameState = game.endState;
+			game.setGameState(Game.endState);
 			game.ui.win = false;
 		}
 	}
@@ -222,14 +221,14 @@ public class GameClient extends Thread {
 	private void handleGameStart(Pkt14StartGame startGamePacket) {
 		// Check who entered the new game, if it's player, refresh the map to the new one
 		if (startGamePacket.getUsername().equals(game.player.getUsername())) {
-			game.gameState = game.playState;
+			game.setGameState(Game.playState);
 			game.loadDefaults();
 			game.player.generatePlayerXY();
 			game.player.setPlayerDefault();
 			game.player.setFreeze(true);
-			game.player.setPlayerState(game.playState);
+			game.player.setPlayerState(Game.playState);
 		} else
-			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).setPlayerState(game.playState);
+			game.getPlayers().get(playerIndex(startGamePacket.getUsername())).setPlayerState(Game.playState);
 	}
 
 	private void handleWeapDrop(Pkt12DropWeapon dropPacket) {
@@ -257,10 +256,9 @@ public class GameClient extends Thread {
 
 	private void handleSeed(Pkt07ServerSeed seedPacket) {
 		// After joining server, server will send the seed for player to generate the world
-		game.randSeed = seedPacket.getServerSeed();
-		game.rand = new Random(game.randSeed);
-		game.gameState = game.waitState;
-		game.player.setPlayerState(game.waitState);
+		game.setRandSeed(seedPacket.getServerSeed());
+		game.setGameState(Game.waitState);
+		game.player.setPlayerState(Game.waitState);
 		game.loadDefaults();
 		game.player.generatePlayerXY();
 	}

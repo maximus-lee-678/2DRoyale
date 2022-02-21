@@ -101,8 +101,8 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 			for (int i = 0; i < getBullets().size(); i++) {
 				Projectile proj = getBullets().get(i);
 
-				if (p.getWorldX() < proj.getWorldX() + bulletSize && p.getWorldX() + game.playerSize > proj.getWorldX() && p.getWorldY() < proj.getWorldY() + bulletSize
-						&& p.getWorldY() + game.playerSize > proj.getWorldY()) {
+				if (p.getWorldX() < proj.getWorldX() + bulletSize && p.getWorldX() + Game.playerSize > proj.getWorldX() && p.getWorldY() < proj.getWorldY() + bulletSize
+						&& p.getWorldY() + Game.playerSize > proj.getWorldY()) {
 					getBullets().remove(i--);
 					Pkt09ServerBulletHit serverHitPacket = new Pkt09ServerBulletHit(player.getUsername(), p.getUsername(), this.id, proj.getId());
 					serverHitPacket.sendData(socketServer);
@@ -112,7 +112,7 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 						if (p.getWeapons()[p.getPlayerWeapIndex()] != null) {
 							SuperWeapon dropWeap = p.getWeapons()[p.getPlayerWeapIndex()];
 							Pkt12DropWeapon dropPacket = new Pkt12DropWeapon(p.getUsername(), p.getPlayerWeapIndex(), dropWeap.typeId, dropWeap.id,
-									p.getWorldX() - dropWeap.imgIconWidth / 2 + game.playerSize / 2, p.getWorldY() - dropWeap.imgIconHeight / 2 + game.playerSize / 2);
+									p.getWorldX() - dropWeap.imgIconWidth / 2 + Game.playerSize / 2, p.getWorldY() - dropWeap.imgIconHeight / 2 + Game.playerSize / 2);
 							dropPacket.sendData(game.socketClient);
 						}
 						p.setPlayerState(GameServer.endState);

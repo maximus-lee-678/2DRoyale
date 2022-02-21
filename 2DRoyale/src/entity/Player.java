@@ -38,7 +38,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 	private boolean local;
 	private boolean freeze;
 
-	private double imageAngleRad = 0;
+	private double imageAngleRad;
 	private BufferedImage playerHand;
 
 	protected SuperWeapon[] playerWeap;
@@ -50,10 +50,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		this.keys = keys;
 		this.mouse = mouse;
 
-		this.setPlayerState(game.waitState);
+		this.setPlayerState(Game.waitState);
 		this.playerOffset = 12;
-		this.screenX = game.screen.getScreenWidth() / 2 - game.playerSize / 2;
-		this.screenY = game.screen.getScreenHeight() / 2 - game.playerSize / 2;
+		this.screenX = game.screen.getScreenWidth() / 2 - Game.playerSize / 2;
+		this.screenY = game.screen.getScreenHeight() / 2 - Game.playerSize / 2;
 		this.mouseX = 0;
 		this.mouseY = 0;
 
@@ -82,7 +82,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 	// Refresh player to a new state
 	public void setPlayerDefault() {
-		this.setPlayerState(game.waitState);
+		this.setPlayerState(Game.waitState);
 		this.playerWeap = new SuperWeapon[4];
 		this.health = 100;
 	}
@@ -93,35 +93,35 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 		mainLoop: while (true) {
 
-			int randomX = playerOffset + (int) (Math.random() * (game.worldWidth - entityArea.width - (playerOffset * 2)));
-			int randomY = playerOffset + (int) (Math.random() * (game.worldHeight - entityArea.height - (playerOffset * 2)));
+			int randomX = playerOffset + (int) (Math.random() * ((Game.tileSize * game.tileM.getMaxWorldCol()) - entityArea.width - (playerOffset * 2)));
+			int randomY = playerOffset + (int) (Math.random() * ((Game.tileSize * game.tileM.getMaxWorldRow()) - entityArea.height - (playerOffset * 2)));
 
 			Rectangle separationHitbox = new Rectangle(randomX - playerOffset, randomY - playerOffset, entityArea.width + playerOffset * 2, entityArea.height + playerOffset * 2);
 
 			// Prevent player from spawning in unpassable tiles (eg. walls, water)
-			int randomTopLeftTileX = separationHitbox.x / game.tileSize;
-			int randomTopLeftTileY = separationHitbox.y / game.tileSize;
-			int randomTopRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
-			int randomTopRightTileY = separationHitbox.y / game.tileSize;
-			int randomBottomLeftTileX = randomX / game.tileSize;
-			int randomBottomLeftTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
-			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
-			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
+			int randomTopLeftTileX = separationHitbox.x / Game.tileSize;
+			int randomTopLeftTileY = separationHitbox.y / Game.tileSize;
+			int randomTopRightTileX = (separationHitbox.x + separationHitbox.width) / Game.tileSize;
+			int randomTopRightTileY = separationHitbox.y / Game.tileSize;
+			int randomBottomLeftTileX = randomX / Game.tileSize;
+			int randomBottomLeftTileY = (separationHitbox.y + separationHitbox.height) / Game.tileSize;
+			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / Game.tileSize;
+			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / Game.tileSize;
 
-			if (game.tileM.getMapTileData()[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
-					|| game.tileM.getMapTileData()[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
-					|| game.tileM.getMapTileData()[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
-					|| game.tileM.getMapTileData()[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
+			if (game.tileM.getMapTileData()[randomTopLeftTileX][randomTopLeftTileY].getTile().isCollisionPlayer()
+					|| game.tileM.getMapTileData()[randomTopRightTileX][randomTopRightTileY].getTile().isCollisionPlayer()
+					|| game.tileM.getMapTileData()[randomBottomLeftTileX][randomBottomLeftTileY].getTile().isCollisionPlayer()
+					|| game.tileM.getMapTileData()[randomBottomRightTileX][randomBottomRightTileY].getTile().isCollisionPlayer()) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
 
 			// Prevent player from spawning in buildings
 			for (int i = 0; i < game.structM.getBuildings().length; i++) {
-				if (separationHitbox.x < game.structM.getBuildings()[i].boundingBox.x + game.structM.getBuildings()[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.getBuildings()[i].boundingBox.x
-						&& separationHitbox.y < game.structM.getBuildings()[i].boundingBox.y + game.structM.getBuildings()[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.getBuildings()[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.getBuildings()[i].getBoundingBox().x + game.structM.getBuildings()[i].getBoundingBox().width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getBuildings()[i].getBoundingBox().x
+						&& separationHitbox.y < game.structM.getBuildings()[i].getBoundingBox().y + game.structM.getBuildings()[i].getBoundingBox().height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getBuildings()[i].getBoundingBox().y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -129,10 +129,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 			// Prevent player from spawning in crates
 			for (int i = 0; i < game.structM.getCrates().size(); i++) {
-				if (separationHitbox.x < game.structM.getCrates().get(i).collisionBoundingBox.x + game.structM.getCrates().get(i).collisionBoundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.getCrates().get(i).collisionBoundingBox.x
-						&& separationHitbox.y < game.structM.getCrates().get(i).collisionBoundingBox.y + game.structM.getCrates().get(i).collisionBoundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.getCrates().get(i).collisionBoundingBox.y) {
+				if (separationHitbox.x < game.structM.getCrates().get(i).getCollisionBoundingBox().x + game.structM.getCrates().get(i).getCollisionBoundingBox().width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getCrates().get(i).getCollisionBoundingBox().x
+						&& separationHitbox.y < game.structM.getCrates().get(i).getCollisionBoundingBox().y + game.structM.getCrates().get(i).getCollisionBoundingBox().height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getCrates().get(i).getCollisionBoundingBox().y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -140,10 +140,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 			// Prevent player from spawning in obstructions
 			for (int i = 0; i < game.structM.getObstructions().length; i++) {
-				if (separationHitbox.x < game.structM.getObstructions()[i].boundingBox.x + game.structM.getObstructions()[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.getObstructions()[i].boundingBox.x
-						&& separationHitbox.y < game.structM.getObstructions()[i].boundingBox.y + game.structM.getObstructions()[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.getObstructions()[i].boundingBox.y) {
+				if (separationHitbox.x < game.structM.getObstructions()[i].getBoundingBox().x + game.structM.getObstructions()[i].getBoundingBox().width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getObstructions()[i].getBoundingBox().x
+						&& separationHitbox.y < game.structM.getObstructions()[i].getBoundingBox().y + game.structM.getObstructions()[i].getBoundingBox().height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getObstructions()[i].getBoundingBox().y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
@@ -217,8 +217,8 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 				if (playerWeap[playerWeapIndex] != null) {
 					SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 					// Update weapon drop to server
-					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), this.worldX - dropWeap.getImgIconWidth() / 2 + game.playerSize / 2,
-							this.worldY - dropWeap.getImgIconHeight() / 2 + game.playerSize / 2).sendData(game.socketClient);
+					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), this.worldX - dropWeap.getImgIconWidth() / 2 + Game.playerSize / 2,
+							this.worldY - dropWeap.getImgIconHeight() / 2 + Game.playerSize / 2).sendData(game.socketClient);
 					game.playSE(9);
 				}
 				keys.setDrop(false);
@@ -228,16 +228,16 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		// Check mouse inputs
 		if (mouse != null) {
 			// Check mouse movement
-			if (mouseX != mouse.x || mouseY != mouse.y) {
-				this.mouseX = mouse.x;
-				this.mouseY = mouse.y;
+			if (mouseX != mouse.getX() || mouseY != mouse.getY()) {
+				this.mouseX = mouse.getX();
+				this.mouseY = mouse.getY();
 
-				updateMouseDirection(mouse.x, mouse.y);
+				updateMouseDirection(mouse.getX(), mouse.getY());
 				// Update mouse direction to server
 				new Pkt04MouseMove(this.username, this.mouseX, this.mouseY).sendData(game.socketClient);
 			}
 			// Check mouse clicks
-			if (mouse.mousePressed)
+			if (mouse.isMousePressed())
 				// Handle shoot event
 				if (playerWeapIndex >= 0)
 					if (getWeapons()[playerWeapIndex] != null)
@@ -250,9 +250,9 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 				weap.update();
 
 		
-		if (game.gameState == game.playState) {
+		if (game.getGameState() == Game.playState) {
 			// Check if user is in gas
-			if (game.tileM.withinGas(worldX, worldX + game.playerSize, worldY, worldY + game.playerSize))
+			if (game.tileM.withinGas(worldX, worldX + Game.playerSize, worldY, worldY + Game.playerSize))
 				new Pkt20GasDamage(this.getUsername()).sendData(game.socketClient);
 		}
 	}
@@ -371,16 +371,16 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		AffineTransform t = new AffineTransform();
 		t.setToTranslation(handX, handY);
 		t.rotate(imageAngleRad, holding.getWidth() / 2, holding.getHeight() / 2);
-		t.translate(game.playerSize / 2 + holding.getWidth() / 2 + handOffset, 0);
+		t.translate(Game.playerSize / 2 + holding.getWidth() / 2 + handOffset, 0);
 
 		g2.drawImage(holding, t, null); // Draw hand (weapons)
-		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
+		g2.drawImage(sprite, x, y, Game.playerSize, Game.playerSize, null); // Draw player
 
 		g2.setColor(new Color(255, 0, 30));
-		g2.fillRect(x - game.tileSize / 4, y - 15, (int) ((this.health)) / 2, 10);
+		g2.fillRect(x - Game.tileSize / 4, y - 15, (int) ((this.health)) / 2, 10);
 		g2.setColor(Color.white);
 		int length = (int) g2.getFontMetrics().getStringBounds(this.getUsername(), g2).getWidth();
-		g2.drawString(this.getUsername(), x - length /2 + game.playerSize / 2 , y + 40);
+		g2.drawString(this.getUsername(), x - length /2 + Game.playerSize / 2 , y + 40);
 	}
 
 	public void renderBullets(Graphics2D g2) {

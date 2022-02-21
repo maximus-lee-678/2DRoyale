@@ -20,16 +20,15 @@ public class KeyHandler implements KeyListener {
 	private boolean up, down, left, right;
 	private boolean interact, drop, map, ping;
 	private boolean isHost;
-	String pattern = "^[a-zA-Z0-9]*$";	// regex for username	
-	String ipPattern = "^[0-9\\.]*$";	// regex for ip address
-	
+	private static final String pattern = "^[a-zA-Z0-9]*$";// regex for username
+	private static final String ipPattern = "^[0-9\\.]*$"; // regex for ip address
 
 	public KeyHandler(Game game) {
 		this.game = game;
 		this.interact = false;
 		this.drop = false;
 		this.map = false;
-		this.ping= false; 
+		this.ping = false;
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -38,68 +37,48 @@ public class KeyHandler implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
 		// when in menu page
-		if (game.gameState == game.titleState) {
+		if (game.getGameState() == Game.titleState) {
 			if (game.ui.titleScreenState == 0) {
 				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) {
-						game.ui.commandNum = 3;
-					}
+					if (game.ui.commandNum < 0) { game.ui.commandNum = 3; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
-					if (game.ui.commandNum > 3) {
-						game.ui.commandNum = 0;
-					}
+					if (game.ui.commandNum > 3) { game.ui.commandNum = 0; }
 				}
 				if (code == KeyEvent.VK_ENTER) {
 					// when user click "start"
-					if (game.ui.commandNum == 0) {
-						game.ui.titleScreenState = 3;
-					}
+					if (game.ui.commandNum == 0) { game.ui.titleScreenState = 3; }
 					//// when user click "how to play"
-					if (game.ui.commandNum == 1) {
-						game.ui.titleScreenState = 1;
-					}
+					if (game.ui.commandNum == 1) { game.ui.titleScreenState = 1; }
 					// when user click "players control"
-					if (game.ui.commandNum == 2) {
-						game.ui.titleScreenState = 2;
-					}
+					if (game.ui.commandNum == 2) { game.ui.titleScreenState = 2; }
 					// when user click "quit"
-					if (game.ui.commandNum == 3) {
-						System.exit(0);
-					}
+					if (game.ui.commandNum == 3) { System.exit(0); }
 				}
 			}
 			// when in "how to play" page
 			else if (game.ui.titleScreenState == 1) {
-				if (code == KeyEvent.VK_ENTER) {
-					game.ui.titleScreenState = 0;
-				}
+				if (code == KeyEvent.VK_ENTER) { game.ui.titleScreenState = 0; }
 			}
 			// when in "players control page"
 			else if (game.ui.titleScreenState == 2) {
-				if (code == KeyEvent.VK_ENTER) {
-					game.ui.titleScreenState = 0;
-				}
+				if (code == KeyEvent.VK_ENTER) { game.ui.titleScreenState = 0; }
 			}
 			// when in "do you want to host the server" page
 			else if (game.ui.titleScreenState == 3) {
 				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) {
-						game.ui.commandNum = 2;
-					}
+					if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
-					if (game.ui.commandNum > 2) {
-						game.ui.commandNum = 0;
-					}
+					if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
 				}
 				if (code == KeyEvent.VK_ENTER) {
 					// user will create a server using his/her ip address
@@ -120,16 +99,12 @@ public class KeyHandler implements KeyListener {
 				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) {
-						game.ui.commandNum = 1;
-					}
+					if (game.ui.commandNum < 0) { game.ui.commandNum = 1; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
-					if (game.ui.commandNum > 1) {
-						game.ui.commandNum = 0;
-					}
+					if (game.ui.commandNum > 1) { game.ui.commandNum = 0; }
 				}
 				char input = e.getKeyChar();
 				String tempInput = "";
@@ -144,13 +119,13 @@ public class KeyHandler implements KeyListener {
 				if (game.ui.commandNum == 0) {
 					if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
 						game.player.setUsername(game.ui.name.trim());
-						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), game.waitState);
+						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), Game.waitState);
 						if (isHost) {
-							game.socketServer = new GameServer(game, game.randSeed);
+							game.socketServer = new GameServer(game, game.getRandSeed());
 							game.socketServer.start();
 							game.socketClient = new GameClient(game, "localhost");
 							game.socketClient.start();
-							
+
 							game.getPlayers().add(game.player);
 							PlayerMP clonePlayer = null;
 							try {
@@ -159,27 +134,25 @@ public class KeyHandler implements KeyListener {
 								e1.printStackTrace();
 							}
 							game.socketServer.addConnection(clonePlayer, loginPacket);
-							game.gameState = game.waitState;
-							game.player.setPlayerState(game.waitState);
+							game.setGameState(Game.waitState);
+							game.player.setPlayerState(Game.waitState);
 							game.loadDefaults();
 							loginPacket.sendData(game.socketClient);
 							game.player.generatePlayerXY();
-						}
-						else {
+						} else {
 							game.socketClient = new GameClient(game, game.ui.ipAddress);
 							game.socketClient.start();
-							
+
 							loginPacket.sendData(game.socketClient);
 						}
-						
+
 					}
 				} else if (game.ui.commandNum == 1) {
-					if(code == KeyEvent.VK_ENTER) {
+					if (code == KeyEvent.VK_ENTER) {
 						if (isHost) {
 							game.ui.titleScreenState = 3;
 							game.ui.commandNum = 0;
-						}
-						else {
+						} else {
 							game.ui.titleScreenState = 5;
 							game.ui.commandNum = 0;
 						}
@@ -191,18 +164,14 @@ public class KeyHandler implements KeyListener {
 				if (code == KeyEvent.VK_UP) {
 					game.playSE(0);
 					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) {
-						game.ui.commandNum = 2;
-					}
+					if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
 					game.playSE(0);
 					game.ui.commandNum++;
-					if (game.ui.commandNum > 2) {
-						game.ui.commandNum = 0;
-					}
+					if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
 				}
-				
+
 				// user type in server address
 				char input = e.getKeyChar();
 				String tempInput = "";
@@ -217,9 +186,7 @@ public class KeyHandler implements KeyListener {
 					if (code == KeyEvent.VK_ENTER) {
 						game.ui.ipAddress = game.ui.ipAddress.trim();
 						// if user leave it empty, the user will enter his/her own ip address
-						if (game.ui.ipAddress.isEmpty() == true) {
-							game.ui.ipAddress = "localhost";
-						}
+						if (game.ui.ipAddress.isEmpty() == true) { game.ui.ipAddress = "localhost"; }
 						// go to "Enter your nickname" page
 						game.ui.titleScreenState = 4;
 						isHost = false;
@@ -249,20 +216,16 @@ public class KeyHandler implements KeyListener {
 			}
 		}
 		// when in option screen
-		if ((game.gameState == game.waitState || game.gameState == game.playState) && game.ui.option == true) {
+		if ((game.getGameState() == Game.waitState || game.getGameState() == Game.playState) && game.ui.option == true) {
 			if (code == KeyEvent.VK_UP) {
 				game.playSE(0);
 				game.ui.commandNum--;
-				if (game.ui.commandNum < 0) {
-					game.ui.commandNum = 2;
-				}
+				if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
 			}
 			if (code == KeyEvent.VK_DOWN) {
 				game.playSE(0);
 				game.ui.commandNum++;
-				if (game.ui.commandNum > 2) {
-					game.ui.commandNum = 0;
-				}
+				if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to game
@@ -271,24 +234,22 @@ public class KeyHandler implements KeyListener {
 				}
 				// back to main menu
 				else if (game.ui.commandNum == 1) {
-					game.gameState = game.titleState;
-					game.player.setPlayerState(game.titleState);
+					game.setGameState(Game.titleState);
+					game.player.setPlayerState(Game.titleState);
 					game.clearPlayers();
 					game.ui.titleScreenState = 0;
 					game.ui.commandNum = 0;
 					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 				}
 				// exit game
-				else if (game.ui.commandNum == 2) {
-					System.exit(0);
-				}
+				else if (game.ui.commandNum == 2) { System.exit(0); }
 			}
 			// press escape to go back to game
 			if (code == KeyEvent.VK_ESCAPE) {
 				game.playSE(0);
 				game.ui.option = false;
 			}
-		} else if (game.gameState == game.waitState || game.gameState == game.playState) {
+		} else if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState) {
 			// true if user presses button
 			if (code == KeyEvent.VK_W)
 				up = true;
@@ -312,43 +273,29 @@ public class KeyHandler implements KeyListener {
 				;
 			}
 
-			if (code == KeyEvent.VK_Q) {
-				drop = false;
-			}
+			if (code == KeyEvent.VK_Q) { drop = false; }
 			if (code == KeyEvent.VK_M) {
 				map = !map;
 				game.playSE(5);
 			}
 
-			if (code == KeyEvent.VK_1) {
-				game.player.setPlayerWeapIndex(0);
-			}
-			if (code == KeyEvent.VK_2) {
-				game.player.setPlayerWeapIndex(1);
-			}
-			if (code == KeyEvent.VK_3) {
-				game.player.setPlayerWeapIndex(2);
-			}
-			if (code == KeyEvent.VK_4) {
-				game.player.setPlayerWeapIndex(3);
-			}
+			if (code == KeyEvent.VK_1) { game.player.setPlayerWeapIndex(0); }
+			if (code == KeyEvent.VK_2) { game.player.setPlayerWeapIndex(1); }
+			if (code == KeyEvent.VK_3) { game.player.setPlayerWeapIndex(2); }
+			if (code == KeyEvent.VK_4) { game.player.setPlayerWeapIndex(3); }
 
 		}
 		// when in end game screen
-		if (game.gameState == game.endState) {
+		if (game.getGameState() == Game.endState) {
 			if (code == KeyEvent.VK_UP) {
 				game.playSE(0);
 				game.ui.commandNum--;
-				if (game.ui.commandNum < 0) {
-					game.ui.commandNum = 1;
-				}
+				if (game.ui.commandNum < 0) { game.ui.commandNum = 1; }
 			}
 			if (code == KeyEvent.VK_DOWN) {
 				game.playSE(0);
 				game.ui.commandNum++;
-				if (game.ui.commandNum > 1) {
-					game.ui.commandNum = 0;
-				}
+				if (game.ui.commandNum > 1) { game.ui.commandNum = 0; }
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to lobby
@@ -356,7 +303,7 @@ public class KeyHandler implements KeyListener {
 					new Pkt17BackToLobby(game.player.getUsername()).sendData(game.socketClient);
 					// back to main menu
 				} else if (game.ui.commandNum == 1) {
-					game.gameState = game.titleState;
+					game.setGameState(Game.titleState);
 					game.ui.titleScreenState = 0;
 					game.ui.commandNum = 0;
 					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
@@ -383,27 +330,24 @@ public class KeyHandler implements KeyListener {
 		if (code == KeyEvent.VK_Q)
 			drop = true;
 		if (code == KeyEvent.VK_P) {
-			if(game.gameState == game.titleState) return;
+			if (game.getGameState() == Game.titleState)
+				return;
 			game.socketClient.setLatency(System.currentTimeMillis());
 			new Pkt08ServerPing().sendData(game.socketClient);
 		}
 
 	}
-	
+
 	// method to backspace a character when keying nickname
 	public String removeLastChar(String str) {
-		if (str != null && str.length() > 0) {
-			str = str.substring(0, str.length() - 1);
-		}
+		if (str != null && str.length() > 0) { str = str.substring(0, str.length() - 1); }
 		System.out.println(str);
 		return str;
 	}
 
 	// method to limit nickname and ip address length
 	public String maxLength(String str, int max) {
-		if (str.length() > max) {
-			str = str.substring(0, max);
-		}
+		if (str.length() > max) { str = str.substring(0, max); }
 		return str;
 	}
 
@@ -446,7 +390,5 @@ public class KeyHandler implements KeyListener {
 	public void setDrop(boolean drop) {
 		this.drop = drop;
 	}
-	
-	
-	
+
 }

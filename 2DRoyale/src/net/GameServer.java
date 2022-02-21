@@ -20,20 +20,21 @@ public class GameServer extends Thread {
 	private long seed;
 	private List<PlayerMP> connectedPlayers = new ArrayList<PlayerMP>();
 
-	private int gameTicks = 0;
-	private int gameState;
-	public static final int waitState = 1;
-	public static final int playState = 2;
-	public static final int endState = 3;
-
+	private int gameTicks;
 	private int countDownSeq;
 	private int weaponIdCount;
 	private int playerRemaining;
 
+	private int gameState;
+	public static final int waitState = 1;
+	public static final int playState = 2;
+	public static final int endState = 3;
+	
 	public GameServer(Game game, long seed) {
 		this.game = game;
 		this.seed = seed;
 		this.weaponIdCount = 0;
+		this.gameTicks = 0;
 		this.gameState = waitState;
 		this.countDownSeq = -1;
 		this.playerRemaining = 0;
@@ -185,7 +186,7 @@ public class GameServer extends Thread {
 			if (gasVictim.getWeapons()[gasVictim.getPlayerWeapIndex()] != null) {
 				SuperWeapon dropWeap = gasVictim.getWeapons()[gasVictim.getPlayerWeapIndex()];
 				new Pkt12DropWeapon(gasVictim.getUsername(), gasVictim.getPlayerWeapIndex(), dropWeap.getTypeId(), dropWeap.getId(),
-						gasVictim.getWorldX() - dropWeap.getImgIconWidth() / 2 + game.playerSize / 2, gasVictim.getWorldY() - dropWeap.getImgIconHeight() / 2 + game.playerSize / 2)
+						gasVictim.getWorldX() - dropWeap.getImgIconWidth() / 2 + Game.playerSize / 2, gasVictim.getWorldY() - dropWeap.getImgIconHeight() / 2 + Game.playerSize / 2)
 								.sendData(game.socketClient);
 			}
 			gasVictim.setPlayerState(endState);
@@ -229,7 +230,7 @@ public class GameServer extends Thread {
 			if (p.getPlayerState() == endState)
 				continue;
 			playerRemaining++;
-			p.setPlayerState(game.playState);
+			p.setPlayerState(Game.playState);
 			new Pkt14StartGame(p.getUsername()).sendData(this);
 		}
 		// Generate new seed
