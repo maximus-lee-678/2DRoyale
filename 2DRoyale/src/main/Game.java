@@ -164,8 +164,8 @@ public class Game extends JPanel implements Runnable {
 		// Load world defaults based on game state
 		loading = true;
 		tileM = new TileManager(this);
-		maxWorldCol = tileM.maxWorldCol;
-		maxWorldRow = tileM.maxWorldRow;
+		maxWorldCol = tileM.getMaxWorldCol();
+		maxWorldRow = tileM.getMaxWorldRow();
 		worldWidth = tileSize * maxWorldCol;
 		worldHeight = tileSize * maxWorldRow;
 		if (gameState == playState) {

@@ -10,16 +10,16 @@ import main.Game;
 public class TileManager {
 
 	private Game game;
-	public Tile[] tile;
-	public Tile gasTile;
-	public MapTiles[][] mapTileNum;
-	public int maxWorldCol, maxWorldRow;
-	public int gasCounter;
+	private Tile[] floorTile;
+	private Tile gasTile;
+	private MapTiles[][] mapTileData;
+	private int maxWorldCol, maxWorldRow;
+	private int gasCounter;
 
 	public TileManager(Game game) {
 
 		this.game = game;
-		tile = new Tile[20]; // Currently we just store 20 types of tiles
+		floorTile = new Tile[20]; // Currently we just store 20 types of tiles
 		gasCounter = 0;
 		getTileImage(); // populate tile array
 
@@ -34,25 +34,25 @@ public class TileManager {
 	 * Loads tile textures into memory.
 	 */
 	private void getTileImage() {
-		tile[0] = new Tile("tiles", "grass1.png", "Forest");
-		tile[1] = new Tile("tiles", "grass2.png", "Forest");
-		tile[2] = new Tile("tiles", "grass3.png", "Forest");
-		tile[3] = new Tile("tiles", "grasstall.png", "Forest");
-		tile[4] = new Tile("tiles", "earth1.png", "Forest");
-		tile[5] = new Tile("tiles", "earth2.png", "Forest");
+		floorTile[0] = new Tile("tiles", "grass1.png", "Forest");
+		floorTile[1] = new Tile("tiles", "grass2.png", "Forest");
+		floorTile[2] = new Tile("tiles", "grass3.png", "Forest");
+		floorTile[3] = new Tile("tiles", "grasstall.png", "Forest");
+		floorTile[4] = new Tile("tiles", "earth1.png", "Forest");
+		floorTile[5] = new Tile("tiles", "earth2.png", "Forest");
 
-		tile[6] = new Tile("tiles", "coldstone.png", "Snow");
-		tile[7] = new Tile("tiles", "ice.png", "Snow");
-		tile[8] = new Tile("tiles", "slush.png", "Snow");
-		tile[9] = new Tile("tiles", "snow.png", "Snow");
+		floorTile[6] = new Tile("tiles", "coldstone.png", "Snow");
+		floorTile[7] = new Tile("tiles", "ice.png", "Snow");
+		floorTile[8] = new Tile("tiles", "slush.png", "Snow");
+		floorTile[9] = new Tile("tiles", "snow.png", "Snow");
 
-		tile[10] = new Tile("tiles", "ash.png", "Wasteland");
-		tile[11] = new Tile("tiles", "volcanic.png", "Wasteland");
+		floorTile[10] = new Tile("tiles", "ash.png", "Wasteland");
+		floorTile[11] = new Tile("tiles", "volcanic.png", "Wasteland");
 
-		tile[12] = new Tile("tiles", "sand.png", "undefined");
-		tile[13] = new Tile("tiles", "water.png", "undefined", true, false);
-		tile[14] = new Tile("tiles", "magma.png", "undefined", true, false);
-		tile[15] = new Tile("misc", "missing.png", "undefined");
+		floorTile[12] = new Tile("tiles", "sand.png", "undefined");
+		floorTile[13] = new Tile("tiles", "water.png", "undefined", true, false);
+		floorTile[14] = new Tile("tiles", "magma.png", "undefined", true, false);
+		floorTile[15] = new Tile("misc", "missing.png", "undefined");
 
 		gasTile = new Tile("misc", "gas.png");
 	}
@@ -60,7 +60,7 @@ public class TileManager {
 	/**
 	 * Called by loadMap() to map RGB values read from the map schematic to actual tiles in tile[].
 	 */
-	public int mapRGBValues(int red, int green, int blue) {
+	private int mapRGBValues(int red, int green, int blue) {
 
 		double roll = game.rand.nextDouble();
 
@@ -104,7 +104,7 @@ public class TileManager {
 	/**
 	 * Loads building textures into memory.
 	 */
-	public void loadMap(String filePath) {
+	private void loadMap(String filePath) {
 
 		try {
 			BufferedImage img = ImageIO.read(getClass().getResourceAsStream(filePath));
@@ -112,7 +112,7 @@ public class TileManager {
 			maxWorldCol = img.getWidth();
 			maxWorldRow = img.getHeight();
 
-			mapTileNum = new MapTiles[maxWorldCol][maxWorldRow];
+			mapTileData = new MapTiles[maxWorldCol][maxWorldRow];
 
 			for (int y = 0; y < maxWorldRow; y++) {
 				for (int x = 0; x < maxWorldCol; x++) {
@@ -125,7 +125,7 @@ public class TileManager {
 					int green = color.getGreen();
 					int blue = color.getBlue();
 
-					mapTileNum[x][y] = new MapTiles(tile[mapRGBValues(red, green, blue)], game.rand.nextBoolean());
+					mapTileData[x][y] = new MapTiles(floorTile[mapRGBValues(red, green, blue)], game.rand.nextBoolean());
 				}
 			}
 
@@ -135,19 +135,19 @@ public class TileManager {
 	}
 
 	/**
-	 * Updates gas status of tiles in mapTileNum.
+	 * Updates gas status of tiles in mapTileData.
 	 */
 	public void closeGas() {
 		// Close x axis
 		for (int y = 0; y < maxWorldRow; y++) {
-			mapTileNum[gasCounter][y].setIsGassed(true);
-			mapTileNum[maxWorldCol - gasCounter - 1][y].setIsGassed(true);
+			mapTileData[gasCounter][y].setIsGassed(true);
+			mapTileData[maxWorldCol - gasCounter - 1][y].setIsGassed(true);
 		}
 
 		// Close y axis
 		for (int x = 0; x < maxWorldCol; x++) {
-			mapTileNum[x][gasCounter].setIsGassed(true);
-			mapTileNum[x][maxWorldRow - gasCounter - 1].setIsGassed(true);
+			mapTileData[x][gasCounter].setIsGassed(true);
+			mapTileData[x][maxWorldRow - gasCounter - 1].setIsGassed(true);
 		}
 
 		gasCounter++;
@@ -176,20 +176,20 @@ public class TileManager {
 		Tile tileNum1 = null, tileNum2 = null;
 
 		if (ya < 0) { // UP
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityTopRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityTopRow].tile;
 		}
 		if (ya > 0) { // DOWN
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow].tile;
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].tile;
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].tile;
 		}
 		if (xa < 0) { // LEFT
-			tileNum1 = game.tileM.mapTileNum[entityLeftCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileNum[entityLeftCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityLeftCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileData[entityLeftCol][entityBottomRow].tile;
 		}
 		if (xa > 0) { // RIGHT
-			tileNum1 = game.tileM.mapTileNum[entityRightCol][entityTopRow].tile;
-			tileNum2 = game.tileM.mapTileNum[entityRightCol][entityBottomRow].tile;
+			tileNum1 = game.tileM.mapTileData[entityRightCol][entityTopRow].tile;
+			tileNum2 = game.tileM.mapTileData[entityRightCol][entityBottomRow].tile;
 		}
 
 		if (type == "Entity") {
@@ -217,11 +217,31 @@ public class TileManager {
 		int bottomRightTileX = entityRightWorldX / game.tileSize;
 		int bottomRightTileY = entityBottomWorldY / game.tileSize;
 
-		if (mapTileNum[topLeftTileX][topLeftTileY].isGassed() || mapTileNum[topRightTileX][topRightTileY].isGassed() || mapTileNum[bottomLeftTileX][bottomLeftTileY].isGassed()
-				|| mapTileNum[bottomRightTileX][bottomRightTileY].isGassed()) {
+		if (mapTileData[topLeftTileX][topLeftTileY].isGassed() || mapTileData[topRightTileX][topRightTileY].isGassed() || mapTileData[bottomLeftTileX][bottomLeftTileY].isGassed()
+				|| mapTileData[bottomRightTileX][bottomRightTileY].isGassed()) {
 			return true;
 		}
 		return false;
+	}
+
+	public Tile getGasTile() {
+		return gasTile;
+	}
+
+	public MapTiles[][] getMapTileData() {
+		return mapTileData;
+	}
+
+	public int getMaxWorldCol() {
+		return maxWorldCol;
+	}
+
+	public int getMaxWorldRow() {
+		return maxWorldRow;
+	}
+
+	public int getGasCounter() {
+		return gasCounter;
 	}
 
 }

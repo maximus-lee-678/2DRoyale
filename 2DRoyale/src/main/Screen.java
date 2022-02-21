@@ -25,7 +25,7 @@ public class Screen implements RenderInterface {
 	public final int maxScreenRow = 15;
 	public final int screenWidth;
 	public final int screenHeight;
-	private BufferedImage minimapBack, megamapLobby, megamapGame, buildingMinimap;
+	private BufferedImage minimapBack, minimapVoid, megamapLobby, megamapGame, buildingMinimap;
 
 	public Screen(Game game) {
 		this.game = game;
@@ -33,6 +33,7 @@ public class Screen implements RenderInterface {
 		this.screenHeight = game.tileSize * maxScreenRow;
 		try {
 			minimapBack = ImageIO.read(getClass().getResourceAsStream("/UI/minimap_back.png"));
+			minimapVoid = ImageIO.read(getClass().getResourceAsStream("/world_textures/tiles/water.png"));
 			megamapLobby = ImageIO.read(getClass().getResourceAsStream("/maps/lobbyMega.png"));
 			megamapGame = ImageIO.read(getClass().getResourceAsStream("/maps/olympusMega.png"));
 			buildingMinimap = ImageIO.read(getClass().getResourceAsStream("/world_textures/buildings/wall.png"));
@@ -98,10 +99,10 @@ public class Screen implements RenderInterface {
 				if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
 						&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 					// Render tiles based on flip orientation
-					if (!game.tileM.mapTileNum[x][y].isFlipped())
-						g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, gameX, gameY, game.tileSize, game.tileSize, null);
+					if (!game.tileM.getMapTileData()[x][y].isFlipped())
+						g2.drawImage(game.tileM.getMapTileData()[x][y].tile.image, gameX, gameY, game.tileSize, game.tileSize, null);
 					else
-						g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, gameX + game.tileSize, gameY, -game.tileSize, game.tileSize, null);
+						g2.drawImage(game.tileM.getMapTileData()[x][y].tile.image, gameX + game.tileSize, gameY, -game.tileSize, game.tileSize, null);
 				}
 
 			}
@@ -131,7 +132,7 @@ public class Screen implements RenderInterface {
 					if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
 							&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
 						if (tileNum != 0) // Don't draw empty spaces
-							g2.drawImage(game.structM.getTile()[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
+							g2.drawImage(game.structM.getBuildingTile()[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
 					}
 
 				}
@@ -156,7 +157,7 @@ public class Screen implements RenderInterface {
 			// Only render crates player can see
 			if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
 					&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
-				g2.drawImage(game.structM.solid[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
+				g2.drawImage(game.structM.getSolid()[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
 			}
 		}
 	}
@@ -232,8 +233,8 @@ public class Screen implements RenderInterface {
 				// Only render tiles player can see
 				if (worldX + game.tileSize > game.player.getWorldX() - game.player.getScreenX() && worldX - game.tileSize < game.player.getWorldX() + game.player.getScreenX()
 						&& worldY + game.tileSize > game.player.getWorldY() - game.player.getScreenY() && worldY - game.tileSize < game.player.getWorldY() + game.player.getScreenY()) {
-					if (game.tileM.mapTileNum[x][y].isGassed())
-						g2.drawImage(game.tileM.gasTile.image, gameX, gameY, game.tileSize, game.tileSize, null);
+					if (game.tileM.getMapTileData()[x][y].isGassed())
+						g2.drawImage(game.tileM.getGasTile().image, gameX, gameY, game.tileSize, game.tileSize, null);
 				}
 
 			}
@@ -269,9 +270,9 @@ public class Screen implements RenderInterface {
 			g2.drawImage(megamapGame, megamapRenderAtX, megamapRenderAtY, megamapLength, megamapHeight, null);
 
 		// Draw Gas
-		TexturePaint farts = new TexturePaint(game.tileM.gasTile.image, new Rectangle(0, 0, megamapTileSizeX, megamapTileSizeY));
+		TexturePaint farts = new TexturePaint(game.tileM.getGasTile().image, new Rectangle(0, 0, megamapTileSizeX, megamapTileSizeY));
 
-		int gasCounter = game.tileM.gasCounter;
+		int gasCounter = game.tileM.getGasCounter();
 
 		// Prevent gas from drawing over itself
 		if (gasCounter > game.maxWorldCol / 2 || gasCounter > game.maxWorldRow / 2)
@@ -356,10 +357,10 @@ public class Screen implements RenderInterface {
 		for (int y = 0; y < minimapRadius * 2 + 1; y++) {
 			minimapX = 0;
 			for (int x = 0; x < minimapRadius * 2 + 1; x++) {
-				g2.drawImage(game.tileM.tile[13].image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
+				g2.drawImage(minimapVoid, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
 
 				if (game.gameState == game.playState) // only draw gas on border of minimap during combat phase
-					g2.drawImage(game.tileM.gasTile.image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
+					g2.drawImage(game.tileM.getGasTile().image, minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;
 			}
@@ -374,7 +375,7 @@ public class Screen implements RenderInterface {
 			minimapX = 0;
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
 
-				g2.drawImage(game.tileM.mapTileNum[x][y].tile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
+				g2.drawImage(game.tileM.getMapTileData()[x][y].tile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
 						minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;
@@ -408,8 +409,8 @@ public class Screen implements RenderInterface {
 			minimapX = 0;
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
 
-				if (game.tileM.mapTileNum[x][y].isGassed())
-					g2.drawImage(game.tileM.gasTile.image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
+				if (game.tileM.getMapTileData()[x][y].isGassed())
+					g2.drawImage(game.tileM.getGasTile().image, minimapRenderAtX + minimapX + (xOffset * minimapTileSize),
 							minimapRenderAtY + minimapY + (yOffset * minimapTileSize), minimapTileSize, minimapTileSize, null);
 
 				minimapX += minimapTileSize;

@@ -108,10 +108,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
 			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
-			if (game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
+			if (game.tileM.getMapTileData()[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
