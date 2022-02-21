@@ -18,18 +18,16 @@ import item.SuperWeapon;
 
 public class UI {
 
-	Game game;
-	Graphics2D g2;
-	Font maruMonica;
-	public boolean messageOn = false;
-	public boolean gameFinished = false;
-	ArrayList<String> message = new ArrayList<>();
-	ArrayList<Integer> messageCounter = new ArrayList<>();
+	private Game game;
+	private Graphics2D g2;
+	private Font maruMonica;
+	private ArrayList<String> message = new ArrayList<>();
+	private ArrayList<Integer> messageCounter = new ArrayList<>();
 	public int commandNum = 0;
 	public int titleScreenState = 0;
-	public String name = "";
-	public String temp = "";
-	public String ipAddress = "";
+	private String name = "";
+	private String temp = "";
+	private String ipAddress = "";
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 	public int countDownSeq = 0;
 	int tempcounter = 6;
@@ -125,7 +123,7 @@ public class UI {
 		// Main Screen when user opens the game
 		if (titleScreenState == 0) {
 			g2.setColor(new Color(0, 0, 0));
-			g2.fillRect(0, 0, game.screen.screenWidth, game.screen.screenHeight);
+			g2.fillRect(0, 0, game.screen.getScreenWidth(), game.screen.getScreenHeight());
 			
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
 			String text = "2D Royale";
@@ -292,7 +290,7 @@ public class UI {
 			int y = game.tileSize * 3;
 			g2.drawString(text, x, y);
 
-			g2.drawRect(game.tileSize * 6, game.tileSize * 5, game.screen.screenWidth - game.tileSize * 12, game.tileSize * 2);
+			g2.drawRect(game.tileSize * 6, game.tileSize * 5, game.screen.getScreenWidth() - game.tileSize * 12, game.tileSize * 2);
 			x = getXforCenteredText(name);
 			y += game.tileSize * 3;
 			g2.drawString(name, x, y);
@@ -323,7 +321,7 @@ public class UI {
 			int y = game.tileSize * 3;
 			g2.drawString(text, x, y);
 
-			g2.drawRect(game.tileSize * 6, game.tileSize * 5, game.screen.screenWidth - game.tileSize * 12, game.tileSize * 2);
+			g2.drawRect(game.tileSize * 6, game.tileSize * 5, game.screen.getScreenWidth() - game.tileSize * 12, game.tileSize * 2);
 			x = getXforCenteredText(ipAddress);
 			y += game.tileSize * 3;
 			g2.drawString(ipAddress, x, y);
@@ -358,7 +356,7 @@ public class UI {
 	//function to align text in middle
 	public int getXforCenteredText(String text) {
 		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-		int x = game.screen.screenWidth / 2 - length / 2;
+		int x = game.screen.getScreenWidth() / 2 - length / 2;
 		return x;
 	}
 	//draw HP UI
@@ -412,7 +410,7 @@ public class UI {
 
 	// draw kill count
 	public void drawKillsStat(int kills) {
-		int x = game.screen.screenWidth - game.tileSize * 4;
+		int x = game.screen.getScreenWidth() - game.tileSize * 4;
 		int y = game.tileSize;
 		// make box
 		drawSubWindow(x, y, game.tileSize * 3, game.tileSize);
@@ -429,7 +427,7 @@ public class UI {
 	// draw player count
 	public void drawPlayerCount(int playerCount) {
 
-		int x = game.screen.screenWidth - game.tileSize * 4 + 85;
+		int x = game.screen.getScreenWidth() - game.tileSize * 4 + 85;
 		int y = game.tileSize + 14;
 		// draw player count image
 		g2.drawImage(remainingPlayersImage, x, y, 20, 20, null);
@@ -467,7 +465,7 @@ public class UI {
 			int x = game.tileSize * 6;
 			int y = game.tileSize * 2;
 			// make box
-			drawSubWindow(x, y, game.screen.screenWidth - x * 2, game.screen.screenHeight - y * 5);
+			drawSubWindow(x, y, game.screen.getScreenWidth() - x * 2, game.screen.getScreenHeight() - y * 5);
 			String text = "Back To Game";
 			x = getXforCenteredText(text);
 			y += game.tileSize + 30;
@@ -516,7 +514,7 @@ public class UI {
 
 	// also for scrolling kill feed
 	public void drawMessage() {
-		int messageX = game.screen.screenWidth - game.tileSize * 4;
+		int messageX = game.screen.getScreenWidth() - game.tileSize * 4;
 		int messageY = game.tileSize * 4;
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
 

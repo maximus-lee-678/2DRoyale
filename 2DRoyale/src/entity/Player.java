@@ -52,8 +52,8 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 
 		this.setPlayerState(game.waitState);
 		this.playerOffset = 12;
-		this.screenX = game.screen.screenWidth / 2 - game.playerSize / 2;
-		this.screenY = game.screen.screenHeight / 2 - game.playerSize / 2;
+		this.screenX = game.screen.getScreenWidth() / 2 - game.playerSize / 2;
+		this.screenY = game.screen.getScreenHeight() / 2 - game.playerSize / 2;
 		this.mouseX = 0;
 		this.mouseY = 0;
 
@@ -108,10 +108,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 			int randomBottomRightTileX = (separationHitbox.x + separationHitbox.width) / game.tileSize;
 			int randomBottomRightTileY = (separationHitbox.y + separationHitbox.height) / game.tileSize;
 
-			if (game.tileM.mapTileNum[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
-					|| game.tileM.mapTileNum[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
+			if (game.tileM.getMapTileData()[randomTopLeftTileX][randomTopLeftTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomTopRightTileX][randomTopRightTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomBottomLeftTileX][randomBottomLeftTileY].tile.collisionPlayer
+					|| game.tileM.getMapTileData()[randomBottomRightTileX][randomBottomRightTileY].tile.collisionPlayer) {
 				failedPlayerAttempts++;
 				continue mainLoop;
 			}
@@ -358,13 +358,13 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		if (!local) {
 			x = worldX - game.player.worldX + game.player.getScreenX();
 			y = worldY - game.player.worldY + game.player.getScreenY();
-			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
-			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
+			handX = worldX - game.player.worldX + game.screen.getScreenWidth() / 2 - holding.getWidth() / 2;
+			handY = worldY - game.player.worldY + game.screen.getScreenHeight() / 2 - holding.getHeight() / 2;
 		} else {
 			x = screenX;
 			y = screenY;
-			handX = game.screen.screenWidth / 2 - holding.getWidth() / 2;
-			handY = game.screen.screenHeight / 2 - holding.getHeight() / 2;
+			handX = game.screen.getScreenWidth() / 2 - holding.getWidth() / 2;
+			handY = game.screen.getScreenHeight() / 2 - holding.getHeight() / 2;
 		}
 
 		// Rotate weapon/hand to mouse

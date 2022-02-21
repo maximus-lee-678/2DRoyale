@@ -87,7 +87,7 @@ public class Game extends JPanel implements Runnable {
 		rand = new Random(randSeed);
 		playerList = new ArrayList<PlayerMP>();
 
-		this.setPreferredSize(new Dimension(screen.screenWidth, screen.screenHeight));
+		this.setPreferredSize(new Dimension(screen.getScreenWidth(), screen.getScreenHeight()));
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.setFocusable(true);
@@ -164,8 +164,8 @@ public class Game extends JPanel implements Runnable {
 		// Load world defaults based on game state
 		loading = true;
 		tileM = new TileManager(this);
-		maxWorldCol = tileM.maxWorldCol;
-		maxWorldRow = tileM.maxWorldRow;
+		maxWorldCol = tileM.getMaxWorldCol();
+		maxWorldRow = tileM.getMaxWorldRow();
 		worldWidth = tileSize * maxWorldCol;
 		worldHeight = tileSize * maxWorldRow;
 		if (gameState == playState) {

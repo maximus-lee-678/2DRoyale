@@ -28,7 +28,7 @@ public class StructuresManager {
 	// Universal Variables
 	private static final int offset = 48; // used to prevent solids from spawning too near each other
 
-	private Tile[] tile;
+	private Tile[] buildingTile;
 	private Tile[] solid;
 	private Building[] buildings;
 	private List<Crate> crates;
@@ -36,7 +36,7 @@ public class StructuresManager {
 
 	public StructuresManager(Game game) {
 		this.game = game;
-		tile = new Tile[10];
+		buildingTile = new Tile[10];
 		solid = new Tile[10];
 		buildings = new Building[game.numberOfBuildings];
 		crates = new ArrayList<Crate>();
@@ -58,16 +58,16 @@ public class StructuresManager {
 	 */
 	private void getTileImage() {
 
-		tile[0] = new Tile("misc", "missing.png");
-		tile[1] = new Tile("buildings", "marble.png");
+		buildingTile[0] = new Tile("misc", "missing.png");
+		buildingTile[1] = new Tile("buildings", "marble.png");
 
-		tile[2] = new Tile("buildings", "wall.png", true, true);
-		tile[3] = new Tile("buildings", "wallHL.png", true, true);
-		tile[4] = new Tile("buildings", "wallHC.png", true, true);
-		tile[5] = new Tile("buildings", "wallHR.png", true, true);
-		tile[6] = new Tile("buildings", "wallVT.png", true, true);
-		tile[7] = new Tile("buildings", "wallVC.png", true, true);
-		tile[8] = new Tile("buildings", "wallVB.png", true, true);
+		buildingTile[2] = new Tile("buildings", "wall.png", true, true);
+		buildingTile[3] = new Tile("buildings", "wallHL.png", true, true);
+		buildingTile[4] = new Tile("buildings", "wallHC.png", true, true);
+		buildingTile[5] = new Tile("buildings", "wallHR.png", true, true);
+		buildingTile[6] = new Tile("buildings", "wallVT.png", true, true);
+		buildingTile[7] = new Tile("buildings", "wallVC.png", true, true);
+		buildingTile[8] = new Tile("buildings", "wallVB.png", true, true);
 
 	}
 
@@ -115,7 +115,7 @@ public class StructuresManager {
 			// Spawn buildings on solid tiles
 			for (int x = topLeftTileX; x <= topRightTileX; x++) {
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
+					if (game.tileM.getMapTileData()[x][y].tile.collisionPlayer) {
 						failedBuildingAttempts++;
 						continue mainLoop;
 					}
@@ -190,7 +190,7 @@ public class StructuresManager {
 			// Spawn buildings on solid tiles
 			for (int x = topLeftTileX; x <= topRightTileX; x++) {
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
+					if (game.tileM.getMapTileData()[x][y].tile.collisionPlayer) {
 						failedCrateAttempts++;
 						continue mainLoop;
 					}
@@ -261,7 +261,7 @@ public class StructuresManager {
 			// Spawn buildings on solid tiles
 			for (int x = topLeftTileX; x <= topRightTileX; x++) {
 				for (int y = topLeftTileY; y <= bottomLeftTileY; y++) {
-					if (game.tileM.mapTileNum[x][y].tile.collisionPlayer) {
+					if (game.tileM.getMapTileData()[x][y].tile.collisionPlayer) {
 						failedObstructionsAttempts++;
 						continue mainLoop;
 					}
@@ -329,7 +329,7 @@ public class StructuresManager {
 			}
 
 			// Picks a corresponding biome tile
-			switch (game.tileM.mapTileNum[biomeTileX][biomeTileY].tile.biome) {
+			switch (game.tileM.getMapTileData()[biomeTileX][biomeTileY].tile.biome) {
 			case "Forest":
 				tryObstruction.imageID = game.rand.nextInt(1, 2 + 1);
 				break;
@@ -440,10 +440,10 @@ public class StructuresManager {
 					tileNum2 = rowNum[entityRightCol];
 				}
 				if (type == "Entity") {
-					if (tile[tileNum1].collisionPlayer || tile[tileNum2].collisionPlayer)
+					if (buildingTile[tileNum1].collisionPlayer || buildingTile[tileNum2].collisionPlayer)
 						return true;
 				} else if (type == "Projectile") {
-					if (tile[tileNum1].collisionProjectile || tile[tileNum2].collisionProjectile)
+					if (buildingTile[tileNum1].collisionProjectile || buildingTile[tileNum2].collisionProjectile)
 						return true;
 				}
 
@@ -546,8 +546,8 @@ public class StructuresManager {
 		return buildingOccupiesTile;
 	}
 
-	public Tile[] getTile() {
-		return tile;
+	public Tile[] getBuildingTile() {
+		return buildingTile;
 	}
 	
 	public Tile[] getSolid() {
