@@ -18,18 +18,16 @@ import item.SuperWeapon;
 
 public class UI {
 
-	Game game;
-	Graphics2D g2;
-	Font maruMonica;
-	public boolean messageOn = false;
-	public boolean gameFinished = false;
-	ArrayList<String> message = new ArrayList<>();
-	ArrayList<Integer> messageCounter = new ArrayList<>();
+	private Game game;
+	private Graphics2D g2;
+	private Font maruMonica;
+	private ArrayList<String> message = new ArrayList<>();
+	private ArrayList<Integer> messageCounter = new ArrayList<>();
 	public int commandNum = 0;
 	public int titleScreenState = 0;
-	public String name = "";
-	public String temp = "";
-	public String ipAddress = "";
+	private String name = "";
+	private String temp = "";
+	private String ipAddress = "";
 	public BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 	public int countDownSeq = 0;
 	int tempcounter = 6;
