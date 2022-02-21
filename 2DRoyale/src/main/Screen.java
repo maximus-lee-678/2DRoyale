@@ -15,6 +15,7 @@ import item.SuperWeapon;
 import structure.Building;
 import structure.Crate;
 import structure.Obstruction;
+import structure.StructuresManager;
 
 public class Screen implements RenderInterface {
 
@@ -112,8 +113,8 @@ public class Screen implements RenderInterface {
 	 * Renders buildings. 2nd layer to render.
 	 */
 	private void renderBuildings(Graphics2D g2) {
-		Building[] buildings = game.structM.buildings;
-		int buildingTileSize = game.structM.buildingTileSize;
+		Building[] buildings = game.structM.getBuildings();
+		int buildingTileSize = StructuresManager.getBuildingTileSize();
 
 		for (int i = 0; i < game.numberOfBuildings; i++) {
 
@@ -130,7 +131,7 @@ public class Screen implements RenderInterface {
 					if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
 							&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
 						if (tileNum != 0) // Don't draw empty spaces
-							g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
+							g2.drawImage(game.structM.getTile()[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize, null);
 					}
 
 				}
@@ -142,8 +143,8 @@ public class Screen implements RenderInterface {
 	 * Renders crates. 2nd layer to render.
 	 */
 	private void renderCrates(Graphics2D g2) {
-		List<Crate> crates = game.structM.crates;
-		int crateTileSize = game.structM.crateTileSize;
+		List<Crate> crates = game.structM.getCrates();
+		int crateTileSize = StructuresManager.getCrateTileSize();
 
 		for (int i = 0; i < crates.size(); i++) {
 			Crate crate = crates.get(i);
@@ -155,7 +156,7 @@ public class Screen implements RenderInterface {
 			// Only render crates player can see
 			if (worldX + game.tileSize > game.player.worldX - game.player.screenX && worldX - game.tileSize < game.player.worldX + game.player.screenX
 					&& worldY + game.tileSize > game.player.worldY - game.player.screenY && worldY - game.tileSize < game.player.worldY + game.player.screenY) {
-				g2.drawImage(game.structM.solid[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
+				g2.drawImage(game.structM.getSolid()[crate.imageID].image, gameX, gameY, crateTileSize, crateTileSize, null);
 			}
 		}
 	}
@@ -164,7 +165,7 @@ public class Screen implements RenderInterface {
 	 * Renders obstructions. 2nd layer to render.
 	 */
 	private void renderObstructions(Graphics2D g2) {
-		Obstruction[] obstructions = game.structM.obstructions;
+		Obstruction[] obstructions = game.structM.getObstructions();
 
 		for (int i = 0; i < obstructions.length; i++) {
 			int worldX = obstructions[i].boundingBox.x;
@@ -179,9 +180,9 @@ public class Screen implements RenderInterface {
 					&& worldY - obstructions[i].boundingBox.height < game.player.worldY + game.player.screenY) {
 				// Render obstructions based on flip orientation
 				if (!obstructions[i].mirrored)
-					g2.drawImage(game.structM.solid[obstructions[i].imageID].image, gameX, gameY, obstructions[i].boundingBox.width, obstructions[i].boundingBox.height, null);
+					g2.drawImage(game.structM.getSolid()[obstructions[i].imageID].image, gameX, gameY, obstructions[i].boundingBox.width, obstructions[i].boundingBox.height, null);
 				else
-					g2.drawImage(game.structM.solid[obstructions[i].imageID].image, gameX + obstructions[i].boundingBox.width, gameY, -obstructions[i].boundingBox.width,
+					g2.drawImage(game.structM.getSolid()[obstructions[i].imageID].image, gameX + obstructions[i].boundingBox.width, gameY, -obstructions[i].boundingBox.width,
 							obstructions[i].boundingBox.height, null);
 
 			}
@@ -390,7 +391,7 @@ public class Screen implements RenderInterface {
 			for (int x = xLowerBound; x < xUpperBound + 1; x++) {
 				// Checks buildingOccupiesTile array populated during generation to see if
 				// building intersects that tile
-				if (game.structM.buildingOccupiesTile[x][y])
+				if (game.structM.getBuildingOccupiesTile()[x][y])
 					g2.drawImage(buildingMinimap, minimapRenderAtX + minimapX + (xOffset * minimapTileSize), minimapRenderAtY + minimapY + (yOffset * minimapTileSize),
 							minimapTileSize, minimapTileSize, null);
 
