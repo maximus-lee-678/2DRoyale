@@ -1,4 +1,4 @@
-/**
+	/**
 	 * Not normally used. Used when changes are made to the map to generate a new graphic for the megamap. Place and call in Screen.java.
 	 */
 	private void renderMegamapObsolete(Graphics2D g2) {
@@ -38,7 +38,7 @@
 		for (int y = 0; y < game.maxWorldRow; y++) {
 			megamapX = 0;
 			for (int x = 0; x < game.maxWorldCol; x++) {
-				if (game.structM.buildingOccupiesTile[x][y])
+				if (game.tileM.getMapTileData()[x][y].hasBuilding())
 					g2.drawImage(game.tileM.tile[6].image, megamapRenderAtX + megamapX, megamapRenderAtY + megamapY, megamapTileSizeX, megamapTileSizeY, null);
 				megamapX += megamapTileSizeX;
 			}
@@ -64,3 +64,235 @@
 		g2.drawImage(game.player.sprite, megamapRenderAtX + playerMapX - (playerSize / 2), megamapRenderAtY + playerMapY - (playerSize / 2), playerSize, playerSize, null);
 
 	}
+	
+=====
+
+	/**
+	 * Player render function that ensure out-of bounds region on the map is not shown. Not used because of time limitations in calculating player shooting.
+	 * Place in Player.java.
+	 */	
+	public void render(Graphics2D g2) {
+		
+		BufferedImage holding;		
+		int handOffset;		
+
+		if(playerWeapIndex < 0) {
+			holding = playerHand;
+			handOffset = -4;
+		} else {
+			holding = getWeapons().get(playerWeapIndex).sprite; // This will be replaced by the img of the weapon the player is holding
+			handOffset = getWeapons().get(playerWeapIndex).imgOffset;
+		}		
+		
+		int x, y;
+		int handX, handY;		
+
+		if (!isLocal) {
+			x = worldX - game.player.worldX + game.player.screenX;
+			y = worldY - game.player.worldY + game.player.screenY;
+			handX = worldX - game.player.worldX + game.screen.screenWidth / 2 - holding.getWidth() / 2;
+			handY = worldY - game.player.worldY + game.screen.screenHeight / 2 - holding.getHeight() / 2;
+		} else {
+			x = screenX;
+			y = screenY;
+			handX = game.screen.screenWidth / 2 - holding.getWidth() / 2;
+			handY = game.screen.screenHeight / 2 - holding.getHeight() / 2;
+			
+			if (screenX > worldX)
+				x = worldX;
+			
+			if (screenY > worldY)
+				y = worldY;
+				
+			int rightOffset = game.screen.screenWidth - game.player.screenX;
+			if (rightOffset > game.worldWidth - game.player.worldX)
+				x = game.screen.screenWidth - (game.worldWidth - worldX);
+			
+			int bottomOffset = game.screen.screenHeight - game.player.screenY;
+			if (bottomOffset > game.worldHeight - game.player.worldY)
+				y = game.screen.screenHeight - (game.worldHeight - worldY);
+		}
+
+		AffineTransform t = new AffineTransform();
+		t.setToTranslation(handX, handY);
+		t.rotate(imageAngleRad, holding.getWidth() / 2, holding.getHeight() / 2);
+		t.translate(game.playerSize / 2 + holding.getWidth() / 2 + handOffset, 0);
+
+		g2.drawImage(holding, t, null); // Draw hand (weapons)
+		g2.drawImage(sprite, x, y, game.playerSize, game.playerSize, null); // Draw player
+
+	}
+
+=====
+	/**
+	 * World render function that ensure out-of bounds region on the map is not shown. Not used because of time limitations in calculating player shooting.
+	 * Place in Screen.java.
+	 */	
+private void renderWorld(Graphics2D g2) {
+		int worldCol = 0;
+		int worldRow = 0;
+
+		while (worldCol < game.maxWorldCol && worldRow < game.maxWorldRow) {
+
+			int tileNum = game.tileM.mapTileNum[worldCol][worldRow][0];
+			int worldX = worldCol * game.tileSize;
+			int worldY = worldRow * game.tileSize;
+			int gameX = worldX - game.player.worldX + game.player.screenX;
+			int gameY = worldY - game.player.worldY + game.player.screenY;
+
+			if (game.player.screenX > game.player.worldX)
+				gameX = worldX;
+			if (game.player.screenY > game.player.worldY)
+				gameY = worldY;
+			int rightOffset = screenWidth - game.player.screenX;
+			if (rightOffset > game.worldWidth - game.player.worldX)
+				gameX = screenWidth - (game.worldWidth - worldX);
+			int bottomOffset = screenHeight - game.player.screenY;
+			if (bottomOffset > game.worldHeight - game.player.worldY)
+				gameY = screenHeight - (game.worldHeight - worldY);
+
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
+				else
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize,
+							game.tileSize, null);
+			} else if (game.player.screenX > game.player.worldX || game.player.screenY > game.player.worldY
+					|| rightOffset > game.worldWidth - game.player.worldX
+					|| bottomOffset > game.worldHeight - game.player.worldY) {
+				if (game.tileM.mapTileNum[worldCol][worldRow][1] == 1)
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX, gameY, game.tileSize, game.tileSize, null);
+				else
+					g2.drawImage(game.tileM.tile[tileNum].image, gameX + game.tileSize, gameY, -game.tileSize,
+							game.tileSize, null);
+			}
+
+			worldCol++;
+
+			if (worldCol == game.maxWorldCol) {
+				worldCol = 0;
+				worldRow++;
+			}
+		}
+	}
+
+=====
+	/**
+	 * Building render function that ensure out-of bounds region on the map is not shown. Not used because of time limitations in calculating player shooting.
+	 * Place in Screen.java.
+	 */	
+	private void renderBuildings(Graphics2D g2) {
+		int worldCol, worldRow;
+		Building[] building = game.structM.building;
+		int buildingTileSize = game.structM.buildingTileSize;
+
+		for (int i = 0; i < game.numberOfBuildings; i++) {
+			worldCol = 0;
+			worldRow = 0;
+			while (worldCol < building[i].boundingBox.width / buildingTileSize
+					&& worldRow < building[i].boundingBox.height / buildingTileSize) {
+
+				int[] rowNum = building[i].buildingTileNum.get(worldRow);
+				int tileNum = rowNum[worldCol];
+				int worldX = building[i].boundingBox.x + (worldCol * buildingTileSize);
+				int worldY = building[i].boundingBox.y + (worldRow * buildingTileSize);
+				int gameX = worldX - game.player.worldX + game.player.screenX;
+				int gameY = worldY - game.player.worldY + game.player.screenY;
+
+				if (game.player.screenX > game.player.worldX)
+					gameX = worldX;
+				if (game.player.screenY > game.player.worldY)
+					gameY = worldY;
+				int rightOffset = screenWidth - game.player.screenX;
+				if (rightOffset > game.worldWidth - game.player.worldX)
+					gameX = screenWidth - (game.worldWidth - worldX);
+				int bottomOffset = screenHeight - game.player.screenY;
+				if (bottomOffset > game.worldHeight - game.player.worldY)
+					gameY = screenHeight - (game.worldHeight - worldY);
+				
+				if (tileNum != 0) {
+					if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+							&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+							&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+							&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize,
+								null);
+					}
+					else if (game.player.screenX > game.player.worldX || game.player.screenY > game.player.worldY
+							|| rightOffset > game.worldWidth - game.player.worldX
+							|| bottomOffset > game.worldHeight - game.player.worldY) {
+						g2.drawImage(game.structM.tile[tileNum].image, gameX, gameY, buildingTileSize, buildingTileSize,
+								null);
+					}
+				} 
+
+				worldCol++;
+
+				if (worldCol == building[i].boundingBox.width / buildingTileSize) {
+					worldCol = 0;
+					worldRow++;
+				}
+			}
+		}
+	}
+	
+=====
+
+	/**
+	 * Crate render function that ensure out-of bounds region on the map is not shown. Not used because of time limitations in calculating player shooting.
+	 * Place in Screen.java.
+	 */	
+	private void renderCrates(Graphics2D g2) {
+		Crate[] crate = game.structM.crate;
+		int crateTileSize = game.structM.crateTileSize;
+
+		for (int i = 0; i < game.numberOfCrates; i++) {
+
+			int worldX = crate[i].collisionBoundingBox.x;
+			int worldY = crate[i].collisionBoundingBox.y;
+			int gameX = worldX - game.player.worldX + game.player.screenX;
+			int gameY = worldY - game.player.worldY + game.player.screenY;
+
+			if (game.player.screenX > game.player.worldX)
+				gameX = worldX;
+			if (game.player.screenY > game.player.worldY)
+				gameY = worldY;
+			int rightOffset = screenWidth - game.player.screenX;
+			if (rightOffset > game.worldWidth - game.player.worldX)
+				gameX = screenWidth - (game.worldWidth - worldX);
+			int bottomOffset = screenHeight - game.player.screenY;
+			if (bottomOffset > game.worldHeight - game.player.worldY)
+				gameY = screenHeight - (game.worldHeight - worldY);
+			
+			if (worldX + game.tileSize > game.player.worldX - game.player.screenX
+					&& worldX - game.tileSize < game.player.worldX + game.player.screenX
+					&& worldY + game.tileSize > game.player.worldY - game.player.screenY
+					&& worldY - game.tileSize < game.player.worldY + game.player.screenY) {
+				g2.drawImage(game.structM.obstruction[crate[i].crateTileNum].image, gameX, gameY, crateTileSize,
+						crateTileSize, null);
+			} else if(game.player.screenX > game.player.worldX || game.player.screenY > game.player.worldY
+					|| rightOffset > game.worldWidth - game.player.worldX
+					|| bottomOffset > game.worldHeight - game.player.worldY) {
+				g2.drawImage(game.structM.obstruction[crate[i].crateTileNum].image, gameX, gameY, crateTileSize,
+						crateTileSize, null);
+			}
+
+		}
+
+	}
+
+=====
+// Snippet for rendering minimap void with setPaint(). Not used due to texture anomalies.
+
+		TexturePaint outOfBounds = new TexturePaint(game.tileM.tile[13].image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
+		g2.setPaint(outOfBounds);
+		g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
+
+		if (game.gameState == game.playState) {
+			TexturePaint farts = new TexturePaint(game.tileM.gasTile.image, new Rectangle(0, 0, minimapTileSize, minimapTileSize));
+			g2.setPaint(farts);
+			g2.fillRect(minimapRenderAtX + minimapX, minimapRenderAtY + minimapY, minimapTileSize * (minimapRadius * 2 + 1), minimapTileSize * (minimapRadius * 2 + 1));
+		}

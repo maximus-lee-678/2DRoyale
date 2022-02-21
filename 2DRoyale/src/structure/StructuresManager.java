@@ -13,20 +13,19 @@ public class StructuresManager {
 
 	// Building Variables
 	private static final int buildingTileSize = 16;
-	private static final int buildingBlueprintCount = 7;
-	private boolean[][] buildingOccupiesTile;
+	private final int buildingBlueprintCount = 7;
 
 	// Crate Variables
 	private static final int crateTileSize = 32;
-	private static final int interactRadius = 16;
+	private final int interactRadius = 16;
 	private List<Integer> crateTileNum;
 
 	// Obstruction Variables
-	private static final int obstructionTileSizeLower = 48;
-	private static final int obstructionTileSizeUpper = 96;
+	private final int obstructionTileSizeLower = 48;
+	private final int obstructionTileSizeUpper = 96;
 
 	// Universal Variables
-	private static final int offset = 48; // used to prevent solids from spawning too near each other
+	private final int offset = 48; // used to prevent solids from spawning too near each other
 
 	private Tile[] buildingTile;
 	private Tile[] solid;
@@ -40,7 +39,6 @@ public class StructuresManager {
 		this.solid = new Tile[10];
 		this.buildings = new Building[numberOfBuildings];
 		this.crates = new ArrayList<Crate>();
-		this.buildingOccupiesTile = new boolean[game.tileM.getMaxWorldCol()][game.tileM.getMaxWorldRow()]; // initialised to false
 		this.obstructions = new Obstruction[numberOfObstructions];
 		this.crateTileNum = new ArrayList<Integer>();
 
@@ -146,7 +144,7 @@ public class StructuresManager {
 
 		System.out.println("Building collisions: " + failedBuildingAttempts);
 
-		// Fill buildings in tile array, for minimap rendering
+		// Sets hasBuilding in mapTileData, for minimap rendering
 		for (int i = 0; i < numberOfBuildings; i++) {
 			int buildingTopLeftX;
 			int buildingTopLeftY;
@@ -159,8 +157,8 @@ public class StructuresManager {
 			buildingBottomRightY = (buildings[i].getBoundingBox().y + buildings[i].getBoundingBox().height) / Game.tileSize;
 
 			for (int y = buildingTopLeftY; y <= buildingBottomRightY; y++) {
-				for (int x = buildingTopLeftX; x < buildingBottomRightX; x++) {
-					buildingOccupiesTile[x][y] = true;
+				for (int x = buildingTopLeftX; x <= buildingBottomRightX; x++) {
+					game.tileM.getMapTileData()[x][y].setHasBuilding(true);
 				}
 			}
 		}
@@ -538,10 +536,6 @@ public class StructuresManager {
 
 	public static int getCrateTileSize() {
 		return crateTileSize;
-	}
-	
-	public boolean[][] getBuildingOccupiesTile() {
-		return buildingOccupiesTile;
 	}
 
 	public Tile[] getBuildingTile() {
