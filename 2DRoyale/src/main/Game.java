@@ -87,7 +87,7 @@ public class Game extends JPanel implements Runnable {
 		rand = new Random(randSeed);
 		playerList = new ArrayList<PlayerMP>();
 
-		this.setPreferredSize(new Dimension(screen.screenWidth, screen.screenHeight));
+		this.setPreferredSize(new Dimension(screen.getScreenWidth(), screen.getScreenHeight()));
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.setFocusable(true);

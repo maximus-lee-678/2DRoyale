@@ -21,10 +21,12 @@ public class Screen implements RenderInterface {
 
 	private Game game;
 
-	public final int maxScreenCol = 26;
-	public final int maxScreenRow = 15;
-	public final int screenWidth;
-	public final int screenHeight;
+	private final int maxScreenCol = 26;
+	private final int maxScreenRow = 15;
+	private final int screenWidth;
+	private final int screenHeight;
+	
+
 	private BufferedImage minimapBack, minimapVoid, megamapLobby, megamapGame, buildingMinimap;
 
 	public Screen(Game game) {
@@ -422,5 +424,12 @@ public class Screen implements RenderInterface {
 		g2.drawImage(game.player.getSprite(), minimapRenderAtX + (minimapRadius * minimapTileSize), minimapRenderAtY + (minimapRadius * minimapTileSize), minimapTileSize,
 				minimapTileSize, null);
 	}
-
+	
+	public int getScreenWidth() {
+		return screenWidth;
+	}
+	
+	public int getScreenHeight() {
+		return screenHeight;
+	}
 }
