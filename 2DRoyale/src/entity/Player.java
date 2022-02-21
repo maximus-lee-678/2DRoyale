@@ -117,33 +117,33 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 			}
 
 			// Prevent player from spawning in buildings
-			for (int i = 0; i < game.structM.buildings.length; i++) {
-				if (separationHitbox.x < game.structM.buildings[i].boundingBox.x + game.structM.buildings[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.buildings[i].boundingBox.x
-						&& separationHitbox.y < game.structM.buildings[i].boundingBox.y + game.structM.buildings[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.buildings[i].boundingBox.y) {
+			for (int i = 0; i < game.structM.getBuildings().length; i++) {
+				if (separationHitbox.x < game.structM.getBuildings()[i].boundingBox.x + game.structM.getBuildings()[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getBuildings()[i].boundingBox.x
+						&& separationHitbox.y < game.structM.getBuildings()[i].boundingBox.y + game.structM.getBuildings()[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getBuildings()[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
 			}
 
 			// Prevent player from spawning in crates
-			for (int i = 0; i < game.structM.crates.size(); i++) {
-				if (separationHitbox.x < game.structM.crates.get(i).collisionBoundingBox.x + game.structM.crates.get(i).collisionBoundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.crates.get(i).collisionBoundingBox.x
-						&& separationHitbox.y < game.structM.crates.get(i).collisionBoundingBox.y + game.structM.crates.get(i).collisionBoundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.crates.get(i).collisionBoundingBox.y) {
+			for (int i = 0; i < game.structM.getCrates().size(); i++) {
+				if (separationHitbox.x < game.structM.getCrates().get(i).collisionBoundingBox.x + game.structM.getCrates().get(i).collisionBoundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getCrates().get(i).collisionBoundingBox.x
+						&& separationHitbox.y < game.structM.getCrates().get(i).collisionBoundingBox.y + game.structM.getCrates().get(i).collisionBoundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getCrates().get(i).collisionBoundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}
 			}
 
 			// Prevent player from spawning in obstructions
-			for (int i = 0; i < game.structM.obstructions.length; i++) {
-				if (separationHitbox.x < game.structM.obstructions[i].boundingBox.x + game.structM.obstructions[i].boundingBox.width
-						&& separationHitbox.x + separationHitbox.width > game.structM.obstructions[i].boundingBox.x
-						&& separationHitbox.y < game.structM.obstructions[i].boundingBox.y + game.structM.obstructions[i].boundingBox.height
-						&& separationHitbox.y + separationHitbox.height > game.structM.obstructions[i].boundingBox.y) {
+			for (int i = 0; i < game.structM.getObstructions().length; i++) {
+				if (separationHitbox.x < game.structM.getObstructions()[i].boundingBox.x + game.structM.getObstructions()[i].boundingBox.width
+						&& separationHitbox.x + separationHitbox.width > game.structM.getObstructions()[i].boundingBox.x
+						&& separationHitbox.y < game.structM.getObstructions()[i].boundingBox.y + game.structM.getObstructions()[i].boundingBox.height
+						&& separationHitbox.y + separationHitbox.height > game.structM.getObstructions()[i].boundingBox.y) {
 					failedPlayerAttempts++;
 					continue mainLoop;
 				}

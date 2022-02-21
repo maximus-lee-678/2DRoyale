@@ -12,30 +12,29 @@ public class StructuresManager {
 	private Game game;
 
 	// Building Variables
-	public int buildingTileSize = 16;
-	public int buildingBlueprintCount = 7;
-	public boolean[][] buildingOccupiesTile;
+	private static final int buildingTileSize = 16;
+	private static final int buildingBlueprintCount = 7;
+	private boolean[][] buildingOccupiesTile;
 
 	// Crate Variables
-	public int crateTileSize = 32;
-	public int interactRadius = 16;
-	public List<Integer> crateTileNum;
+	private static final int crateTileSize = 32;
+	private static final int interactRadius = 16;
+	private List<Integer> crateTileNum;
 
 	// Obstruction Variables
-	public int obstructionTileSizeLower = 48;
-	public int obstructionTileSizeUpper = 96;
+	private static final int obstructionTileSizeLower = 48;
+	private static final int obstructionTileSizeUpper = 96;
 
 	// Universal Variables
-	public int offset = 48; // used to prevent solids from spawning too near each other
+	private static final int offset = 48; // used to prevent solids from spawning too near each other
 
-	public Tile[] tile;
-	public Tile[] solid;
-	public Building[] buildings;
-	public List<Crate> crates;
-	public Obstruction[] obstructions;
+	private Tile[] tile;
+	private Tile[] solid;
+	private Building[] buildings;
+	private List<Crate> crates;
+	private Obstruction[] obstructions;
 
 	public StructuresManager(Game game) {
-
 		this.game = game;
 		tile = new Tile[10];
 		solid = new Tile[10];
@@ -48,7 +47,7 @@ public class StructuresManager {
 		getTileImage(); // populate tile array
 		getSolidImage();
 
-		// generate buildings, then crates, then environmental obstructions(wip)
+		// generate buildings, then crates, then environmental obstructions
 		loadBuildings(game.numberOfBuildings);
 		loadCrates(game.numberOfCrates);
 		loadObstructions(game.numberOfObstructions);
@@ -94,7 +93,7 @@ public class StructuresManager {
 	/**
 	 * Generates buildings.
 	 */
-	public void loadBuildings(int numberOfBuildings) {
+	private void loadBuildings(int numberOfBuildings) {
 		int placedBuildings = 0;
 		int failedBuildingAttempts = 0; // debug variable
 
@@ -170,7 +169,7 @@ public class StructuresManager {
 	/**
 	 * Generates crates.
 	 */
-	public void loadCrates(int numberOfCrates) {
+	private void loadCrates(int numberOfCrates) {
 
 		int placedCrates = 0;
 		int failedCrateAttempts = 0; // debug variable
@@ -239,7 +238,7 @@ public class StructuresManager {
 	/**
 	 * Generates obstructions.
 	 */
-	public void loadObstructions(int numberOfObstructions) {
+	private void loadObstructions(int numberOfObstructions) {
 
 		int placedObstructions = 0;
 		int failedObstructionsAttempts = 0; // debug variable
@@ -534,5 +533,36 @@ public class StructuresManager {
 		return -1;
 
 	}
+	
+	public static int getBuildingTileSize() {
+		return buildingTileSize;
+	}
 
+	public static int getCrateTileSize() {
+		return crateTileSize;
+	}
+	
+	public boolean[][] getBuildingOccupiesTile() {
+		return buildingOccupiesTile;
+	}
+
+	public Tile[] getTile() {
+		return tile;
+	}
+	
+	public Tile[] getSolid() {
+		return solid;
+	}
+
+	public Building[] getBuildings() {
+		return buildings;
+	}
+
+	public List<Crate> getCrates() {
+		return crates;
+	}
+
+	public Obstruction[] getObstructions() {
+		return obstructions;
+	}
 }
