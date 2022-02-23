@@ -269,11 +269,11 @@ public class Screen implements RenderInterface {
 		int megamapTileSizeY = megamapLength / game.tileM.getMaxWorldCol();
 		int megamapRenderAtX = game.player.getScreenX() - megamapLength / 2;
 		int megamapRenderAtY = game.player.getScreenY() - megamapHeight / 2;
-		int fullMapLength = game.tileM.getMaxWorldCol() * Game.tileSize * megamapLength;
-		int fullMapHeight = game.tileM.getMaxWorldRow() * Game.tileSize * megamapHeight;
+		int playerCentreX = game.player.getWorldX() + game.player.getEntityArea().x + (game.player.getEntityArea().width / 2);
+		int playerCentreY = game.player.getWorldY() + game.player.getEntityArea().y + (game.player.getEntityArea().height / 2);
 
-		int playerMapX = (int) Math.round((double) game.player.getWorldX() / fullMapLength);
-		int playerMapY = (int) Math.round((double) game.player.getWorldY() / fullMapHeight);
+		int playerMapX = (int) Math.round((double) playerCentreX / (game.tileM.getMaxWorldRow() * Game.tileSize) * megamapLength);
+		int playerMapY = (int) Math.round((double) playerCentreY / (game.tileM.getMaxWorldCol() * Game.tileSize) * megamapHeight);
 
 		// Draw megamap back
 		Color back = new Color(11, 227, 178);
