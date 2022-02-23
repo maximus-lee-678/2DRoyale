@@ -168,8 +168,8 @@ public class GameClient extends Thread {
 		// Move to title screen and clear player array
 		game.setGameState(Game.titleState);
 		game.player.setPlayerState(Game.titleState);
-		game.ui.titleScreenState = 0;
-		game.ui.commandNum = 0;
+		game.ui.setTitleScreenState(0);
+		game.keys.setUserSelect(0);
 		game.clearPlayers();
 	}
 
@@ -177,10 +177,11 @@ public class GameClient extends Thread {
 		game.ui.addMessage(winnerPacket.getUsername() + " won!");
 		// If player is winner, end the game
 		if (winnerPacket.getUsername().equals(game.player.getUsername())) {
-			game.ui.playingPlayerCount = 1;
-			game.ui.win = true;
+//			game.ui.playingPlayerCount = 1;
+			game.ui.setWin(true);
 			game.setGameState(Game.endState);
 			game.player.setPlayerState(Game.endState);
+			game.soundHandler.playSound(10);
 		}
 	}
 
@@ -189,7 +190,7 @@ public class GameClient extends Thread {
 		game.getPlayers().get(playerIndex(backToLobbyPacket.getUsername())).setPlayerDefault();
 		// If player is you, clear the number of kills
 		if (backToLobbyPacket.getUsername().equals(game.player.getUsername()))
-			game.ui.kills = 0;
+			game.ui.setKills(0);
 	}
 
 	private void handleDeath(Pkt16Death deathPacket) {
@@ -197,16 +198,18 @@ public class GameClient extends Thread {
 		game.getPlayers().get(playerIndex(deathPacket.getVictim())).setPlayerState(Game.endState);
 		// If player is the shooter, increment kills
 		if (deathPacket.getUsername().equals(game.player.getUsername()))
-			game.ui.kills++;
+			game.ui.incrementKills();
 		// If player is victim, end game
 		if (deathPacket.getVictim().equals(game.player.getUsername())) {
 			game.setGameState(Game.endState);
-			game.ui.win = false;
+			game.ui.setWin(false);
+			game.soundHandler.playSound(11);
 		}
 	}
 
 	private void handleCountDown(Pkt15CountdownSeq countDownPacket) {
-		game.ui.countdown = countDownPacket.getCountDown();
+		game.ui.setCountdown(countDownPacket.getCountDown());
+		game.soundHandler.playSound(6);
 		// Show countdown on screen when game starts
 		if (countDownPacket.getCountDown() > 0)
 			System.out.println("Game Starting in " + countDownPacket.getCountDown());

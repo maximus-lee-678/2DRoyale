@@ -13,19 +13,19 @@ public class StructuresManager {
 
 	// Building Variables
 	private static final int buildingTileSize = 16;
-	private final int buildingBlueprintCount = 7;
+	private static final int buildingBlueprintCount = 7;
 
 	// Crate Variables
 	private static final int crateTileSize = 32;
-	private final int interactRadius = 16;
+	private static final int interactRadius = 16;
 	private List<Integer> crateTileNum;
 
 	// Obstruction Variables
-	private final int obstructionTileSizeLower = 48;
-	private final int obstructionTileSizeUpper = 96;
+	private static final int obstructionTileSizeLower = 48;
+	private static final int obstructionTileSizeUpper = 96;
 
 	// Universal Variables
-	private final int offset = 48; // used to prevent solids from spawning too near each other
+	private static final int offset = 48; // used to prevent solids from spawning too near each other
 
 	private Tile[] buildingTile;
 	private Tile[] solid;

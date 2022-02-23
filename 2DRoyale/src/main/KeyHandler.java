@@ -20,6 +20,8 @@ public class KeyHandler implements KeyListener {
 	private boolean up, down, left, right;
 	private boolean interact, drop, map, ping;
 	private boolean isHost;
+
+	private int userSelect;
 	private static final String pattern = "^[a-zA-Z0-9]*$";// regex for username
 	private static final String ipPattern = "^[0-9\\.]*$"; // regex for ip address
 
@@ -38,73 +40,73 @@ public class KeyHandler implements KeyListener {
 		int code = e.getKeyCode();
 		// when in menu page
 		if (game.getGameState() == Game.titleState) {
-			if (game.ui.titleScreenState == 0) {
+			if (game.ui.getTitleScreenState() == 0) {
 				if (code == KeyEvent.VK_UP) {
-					game.playSE(0);
-					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) { game.ui.commandNum = 3; }
+					game.soundHandler.playSound(0);
+					userSelect--;
+					if (userSelect < 0) { userSelect = 3; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
-					game.playSE(0);
-					game.ui.commandNum++;
-					if (game.ui.commandNum > 3) { game.ui.commandNum = 0; }
+					game.soundHandler.playSound(0);
+					userSelect++;
+					if (userSelect > 3) { userSelect = 0; }
 				}
 				if (code == KeyEvent.VK_ENTER) {
 					// when user click "start"
-					if (game.ui.commandNum == 0) { game.ui.titleScreenState = 3; }
+					if (userSelect == 0) { game.ui.setTitleScreenState(3); }
 					//// when user click "how to play"
-					if (game.ui.commandNum == 1) { game.ui.titleScreenState = 1; }
+					if (userSelect == 1) { game.ui.setTitleScreenState(1); }
 					// when user click "players control"
-					if (game.ui.commandNum == 2) { game.ui.titleScreenState = 2; }
+					if (userSelect == 2) { game.ui.setTitleScreenState(2); }
 					// when user click "quit"
-					if (game.ui.commandNum == 3) { System.exit(0); }
+					if (userSelect == 3) { System.exit(0); }
 				}
 			}
 			// when in "how to play" page
-			else if (game.ui.titleScreenState == 1) {
-				if (code == KeyEvent.VK_ENTER) { game.ui.titleScreenState = 0; }
+			else if (game.ui.getTitleScreenState() == 1) {
+				if (code == KeyEvent.VK_ENTER) { game.ui.setTitleScreenState(0); }
 			}
 			// when in "players control page"
-			else if (game.ui.titleScreenState == 2) {
-				if (code == KeyEvent.VK_ENTER) { game.ui.titleScreenState = 0; }
+			else if (game.ui.getTitleScreenState() == 2) {
+				if (code == KeyEvent.VK_ENTER) { game.ui.setTitleScreenState(0); }
 			}
 			// when in "do you want to host the server" page
-			else if (game.ui.titleScreenState == 3) {
+			else if (game.ui.getTitleScreenState() == 3) {
 				if (code == KeyEvent.VK_UP) {
-					game.playSE(0);
-					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
+					game.soundHandler.playSound(0);
+					userSelect--;
+					if (userSelect < 0) { userSelect = 2; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
-					game.playSE(0);
-					game.ui.commandNum++;
-					if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
+					game.soundHandler.playSound(0);
+					userSelect++;
+					if (userSelect > 2) { userSelect = 0; }
 				}
 				if (code == KeyEvent.VK_ENTER) {
 					// user will create a server using his/her ip address
-					if (game.ui.commandNum == 0) {
-						game.ui.titleScreenState = 4;
+					if (userSelect == 0) {
+						game.ui.setTitleScreenState(4);
 						isHost = true;
-					} else if (game.ui.commandNum == 1) {
-						game.ui.titleScreenState = 5;
-						game.ui.commandNum = 0;
-					} else if (game.ui.commandNum == 2) {
-						game.ui.titleScreenState = 0;
-						game.ui.commandNum = 0;
+					} else if (userSelect == 1) {
+						game.ui.setTitleScreenState(5);
+						userSelect = 0;
+					} else if (userSelect == 2) {
+						game.ui.setTitleScreenState(0);
+						userSelect = 0;
 					}
 				}
 			}
 			// when in "Enter your nickname" page
-			else if (game.ui.titleScreenState == 4) {
+			else if (game.ui.getTitleScreenState() == 4) {
 				if (code == KeyEvent.VK_UP) {
-					game.playSE(0);
-					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) { game.ui.commandNum = 1; }
+					game.soundHandler.playSound(0);
+					userSelect--;
+					if (userSelect < 0) { userSelect = 1; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
-					game.playSE(0);
-					game.ui.commandNum++;
-					if (game.ui.commandNum > 1) { game.ui.commandNum = 0; }
+					game.soundHandler.playSound(0);
+					userSelect++;
+					if (userSelect > 1) { userSelect = 0; }
 				}
 				char input = e.getKeyChar();
 				String tempInput = "";
@@ -116,7 +118,7 @@ public class KeyHandler implements KeyListener {
 					game.ui.name = maxLength(game.ui.name, 15);
 				}
 				// check to see if nickname is empty
-				if (game.ui.commandNum == 0) {
+				if (userSelect == 0) {
 					if (game.ui.name != "" && code == KeyEvent.VK_ENTER) {
 						game.player.setUsername(game.ui.name.trim());
 						Pkt01Login loginPacket = new Pkt01Login(game.player.getUsername(), game.player.getWorldX(), game.player.getWorldY(), game.player.getPlayerWeapIndex(), Game.waitState);
@@ -147,29 +149,29 @@ public class KeyHandler implements KeyListener {
 						}
 
 					}
-				} else if (game.ui.commandNum == 1) {
+				} else if (userSelect == 1) {
 					if (code == KeyEvent.VK_ENTER) {
 						if (isHost) {
-							game.ui.titleScreenState = 3;
-							game.ui.commandNum = 0;
+							game.ui.setTitleScreenState(3);
+							userSelect = 0;
 						} else {
-							game.ui.titleScreenState = 5;
-							game.ui.commandNum = 0;
+							game.ui.setTitleScreenState(5);
+							userSelect = 0;
 						}
 					}
 				}
 			}
 			// when in "Type the server ip:" page
-			else if (game.ui.titleScreenState == 5) {
+			else if (game.ui.getTitleScreenState() == 5) {
 				if (code == KeyEvent.VK_UP) {
-					game.playSE(0);
-					game.ui.commandNum--;
-					if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
+					game.soundHandler.playSound(0);
+					userSelect--;
+					if (userSelect < 0) { userSelect = 2; }
 				}
 				if (code == KeyEvent.VK_DOWN) {
-					game.playSE(0);
-					game.ui.commandNum++;
-					if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
+					game.soundHandler.playSound(0);
+					userSelect++;
+					if (userSelect > 2) { userSelect = 0; }
 				}
 
 				// user type in server address
@@ -182,18 +184,18 @@ public class KeyHandler implements KeyListener {
 					game.ui.ipAddress += input;
 					game.ui.ipAddress = maxLength(game.ui.ipAddress, 15);
 				}
-				if (game.ui.commandNum == 0) {
+				if (userSelect == 0) {
 					if (code == KeyEvent.VK_ENTER) {
 						game.ui.ipAddress = game.ui.ipAddress.trim();
 						// if user leave it empty, the user will enter his/her own ip address
 						if (game.ui.ipAddress.isEmpty() == true) { game.ui.ipAddress = "localhost"; }
 						// go to "Enter your nickname" page
-						game.ui.titleScreenState = 4;
+						game.ui.setTitleScreenState(4);
 						isHost = false;
 
 					}
 					// if user wants to copy from keyboard
-				} else if (game.ui.commandNum == 1) {
+				} else if (userSelect == 1) {
 					if (code == KeyEvent.VK_ENTER) {
 						try {
 							String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
@@ -207,47 +209,47 @@ public class KeyHandler implements KeyListener {
 						}
 					}
 					// go back
-				} else if (game.ui.commandNum == 2) {
+				} else if (userSelect == 2) {
 					if (code == KeyEvent.VK_ENTER) {
-						game.ui.titleScreenState = 3;
-						game.ui.commandNum = 0;
+						game.ui.setTitleScreenState(3);
+						userSelect = 0;
 					}
 				}
 			}
 		}
 		// when in option screen
-		if ((game.getGameState() == Game.waitState || game.getGameState() == Game.playState) && game.ui.option == true) {
+		if ((game.getGameState() == Game.waitState || game.getGameState() == Game.playState) && game.ui.isOptionScreenState() == true) {
 			if (code == KeyEvent.VK_UP) {
-				game.playSE(0);
-				game.ui.commandNum--;
-				if (game.ui.commandNum < 0) { game.ui.commandNum = 2; }
+				game.soundHandler.playSound(0);
+				userSelect--;
+				if (userSelect < 0) { userSelect = 2; }
 			}
 			if (code == KeyEvent.VK_DOWN) {
-				game.playSE(0);
-				game.ui.commandNum++;
-				if (game.ui.commandNum > 2) { game.ui.commandNum = 0; }
+				game.soundHandler.playSound(0);
+				userSelect++;
+				if (userSelect > 2) { userSelect = 0; }
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to game
-				if (game.ui.commandNum == 0) {
-					game.ui.option = false;
+				if (userSelect == 0) {
+					game.ui.setOptionScreenState(false);
 				}
 				// back to main menu
-				else if (game.ui.commandNum == 1) {
+				else if (userSelect == 1) {
 					game.setGameState(Game.titleState);
 					game.player.setPlayerState(Game.titleState);
 					game.clearPlayers();
-					game.ui.titleScreenState = 0;
-					game.ui.commandNum = 0;
+					game.ui.setTitleScreenState(0);
+					userSelect = 0;
 					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 				}
 				// exit game
-				else if (game.ui.commandNum == 2) { System.exit(0); }
+				else if (userSelect == 2) { System.exit(0); }
 			}
 			// press escape to go back to game
 			if (code == KeyEvent.VK_ESCAPE) {
-				game.playSE(0);
-				game.ui.option = false;
+				game.soundHandler.playSound(0);
+				game.ui.setOptionScreenState(false);
 			}
 		} else if (game.getGameState() == Game.waitState || game.getGameState() == Game.playState) {
 			// true if user presses button
@@ -267,16 +269,16 @@ public class KeyHandler implements KeyListener {
 
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
-				game.playSE(0);
-				game.ui.option = true;
-				game.ui.commandNum = 0;
+				game.soundHandler.playSound(0);
+				game.ui.setOptionScreenState(true);
+				userSelect = 0;
 				;
 			}
 
 			if (code == KeyEvent.VK_Q) { drop = false; }
 			if (code == KeyEvent.VK_M) {
 				map = !map;
-				game.playSE(5);
+				game.soundHandler.playSound(5);
 			}
 
 			if (code == KeyEvent.VK_1) { game.player.setPlayerWeapIndex(0); }
@@ -288,24 +290,24 @@ public class KeyHandler implements KeyListener {
 		// when in end game screen
 		if (game.getGameState() == Game.endState) {
 			if (code == KeyEvent.VK_UP) {
-				game.playSE(0);
-				game.ui.commandNum--;
-				if (game.ui.commandNum < 0) { game.ui.commandNum = 1; }
+				game.soundHandler.playSound(0);
+				userSelect--;
+				if (userSelect < 0) { userSelect = 1; }
 			}
 			if (code == KeyEvent.VK_DOWN) {
-				game.playSE(0);
-				game.ui.commandNum++;
-				if (game.ui.commandNum > 1) { game.ui.commandNum = 0; }
+				game.soundHandler.playSound(0);
+				userSelect++;
+				if (userSelect > 1) { userSelect = 0; }
 			}
 			if (code == KeyEvent.VK_ENTER) {
 				// back to lobby
-				if (game.ui.commandNum == 0) {
+				if (userSelect == 0) {
 					new Pkt17BackToLobby(game.player.getUsername()).sendData(game.socketClient);
 					// back to main menu
-				} else if (game.ui.commandNum == 1) {
+				} else if (userSelect == 1) {
 					game.setGameState(Game.titleState);
-					game.ui.titleScreenState = 0;
-					game.ui.commandNum = 0;
+					game.ui.setTitleScreenState(0);
+					userSelect = 0;
 					new Pkt02Disconnect(game.player.getUsername()).sendData(game.socketClient);
 				}
 			}
@@ -389,6 +391,14 @@ public class KeyHandler implements KeyListener {
 
 	public void setDrop(boolean drop) {
 		this.drop = drop;
+	}
+
+	public int getUserSelect() {
+		return userSelect;
+	}
+
+	public void setUserSelect(int userSelect) {
+		this.userSelect = userSelect;
 	}
 
 }

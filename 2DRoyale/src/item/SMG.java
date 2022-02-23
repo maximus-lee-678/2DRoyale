@@ -63,7 +63,7 @@ public class SMG extends SuperWeapon {
 
 			fireRateTick = 0;
 			if(game.getGameState() == Game.playState) 
-				game.playSE(1);
+				game.soundHandler.playSound(1);
 		}
 
 	}

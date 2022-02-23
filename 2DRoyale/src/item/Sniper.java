@@ -18,7 +18,7 @@ public class Sniper extends SuperWeapon {
 		this.damage = 50;
 		this.range = 30 * Game.tileSize;
 		this.speed = 10;
-		this.fireRate = 30;
+		this.fireRate = 50;
 		this.bulletSize = 16;
 
 		this.imgOffset = -3;
@@ -56,7 +56,7 @@ public class Sniper extends SuperWeapon {
 
 			fireRateTick = 0;
 			if(game.getGameState() == Game.playState)
-				game.playSE(4);
+				game.soundHandler.playSound(4);
 		}
 
 	}

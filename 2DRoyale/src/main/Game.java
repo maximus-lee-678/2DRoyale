@@ -49,7 +49,7 @@ public class Game extends JPanel implements Runnable {
 	public StructuresManager structM;
 	public Screen screen;	
 	public UI ui;	
-	public SoundHandler sound;
+	public SoundHandler soundHandler;
 	public PlayerMP player;
 	private List<PlayerMP> playerList;
 
@@ -73,7 +73,7 @@ public class Game extends JPanel implements Runnable {
 		this.keys = new KeyHandler(this);
 		this.mouse = new MouseHandler(this);
 		this.screen = new Screen(this);
-		this.sound = new SoundHandler();
+		this.soundHandler = new SoundHandler();
 		this.player = new PlayerMP(this, keys, mouse, null, null, -1);
 		this.windowHandler = new WindowHandler(this);
 		this.ui = new UI(this);
@@ -218,12 +218,6 @@ public class Game extends JPanel implements Runnable {
 
 	}
 
-	// sound method
-	public void playSE(int i) {
-		sound.setFile(i);
-		sound.play();
-	}
-
 	public static void main(String[] args) {
 		// Activate OpenGL
 		System.setProperty("sun.java2d.opengl", "True");
@@ -253,10 +247,6 @@ public class Game extends JPanel implements Runnable {
 
 	public void setRand(Random rand) {
 		this.rand = rand;
-	}
-	
-	
-
-	
+	}	
 	
 }

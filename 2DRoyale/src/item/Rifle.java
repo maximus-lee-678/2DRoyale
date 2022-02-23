@@ -64,7 +64,7 @@ public class Rifle extends SuperWeapon {
 
 			fireRateTick = 0;
 			if(game.getGameState() == Game.playState) 
-				game.playSE(2);
+				game.soundHandler.playSound(2);
 		}
 
 	}

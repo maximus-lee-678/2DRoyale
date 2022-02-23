@@ -115,7 +115,7 @@ public abstract class SuperWeapon extends Entity implements Cloneable, RenderInt
 									p.getWorldX() - dropWeap.imgIconWidth / 2 + Game.playerSize / 2, p.getWorldY() - dropWeap.imgIconHeight / 2 + Game.playerSize / 2);
 							dropPacket.sendData(game.socketClient);
 						}
-						p.setPlayerState(GameServer.endState);
+						p.setPlayerState(Game.endState);
 						Pkt16Death deathPacket = new Pkt16Death(player.getUsername(), p.getUsername(), socketServer.getPlayerRemaining());
 						socketServer.decrementPlayerRemaining();
 						deathPacket.sendData(socketServer);

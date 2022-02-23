@@ -219,7 +219,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 					// Update weapon drop to server
 					new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), this.worldX - dropWeap.getImgIconWidth() / 2 + Game.playerSize / 2,
 							this.worldY - dropWeap.getImgIconHeight() / 2 + Game.playerSize / 2).sendData(game.socketClient);
-					game.playSE(9);
+					game.soundHandler.playSound(9);
 				}
 				keys.setDrop(false);
 			}
@@ -307,10 +307,10 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 			if (playerWeap[playerWeapIndex] != null) {
 				SuperWeapon dropWeap = playerWeap[playerWeapIndex];
 				new Pkt12DropWeapon(username, playerWeapIndex, dropWeap.getTypeId(), dropWeap.getId(), weapon.worldX, weapon.worldY).sendData(game.socketClient);
-				game.playSE(9);
+				game.soundHandler.playSound(9);
 			}
 			new Pkt10PickupWeapon(username, playerWeapIndex, weapon.getTypeId(), weapon.getId()).sendData(game.socketClient);
-			game.playSE(8);
+			game.soundHandler.playSound(8);
 			return;
 		}
 
@@ -318,7 +318,7 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 		int crateIndex = game.structM.withinCrateRange(entityLeftWorldX, entityRightWorldX, entityTopWorldY, entityBottomWorldY);
 		if (crateIndex != -1) {
 			new Pkt11CrateOpen(username, crateIndex).sendData(game.socketClient);
-			game.playSE(7);
+			game.soundHandler.playSound(7);
 			return;
 		}
 	}

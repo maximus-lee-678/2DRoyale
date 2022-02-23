@@ -10,7 +10,7 @@ import javax.sound.sampled.Clip;
 public class SoundHandler {
 
 	private Clip clip;
-	private URL soundURL[] = new URL[30];
+	private URL soundURL[] = new URL[12];
 
 	public SoundHandler() {
 		//input your sounds here!
@@ -28,26 +28,14 @@ public class SoundHandler {
 		this.soundURL[11] = getClass().getResource("/sound/lose.wav");
 	}
 
-	public void setFile(int i) {
+	public void playSound(int i) {
 		try {
 			AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
 			clip = AudioSystem.getClip();
 			clip.open(ais);
+			clip.start();
 		} catch (Exception e) {
 		}
-	}
-
-	// different functions, only play is used in this game, loop and stop are for music
-	public void play() {
-		clip.start();
-	}
-
-	public void loop() {
-		clip.loop(Clip.LOOP_CONTINUOUSLY);
-	}
-
-	public void stop() {
-		clip.stop();
 	}
 
 }
