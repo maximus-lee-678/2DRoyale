@@ -122,11 +122,21 @@ public class UI {
 		// Main Screen when user opens the game
 		int x, y;
 		if (titleScreenState == 0) {
+			
 			g2.setColor(new Color(0, 0, 0));
 			g2.fillRect(0, 0, game.screen.getScreenWidth(), game.screen.getScreenHeight());
+			
+			// How to navigate
+			g2.setFont(g2.getFont().deriveFont(24F));
+			String text = "[Up/Down Arrows] to navigate, [Enter] to enter.";
+			x = 16;
+			y = 32;
+			g2.setColor(Color.white);
+			g2.drawString(text, x, y);
+
 
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
-			String text = "2D Royale";
+			text = "2D Royale";
 			x = getXforCenteredText(text);
 			y = textSpacing * 3;
 
@@ -140,7 +150,7 @@ public class UI {
 
 			// Menu
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-
+			
 			text = "START";
 			x = getXforCenteredText(text);
 			y += textSpacing * 4;
@@ -172,24 +182,54 @@ public class UI {
 			// When user click on "HOW TO PLAY"
 		} else if (titleScreenState == 1) {
 			g2.setColor(Color.white);
-			g2.setFont(g2.getFont().deriveFont(42F));
+			g2.setFont(g2.getFont().deriveFont(32F));
 
-			String text = "Objectives";
+			String text = "OBJECTIVES";
 			x = getXforCenteredText(text);
-			y = textSpacing * 3;
+			y = textSpacing * 2;
 			g2.drawString(text, x, y);
 
-			text = "- Kill everyone and be the last man standing";
+			text = "You are spawned randomly in the world.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "Open crates to obtain weapons.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "Gas closes on the centre of the map. Best to stay out of it.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "Kill everyone. Be the last man standing.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "WEAPONS";
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
 			g2.drawString(text, x, y);
 
-			text = "- Search around for weapons and stay in the restricted area";
+			text = "Shotgun: Fast firing weapon with extreme close quarters lethality.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-
-			text = "Good luck";
+			
+			text = "Rifle: Well rounded automatic weapon.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "SMG: Close quarters spray and pray weapon.";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "Sniper: Low fire rate, slow projectile speed, but massive damage.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
@@ -205,32 +245,42 @@ public class UI {
 			g2.setColor(Color.white);
 			g2.setFont(g2.getFont().deriveFont(32F));
 
-			String text = "Players Control";
+			String text = "CONTROLS";
 			x = getXforCenteredText(text);
-			y = textSpacing * 3;
+			y = textSpacing * 2;
 			g2.drawString(text, x, y);
-
-			text = "- Use WASD to move your character around";
+			
+			text = "[F] HOST: Start Game";
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
 			g2.drawString(text, x, y);
 
-			text = "- Use E to pick weapons and open crates";
+			text = "[W][A][S][D] Character Movement";
+			x = getXforCenteredText(text);
+			y += textSpacing * 2;
+			g2.drawString(text, x, y);
+			
+			text = "[E] Open Crates, Pick Up Weapons";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
 
-			text = "- Use Q to drop weapon";
+			text = "[Q] Drop Held Weapon";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "[M] Toggle Minimap/Full-Sized Map";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
 
-			text = "- Use scroll to change weapons";
+			text = "[Scroll] Change Weapons";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
 
-			text = "- Left-click to aim and shoot";
+			text = "[Mouse1] Aim and Shoot";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
