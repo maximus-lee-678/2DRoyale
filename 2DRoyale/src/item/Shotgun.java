@@ -61,8 +61,7 @@ public class Shotgun extends SuperWeapon {
 
 			fireRateTick = 0;
 			if(game.getGameState() == Game.playState) 
-				game.soundHandler.playSound(3);
-			
+				game.soundHandler.playSound(3);			
 		}
 
 	}

@@ -28,8 +28,8 @@ public class UI {
 	private static final int selectSpacing = 32;
 	private static final int imgSize = 48;
 
-	public String name;
-	public String ipAddress;
+	private String name;
+	private String ipAddress;
 
 	private int titleScreenState;
 	private boolean optionScreenState;
@@ -43,7 +43,7 @@ public class UI {
 	private int playingPlayerCount;
 	private int client_fps;
 	private long ping;
-	
+
 	public UI(Game game) {
 		this.game = game;
 		this.titleScreenState = 0;
@@ -192,7 +192,7 @@ public class UI {
 			x = getXforCenteredText(text);
 			y = textSpacing * 2;
 			g2.drawString(text, x, y);
-			
+
 			g2.setFont(g2.getFont().deriveFont(32F));
 
 			text = "You are spawned randomly in the world.";
@@ -214,14 +214,14 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			g2.setFont(g2.getFont().deriveFont(42F));
 
 			text = "WEAPONS";
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
 			g2.drawString(text, x, y);
-			
+
 			g2.setFont(g2.getFont().deriveFont(32F));
 
 			text = "Shotgun: Fast firing weapon with extreme close quarters lethality.";
@@ -261,7 +261,7 @@ public class UI {
 			g2.drawString(text, x, y);
 
 			g2.setFont(g2.getFont().deriveFont(32F));
-			
+
 			text = "[F] HOST: Start Game";
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
@@ -296,7 +296,7 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "[F3] Toggle Diagnostic Information";
 			x = getXforCenteredText(text);
 			y += textSpacing;
@@ -379,16 +379,16 @@ public class UI {
 			x = getXforCenteredText(text);
 			y = textSpacing * 3;
 			g2.drawString(text, x, y);
-			
+
 			g2.setFont(g2.getFont().deriveFont(24F));
-			
+
 			text = "(empty for localhost)";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
 
 			g2.setFont(g2.getFont().deriveFont(42F));
-			
+
 			g2.drawRect(textSpacing * 6, textSpacing * 5, game.screen.getScreenWidth() - textSpacing * 12, textSpacing * 2);
 			x = getXforCenteredText(ipAddress);
 			y += textSpacing * 2;
@@ -524,17 +524,16 @@ public class UI {
 	// Show FPS, seed and ping
 	private void drawDiagnostics() {
 		String text = " FPS: " + client_fps + " SEED: " + game.getRandSeed() + " PING: " + ping + "ms";
-		
+
 		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-		
+
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
-		g2.setColor(Color.black);		
+		g2.setColor(Color.black);
 		g2.drawString(text, game.screen.getScreenWidth() - length - 10 + 2, game.screen.getScreenHeight() - 10 + 2);
 		g2.setColor(Color.white);
 		g2.drawString(text, game.screen.getScreenWidth() - length - 10, game.screen.getScreenHeight() - 10);
 	}
 
-	
 	// display option screen when esc is pressed
 	public void drawOption() {
 		int x = textSpacing * 6;
@@ -661,6 +660,28 @@ public class UI {
 			g2.drawString(">", x - selectSpacing, y);
 	}
 
+	public void nameRemoveLastChar() {
+		if (name != null && name.length() > 0)
+			name = name.substring(0, name.length() - 1);
+	}
+
+	public void nameAddChar(char input) {
+		name += input;
+		if (name.length() > 15)
+			name = name.substring(0, 15);
+	}
+	
+	public void ipRemoveLastChar() {
+		if (ipAddress != null && ipAddress.length() > 0)
+			ipAddress = ipAddress.substring(0, ipAddress.length() - 1);
+	}
+
+	public void ipAddChar(char input) {
+		ipAddress += input;
+		if (ipAddress.length() > 15)
+			ipAddress = ipAddress.substring(0, 15);
+	}
+
 	public int getTitleScreenState() {
 		return titleScreenState;
 	}
@@ -680,7 +701,7 @@ public class UI {
 	public void setOptionScreenState(boolean optionScreenState) {
 		this.optionScreenState = optionScreenState;
 	}
-	
+
 	public void setDiagnosticState(boolean diagnosticState) {
 		this.diagnosticState = diagnosticState;
 	}
@@ -696,7 +717,7 @@ public class UI {
 	public void setWin(boolean win) {
 		this.win = win;
 	}
-	
+
 	public void setClient_fps(int client_fps) {
 		this.client_fps = client_fps;
 	}
@@ -704,6 +725,22 @@ public class UI {
 	public void setPing(long ping) {
 		this.ping = ping;
 	}
-
+	
+	public String getName() {
+		name.trim();
+		return name;
+	}
+	
+	public String getIpAddress() {
+		ipAddress.trim();
+		return ipAddress;
+	}
+	
+	public void setIpAddress(String ip) {
+		if (ip.length() > 15)
+			ip = ip.substring(0, 15);
+		this.ipAddress = ip;
+		
+	}
 
 }

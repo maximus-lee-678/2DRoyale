@@ -7,7 +7,7 @@ import net.Pkt02Disconnect;
 
 public class WindowHandler implements WindowListener {
 
-	private final Game game;
+	private Game game;
 
 	public WindowHandler(Game game) {
 		this.game = game;

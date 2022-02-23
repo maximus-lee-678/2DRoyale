@@ -24,8 +24,10 @@ public class GameClient extends Thread {
 		try {
 			this.socket = new DatagramSocket(); // create socket
 			this.ipAddress = InetAddress.getByName(ipAddress);
-		} catch (SocketException | UnknownHostException e) {
+		} catch (SocketException e) {
 			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			System.out.println(e);
 		}
 	}
 
@@ -88,6 +90,7 @@ public class GameClient extends Thread {
 			handleSeed(seedPacket);
 			break;
 		case 8:
+			// SERVER PING
 			game.ui.setPing(System.currentTimeMillis() - latency);
 			break;
 		case 9:
@@ -177,7 +180,6 @@ public class GameClient extends Thread {
 		game.ui.addMessage(winnerPacket.getUsername() + " won!");
 		// If player is winner, end the game
 		if (winnerPacket.getUsername().equals(game.player.getUsername())) {
-//			game.ui.playingPlayerCount = 1;
 			game.ui.setWin(true);
 			game.setGameState(Game.endState);
 			game.player.setPlayerState(Game.endState);
@@ -322,7 +324,9 @@ public class GameClient extends Thread {
 		try {
 			socket.send(packet);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.print(e + ": Please go back and enter a valid ip address!");
+		} catch (IllegalArgumentException e) {
+			System.out.print(e + ": Please go back and enter a valid ip address!");
 		}
 	}
 	

@@ -241,7 +241,7 @@ public class StructuresManager {
 
 		mainLoop: while (placedObstructions < numberOfObstructions) {
 			// Get a random size for the object, then create an object with it
-			int randomSize = game.getRand().nextInt(obstructionTileSizeLower, obstructionTileSizeUpper + 1);
+			int randomSize = game.getRand().nextInt(obstructionTileSizeUpper + 1 - obstructionTileSizeLower) + obstructionTileSizeLower;
 			Obstruction tryObstruction = new Obstruction(randomSize, randomSize);
 
 			int randomX = offset + game.getRand().nextInt((Game.tileSize * game.tileM.getMaxWorldCol() - randomSize - (offset * 2)));
@@ -327,13 +327,13 @@ public class StructuresManager {
 			// Picks a corresponding biome tile
 			switch (game.tileM.getMapTileData()[biomeTileX][biomeTileY].getTile().getBiome()) {
 			case "Forest":
-				tryObstruction.setImageID(game.getRand().nextInt(1, 2 + 1));
+				tryObstruction.setImageID(game.getRand().nextInt(2 + 1 - 1) + 1);
 				break;
 			case "Snow":
-				tryObstruction.setImageID(game.getRand().nextInt(3, 4 + 1));
+				tryObstruction.setImageID(game.getRand().nextInt(4 + 1 - 3) + 3);
 				break;
 			case "Wasteland":
-				tryObstruction.setImageID(game.getRand().nextInt(5, 6 + 1));
+				tryObstruction.setImageID(game.getRand().nextInt(6 + 1 - 5) + 5);
 				break;
 			default:
 				tryObstruction.setImageID(1);

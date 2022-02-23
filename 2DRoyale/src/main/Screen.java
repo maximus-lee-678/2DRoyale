@@ -21,28 +21,26 @@ public class Screen implements RenderInterface {
 
 	private Game game;
 
-	private final int maxScreenCol;
-	private final int maxScreenRow;
+	private static final int maxScreenCol = 26;
+	private static final int maxScreenRow = 15;
 	private final int screenWidth;
 	private final int screenHeight;
 
 	// Variables for mini and megamap
-	private final int minimapRadius = 18;
-	private final int minimapTileSize = 4;
-	private final int minimapRenderAtX = 70;
-	private final int minimapRenderAtY = 70;
+	private static final int minimapRadius = 18;
+	private static final int minimapTileSize = 4;
+	private static final int minimapRenderAtX = 70;
+	private static final int minimapRenderAtY = 70;
 
-	private final int megamapLength = 640; // must be multiple of 128 (map size)
-	private final int megamapHeight = 640; // for accurate gas drawing
-	private final int megamapBackBorder = 2;
-	private final int megaPlayerSize = 8;
+	private static final int megamapLength = 640; // must be multiple of 128 (map size)
+	private static final int megamapHeight = 640; // for accurate gas drawing
+	private static final int megamapBackBorder = 2;
+	private static final int megaPlayerSize = 8;
 
 	private BufferedImage minimapBack, minimapVoid, megamapLobby, megamapGame, buildingMinimap;
 
 	public Screen(Game game) {
 		this.game = game;
-		this.maxScreenCol = 26;
-		this.maxScreenRow = 15;
 		this.screenWidth = Game.tileSize * maxScreenCol;
 		this.screenHeight = Game.tileSize * maxScreenRow;
 		try {
