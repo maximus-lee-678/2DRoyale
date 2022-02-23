@@ -146,7 +146,7 @@ public class Game extends JPanel implements Runnable {
 			}
 
 			if (timer >= 1000000000) {
-				window.setTitle("Name: " + player.getUsername() + " FPS: " + frames + " SEED: " + randSeed);
+				ui.setClient_fps(frames);
 				timer = 0;
 				frames = 0;
 			}
@@ -240,7 +240,7 @@ public class Game extends JPanel implements Runnable {
 		this.randSeed = randSeed;
 		this.rand = new Random(randSeed);
 	}
-
+	
 	public Random getRand() {
 		return rand;
 	}

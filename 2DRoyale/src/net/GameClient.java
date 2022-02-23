@@ -88,7 +88,7 @@ public class GameClient extends Thread {
 			handleSeed(seedPacket);
 			break;
 		case 8:
-			System.out.println("Ping: " + (System.currentTimeMillis() - latency) + "ms");
+			game.ui.setPing(System.currentTimeMillis() - latency);
 			break;
 		case 9:
 			// SERVER BULLET HIT

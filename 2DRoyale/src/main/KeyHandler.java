@@ -18,7 +18,7 @@ public class KeyHandler implements KeyListener {
 
 	private Game game;
 	private boolean up, down, left, right;
-	private boolean interact, drop, map, ping;
+	private boolean interact, drop, map, diagnostic;
 	private boolean isHost;
 
 	private int userSelect;
@@ -30,7 +30,7 @@ public class KeyHandler implements KeyListener {
 		this.interact = false;
 		this.drop = false;
 		this.map = false;
-		this.ping = false;
+		this.diagnostic = false;
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -266,13 +266,17 @@ public class KeyHandler implements KeyListener {
 			if (code == KeyEvent.VK_F) {
 				if (game.socketServer != null)
 					new Pkt14StartGame(game.player.getUsername()).sendData(game.socketClient);
-
+			}
+			if (code == KeyEvent.VK_F3) {
+				diagnostic = !diagnostic;
+				game.socketClient.setLatency(System.currentTimeMillis());
+				new Pkt08ServerPing().sendData(game.socketClient);
+				game.ui.setDiagnosticState(diagnostic);
 			}
 			if (code == KeyEvent.VK_ESCAPE) {
 				game.soundHandler.playSound(0);
 				game.ui.setOptionScreenState(true);
 				userSelect = 0;
-				;
 			}
 
 			if (code == KeyEvent.VK_Q) { drop = false; }
@@ -331,13 +335,6 @@ public class KeyHandler implements KeyListener {
 			interact = true;
 		if (code == KeyEvent.VK_Q)
 			drop = true;
-		if (code == KeyEvent.VK_P) {
-			if (game.getGameState() == Game.titleState)
-				return;
-			game.socketClient.setLatency(System.currentTimeMillis());
-			new Pkt08ServerPing().sendData(game.socketClient);
-		}
-
 	}
 
 	// method to backspace a character when keying nickname
@@ -377,8 +374,8 @@ public class KeyHandler implements KeyListener {
 		return drop;
 	}
 
-	public boolean isPing() {
-		return ping;
+	public boolean isDiagnostic() {
+		return diagnostic;
 	}
 
 	public boolean isMap() {

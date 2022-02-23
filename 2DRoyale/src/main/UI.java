@@ -33,6 +33,7 @@ public class UI {
 
 	private int titleScreenState;
 	private boolean optionScreenState;
+	private boolean diagnosticState;
 
 	private BufferedImage healthImage, killCounterImage, remainingPlayersImage;
 	private int countdown;
@@ -40,7 +41,9 @@ public class UI {
 	private boolean win;
 	private int waitingPlayerCount;
 	private int playingPlayerCount;
-
+	private int client_fps;
+	private long ping;
+	
 	public UI(Game game) {
 		this.game = game;
 		this.titleScreenState = 0;
@@ -104,6 +107,8 @@ public class UI {
 			drawPlayerCount(playerCount);
 			drawMessage();
 			drawCountdown();
+			if (diagnosticState)
+				drawDiagnostics();
 			if (optionScreenState)
 				drawOption();
 			// Start game message
@@ -122,10 +127,10 @@ public class UI {
 		// Main Screen when user opens the game
 		int x, y;
 		if (titleScreenState == 0) {
-			
+
 			g2.setColor(new Color(0, 0, 0));
 			g2.fillRect(0, 0, game.screen.getScreenWidth(), game.screen.getScreenHeight());
-			
+
 			// How to navigate
 			g2.setFont(g2.getFont().deriveFont(24F));
 			String text = "[Up/Down Arrows] to navigate, [Enter] to enter.";
@@ -133,7 +138,6 @@ public class UI {
 			y = 32;
 			g2.setColor(Color.white);
 			g2.drawString(text, x, y);
-
 
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
 			text = "2D Royale";
@@ -150,7 +154,7 @@ public class UI {
 
 			// Menu
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-			
+
 			text = "START";
 			x = getXforCenteredText(text);
 			y += textSpacing * 4;
@@ -182,53 +186,59 @@ public class UI {
 			// When user click on "HOW TO PLAY"
 		} else if (titleScreenState == 1) {
 			g2.setColor(Color.white);
-			g2.setFont(g2.getFont().deriveFont(32F));
+			g2.setFont(g2.getFont().deriveFont(42F));
 
 			String text = "OBJECTIVES";
 			x = getXforCenteredText(text);
 			y = textSpacing * 2;
 			g2.drawString(text, x, y);
+			
+			g2.setFont(g2.getFont().deriveFont(32F));
 
 			text = "You are spawned randomly in the world.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "Open crates to obtain weapons.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "Gas closes on the centre of the map. Best to stay out of it.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "Kill everyone. Be the last man standing.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
 			
+			g2.setFont(g2.getFont().deriveFont(42F));
+
 			text = "WEAPONS";
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
 			g2.drawString(text, x, y);
+			
+			g2.setFont(g2.getFont().deriveFont(32F));
 
 			text = "Shotgun: Fast firing weapon with extreme close quarters lethality.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "Rifle: Well rounded automatic weapon.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "SMG: Close quarters spray and pray weapon.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "Sniper: Low fire rate, slow projectile speed, but massive damage.";
 			x = getXforCenteredText(text);
 			y += textSpacing;
@@ -243,12 +253,14 @@ public class UI {
 			// When user click on "PLAYERS CONTROL"
 		} else if (titleScreenState == 2) {
 			g2.setColor(Color.white);
-			g2.setFont(g2.getFont().deriveFont(32F));
+			g2.setFont(g2.getFont().deriveFont(42F));
 
 			String text = "CONTROLS";
 			x = getXforCenteredText(text);
 			y = textSpacing * 2;
 			g2.drawString(text, x, y);
+
+			g2.setFont(g2.getFont().deriveFont(32F));
 			
 			text = "[F] HOST: Start Game";
 			x = getXforCenteredText(text);
@@ -259,7 +271,7 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += textSpacing * 2;
 			g2.drawString(text, x, y);
-			
+
 			text = "[E] Open Crates, Pick Up Weapons";
 			x = getXforCenteredText(text);
 			y += textSpacing;
@@ -269,7 +281,7 @@ public class UI {
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
-			
+
 			text = "[M] Toggle Minimap/Full-Sized Map";
 			x = getXforCenteredText(text);
 			y += textSpacing;
@@ -281,6 +293,11 @@ public class UI {
 			g2.drawString(text, x, y);
 
 			text = "[Mouse1] Aim and Shoot";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
+			
+			text = "[F3] Toggle Diagnostic Information";
 			x = getXforCenteredText(text);
 			y += textSpacing;
 			g2.drawString(text, x, y);
@@ -362,10 +379,19 @@ public class UI {
 			x = getXforCenteredText(text);
 			y = textSpacing * 3;
 			g2.drawString(text, x, y);
+			
+			g2.setFont(g2.getFont().deriveFont(24F));
+			
+			text = "(empty for localhost)";
+			x = getXforCenteredText(text);
+			y += textSpacing;
+			g2.drawString(text, x, y);
 
+			g2.setFont(g2.getFont().deriveFont(42F));
+			
 			g2.drawRect(textSpacing * 6, textSpacing * 5, game.screen.getScreenWidth() - textSpacing * 12, textSpacing * 2);
 			x = getXforCenteredText(ipAddress);
-			y += textSpacing * 3;
+			y += textSpacing * 2;
 			g2.drawString(ipAddress, x, y);
 
 			text = "Ok";
@@ -495,6 +521,20 @@ public class UI {
 		}
 	}
 
+	// Show FPS, seed and ping
+	private void drawDiagnostics() {
+		String text = " FPS: " + client_fps + " SEED: " + game.getRandSeed() + " PING: " + ping + "ms";
+		
+		int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+		
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+		g2.setColor(Color.black);		
+		g2.drawString(text, game.screen.getScreenWidth() - length - 10 + 2, game.screen.getScreenHeight() - 10 + 2);
+		g2.setColor(Color.white);
+		g2.drawString(text, game.screen.getScreenWidth() - length - 10, game.screen.getScreenHeight() - 10);
+	}
+
+	
 	// display option screen when esc is pressed
 	public void drawOption() {
 		int x = textSpacing * 6;
@@ -640,6 +680,10 @@ public class UI {
 	public void setOptionScreenState(boolean optionScreenState) {
 		this.optionScreenState = optionScreenState;
 	}
+	
+	public void setDiagnosticState(boolean diagnosticState) {
+		this.diagnosticState = diagnosticState;
+	}
 
 	public void setKills(int kills) {
 		this.kills = kills;
@@ -652,5 +696,14 @@ public class UI {
 	public void setWin(boolean win) {
 		this.win = win;
 	}
+	
+	public void setClient_fps(int client_fps) {
+		this.client_fps = client_fps;
+	}
+
+	public void setPing(long ping) {
+		this.ping = ping;
+	}
+
 
 }
