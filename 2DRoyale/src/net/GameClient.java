@@ -218,7 +218,6 @@ public class GameClient extends Thread {
 		else {
 			System.out.println("GO");
 			game.player.setFreeze(false);
-			System.out.println(1);
 		}
 	}
 	

@@ -208,9 +208,9 @@ public class KeyHandler implements KeyListener {
 							if (data.matches(ipPattern))
 								game.ui.setIpAddress(data);
 							else
-								System.out.println("bad syntax");
-						} catch (Exception x) {
-							System.out.println(x);
+								System.out.println("Bad Syntax!");
+						} catch (Exception ex) {
+							ex.printStackTrace();
 						}
 					}
 					// go back
