@@ -1,8 +1,10 @@
 # ict1009-team35-2022
 Running Locally
+
 A jar file, 2DRoyale.jar can be downloaded from directory ict1009-team35-2022. You will need to be running at least JDK 17.0.1 to run this jar file. 
 
 Getting started
+
 git clone https://github.com/sgtechICT1009/ict1009-team35-2022.git
 github cli gh repo clone sgtechICT1009/ict1009-team35-2022
 
