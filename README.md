@@ -6,6 +6,7 @@ A jar file, 2DRoyale.jar can be downloaded from directory ict1009-team35-2022. Y
 # Getting started
 
 git clone https://github.com/sgtechICT1009/ict1009-team35-2022.git
+
 github cli gh repo clone sgtechICT1009/ict1009-team35-2022
 
 # Project Description
