@@ -147,26 +147,30 @@ public class GameServer extends Thread  {
 		if (countDownSeq >= 0 && gameTicks % 60 == 0) {
 			new Pkt15CountdownSeq(countDownSeq).sendData(this);
 			countDownSeq--;
-		}
-		if (gameState == Game.playState && gameTicks % 120 == 0) { // gas speed
-			handleCloseGas();
-		}
-		// Check if no remaining players
-		if (gameState == Game.playState && countDownSeq < 0 && playerRemaining <= 1) {
-			String lastPlayer = findPlayerInPlayState();
-			new Pkt18Winner(lastPlayer).sendData(this);
-			getPlayers().get(playerIndex(lastPlayer)).setPlayerState(Game.endState);
-			gameState = Game.waitState;
-		}
-		// Check for bullet hit
-		for (PlayerMP p : getPlayers()) {
-			for (SuperWeapon weap : p.getWeapons()) {
-				if (weap != null) {
-					weap.checkPlayerHit(this);
-					weap.update();
+		}		
+		
+		if (gameState == Game.playState) {
+			//gas speed
+			if(gameTicks % 120 == 0) 
+				handleCloseGas();
+			// Check if no remaining players
+			if (countDownSeq < 0 && playerRemaining <= 1) {
+				String lastPlayer = findPlayerInPlayState();
+				new Pkt18Winner(lastPlayer).sendData(this);
+				getPlayers().get(playerIndex(lastPlayer)).setPlayerState(Game.endState);
+				gameState = Game.waitState;
+			}
+			// Check for bullet hit
+			for (PlayerMP p : getPlayers()) {
+				for (SuperWeapon weap : p.getWeapons()) {
+					if (weap != null) {
+						weap.checkPlayerHit(this);
+						weap.update();
+					}
 				}
 			}
 		}
+		
 	}
 
 	private void handleGasDamage(Pkt20GasDamage gasDmgPacket) {

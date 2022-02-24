@@ -92,7 +92,7 @@ public class Screen implements RenderInterface {
 		}
 
 		// 8th layer
-		game.ui.draw(g2);
+		game.ui.render(g2);
 	}
 
 	/**

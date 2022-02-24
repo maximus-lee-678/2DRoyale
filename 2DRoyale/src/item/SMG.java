@@ -45,7 +45,6 @@ public class SMG extends SuperWeapon {
 
 	@Override
 	public void shoot() {
-
 		fireRateTick++;
 		if (fireRateTick == fireRate) {
 			// Spawn bullet at the player's location
@@ -65,7 +64,5 @@ public class SMG extends SuperWeapon {
 			if(game.getGameState() == Game.playState) 
 				game.soundHandler.playSound(1);
 		}
-
 	}
-
 }

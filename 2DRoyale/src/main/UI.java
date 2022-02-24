@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 import entity.PlayerMP;
 import item.SuperWeapon;
 
-public class UI {
+public class UI implements RenderInterface{
 
 	private Game game;
 	private Graphics2D g2;
@@ -82,7 +82,7 @@ public class UI {
 		}
 	}
 
-	public void draw(Graphics2D g2) {
+	public void render(Graphics2D g2) {
 
 		this.g2 = g2;
 		g2.setFont(maruMonica);
