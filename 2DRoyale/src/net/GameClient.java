@@ -180,6 +180,7 @@ public class GameClient extends Thread {
 		game.ui.addMessage(winnerPacket.getUsername() + " won!");
 		// If player is winner, end the game
 		if (winnerPacket.getUsername().equals(game.player.getUsername())) {
+			game.ui.setPlayingPlayerCount(1);
 			game.ui.setWin(true);
 			game.setGameState(Game.endState);
 			game.player.setPlayerState(Game.endState);

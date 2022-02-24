@@ -739,8 +739,11 @@ public class UI implements RenderInterface{
 	public void setIpAddress(String ip) {
 		if (ip.length() > 15)
 			ip = ip.substring(0, 15);
-		this.ipAddress = ip;
-		
+		this.ipAddress = ip;		
+	}
+
+	public void setPlayingPlayerCount(int playingPlayerCount) {
+		this.playingPlayerCount = playingPlayerCount;
 	}
 
 }
