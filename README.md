@@ -1,7 +1,7 @@
 # ict1009-team35-2022
 # Running Locally
 
-A jar file, 2DRoyale.jar can be downloaded from directory ict1009-team35-2022. You will need to be running at least JDK 17.0.1 to run this jar file. 
+A jar file, 2DRoyale.jar can be downloaded from directory ict1009-team35-2022. You will need to be running at least JDK 16 to run this jar file. 
 
 # Getting started
 
