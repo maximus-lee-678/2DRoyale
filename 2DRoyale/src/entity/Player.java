@@ -149,9 +149,9 @@ public class Player extends Entity implements RenderInterface { // inherits Enti
 				}
 			}
 
-			// Commit random values
-			worldX = randomX;
-			worldY = randomY;
+			// Commit random values, need to shift as worldX and Y refer to player model coords, we want to set the hitbox coords
+			worldX = randomX - entityArea.x;
+			worldY = randomY - entityArea.y;
 			break;
 		}
 
