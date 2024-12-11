@@ -14,10 +14,10 @@
 ▶ Demonstration Video:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. image:: https://img.youtube.com/vi/3pviI6fJ1U4/maxresdefault.jpg
+.. image:: https://img.youtube.com/vi/s7qVyHmvFyQ/maxresdefault.jpg
     :alt: 2DRoyale Demo
     :width: 256
-    :target: https://www.youtube.com/watch?v=3pviI6fJ1U4
+    :target: https://youtu.be/s7qVyHmvFyQ
 
 👥 Team Members
 ----------------
